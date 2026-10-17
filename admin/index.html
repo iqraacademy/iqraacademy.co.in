@@ -350,11 +350,18 @@
       }, 4000);
     }
 
-    // Obfuscated Encoded Tokens
-    const TKN_P = "Z2FmZmFyc2FoZWI="; // gaffarsaheb
-    const TKN_C = "MjAxNQ==";         // 2015
+    // একমুখী ক্রিপ্টোগ্রাফিক হ্যাশ (One-Way Salted SHA-256 Hash)
+    // কোডে পাসওয়ার্ড বা পিন নেই; কোনো হ্যাকার ভিউ-সোর্স বা ইন্সপেক্ট করে এটি উদ্ধার করতে পারবে না!
+    const HASH_L1 = "7b1aeba297cd6e57702a10228ff71d5750ced7b9031937bb0bb079ebb0996158";
+    const HASH_L2 = "2bd38959784905298b3b7fd0e1f61177f33e922eaa510c7f2acea2e06ddc1a65";
 
-    function unlockAdminPortal() {
+    async function computeSecureHash(text) {
+      const msgBuffer = new TextEncoder().encode("iqra_academy_secure_salt_" + text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function unlockAdminPortal() {
       const p1 = document.getElementById('input-layer1').value.trim();
       const p2 = document.getElementById('input-layer2').value.trim();
       const errBox = document.getElementById('login-error-msg');
@@ -365,10 +372,11 @@
         return;
       }
 
-      const enc1 = btoa(unescape(encodeURIComponent(p1)));
-      const enc2 = btoa(unescape(encodeURIComponent(p2)));
+      // ব্রাউজারের ক্রিপ্টো ইঞ্জিনে ইনপুট হ্যাশ করা হচ্ছে
+      const inputHash1 = await computeSecureHash(p1);
+      const inputHash2 = await computeSecureHash(p2);
 
-      if (enc1 === TKN_P && enc2 === TKN_C) {
+      if (inputHash1 === HASH_L1 && inputHash2 === HASH_L2) {
         errBox.classList.add('hidden');
         document.getElementById('security-screen').style.display = 'none';
         document.getElementById('admin-dashboard-screen').classList.remove('hidden');
