@@ -160,10 +160,10 @@
           <span class="text-[11px] text-slate-500 uppercase font-bold block">২০২৭ শিক্ষাবর্ষ</span>
           <span class="text-sm font-extrabold text-amber-700">ভর্তি চলছে (Pre-Nursery - IX)</span>
         </div>
-        <a id="btn-open-admission-header" href="javascript:void(0)" class="btn-trigger-admission" class="bg-gradient-to-r from-emerald-700 to-emerald-900 hover:from-emerald-800 hover:to-emerald-950 text-white font-bold px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2 text-sm transform hover:-translate-y-0.5">
+        <button type="button" id="btn-open-admission-header" onclick="openAdmissionModal()" class="bg-gradient-to-r from-emerald-700 to-emerald-900 hover:from-emerald-800 hover:to-emerald-950 text-white font-bold px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2 text-sm transform hover:-translate-y-0.5 cursor-pointer">
           <i class="fa-solid fa-file-pen text-amber-300"></i>
           <span>অনলাইনে ভর্তি আবেদন</span>
-        </a>
+        </button>
       </div>
 
       <!-- Mobile Menu Toggle Button -->
@@ -237,9 +237,9 @@
       <a href="#gallery" class="block px-3 py-2 rounded text-sm text-emerald-100 hover:bg-emerald-800">গ্যালারি ও ক্যাম্পাস</a>
       <a href="#contact" class="block px-3 py-2 rounded text-sm text-emerald-100 hover:bg-emerald-800">যোগাযোগ</a>
       <div class="pt-2 border-t border-emerald-800 flex flex-col gap-2">
-        <a id="btn-mobile-apply" href="javascript:void(0)" class="btn-trigger-admission" class="w-full text-center py-2.5 rounded-lg bg-emerald-600 text-white font-bold text-sm block">
+        <button type="button" id="btn-mobile-apply" onclick="openAdmissionModal()" class="w-full text-center py-2.5 rounded-lg bg-emerald-600 text-white font-bold text-sm block cursor-pointer">
           <i class="fa-solid fa-file-pen mr-1 text-amber-300"></i> ভর্তি আবেদন করুন
-        </a>
+        </button>
         <a href="admin/index.html" class="w-full text-center py-2.5 rounded-lg bg-amber-500 text-slate-900 font-bold text-sm block">
           <i class="fa-solid fa-lock mr-1"></i> অ্যাডমিন ডেটা এন্ট্রি
         </a>
@@ -307,10 +307,10 @@
             </p>
 
             <div class="flex flex-wrap items-center gap-3 pt-2">
-              <a id="btn-hero-apply" href="javascript:void(0)" class="btn-trigger-admission" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold px-6 py-3.5 rounded-xl shadow-xl transition transform hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base cursor-pointer">
+              <button type="button" id="btn-hero-apply" onclick="openAdmissionModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold px-6 py-3.5 rounded-xl shadow-xl transition transform hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base cursor-pointer cursor-pointer">
                 <i class="fa-solid fa-paper-plane text-slate-900"></i>
                 <span>ভর্তি আবেদন করুন ২০২৭</span>
-              </a>
+              </button>
               <a href="#admissions" class="bg-white/15 hover:bg-white/25 backdrop-blur-md text-white font-bold px-5 py-3.5 rounded-xl border border-white/30 transition flex items-center gap-2 text-sm md:text-base">
                 <i class="fa-solid fa-file-pdf text-amber-300"></i>
                 <span>ভর্তি নির্দেশিকা ও তথ্য</span>
@@ -582,10 +582,10 @@
           </div>
 
           <div class="flex items-center gap-4 pt-2">
-            <a id="btn-about-apply" href="javascript:void(0)" class="btn-trigger-admission" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-6 py-3 rounded-xl transition shadow flex items-center gap-2 text-sm cursor-pointer">
+            <button type="button" id="btn-about-apply" onclick="openAdmissionModal()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-6 py-3 rounded-xl transition shadow flex items-center gap-2 text-sm cursor-pointer cursor-pointer">
               <i class="fa-solid fa-file-pen text-amber-300"></i>
               <span>ভর্তি ফরম পূরণ করুন</span>
-            </a>
+            </button>
             <a href="#contact" class="text-emerald-800 hover:text-emerald-950 font-bold text-sm flex items-center gap-1.5 underline decoration-2 underline-offset-4">
               <span>আমাদের সাথে যোগাযোগ করুন</span>
               <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -770,10 +770,10 @@
             </div>
           </div>
 
-          <a id="btn-residential-apply" href="javascript:void(0)" class="btn-trigger-admission" class="inline-flex bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-xl transition shadow items-center gap-2 text-sm cursor-pointer">
+          <button type="button" id="btn-residential-apply" onclick="openAdmissionModal(\'Residential Girls Mission (আবাসিক)\')" class="inline-flex bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-xl transition shadow items-center gap-2 text-sm cursor-pointer cursor-pointer">
             <i class="fa-solid fa-bed text-amber-300"></i>
             <span>আবাসিক সিটের জন্য আবেদন করুন</span>
-          </a>
+          </button>
         </div>
 
         <div class="lg:col-span-6 bg-slate-900 text-slate-100 p-6 md:p-8 rounded-3xl shadow-xl border border-slate-800">
@@ -895,10 +895,10 @@
             ঘরে বসেই অনলাইনের মাধ্যমে আপনার সন্তানের ভর্তি আবেদন পত্রটি পূরণ করে জমা দিন। আমাদের প্রতিনিধি ২৪ ঘণ্টার মধ্যে যোগাযোগ করবেন।
           </p>
           <div class="pt-2">
-            <a id="btn-open-admission-modal" href="javascript:void(0)" class="btn-trigger-admission" class="w-full bg-gradient-to-r from-emerald-700 to-emerald-900 hover:from-emerald-800 hover:to-emerald-950 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-base cursor-pointer">
+            <button type="button" id="btn-open-admission-modal" onclick="openAdmissionModal()" class="w-full bg-gradient-to-r from-emerald-700 to-emerald-900 hover:from-emerald-800 hover:to-emerald-950 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-base cursor-pointer cursor-pointer">
               <i class="fa-solid fa-pen-nib text-amber-300"></i>
               <span>ভর্তি ফরম পূরণ শুরু করুন</span>
-            </a>
+            </button>
           </div>
           <p class="text-[11px] text-slate-400">
             * কোনো আবেদন ফি নেই। ফর্ম পূরণ পরবর্তী সময়ে অফিসে এসে যাচাই করতে পারবেন।
@@ -1216,7 +1216,7 @@
   <div id="inbrowser-admission-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white text-slate-800 rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200 my-8 max-h-[90vh] overflow-y-auto">
       
-      <button id="btn-close-inbrowser-admission" class="absolute top-5 right-5 text-slate-400 hover:text-slate-900 text-2xl w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center focus:outline-none cursor-pointer z-10 transition">
+      <button id="btn-close-inbrowser-admission" onclick="closeAdmissionModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-900 text-2xl w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center focus:outline-none cursor-pointer z-10 transition">
         &times;
       </button>
 
@@ -1393,7 +1393,7 @@
         <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-print"></i> প্রিন্ট স্লিপ
         </button>
-        <button onclick="document.getElementById('inbrowser-success-modal').classList.add('hidden')" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2 rounded-xl text-xs cursor-pointer">
+        <button onclick="closeSuccessModal()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2 rounded-xl text-xs cursor-pointer">
           ঠিক আছে
         </button>
       </div>
@@ -1410,9 +1410,9 @@
         <!-- Injected via JS -->
       </div>
       <div class="pt-4 border-t border-slate-100 mt-4 flex justify-end">
-        <a id="btn-stream-modal-apply" href="javascript:void(0)" class="btn-trigger-admission" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer">
+        <button type="button" id="btn-stream-modal-apply" onclick="openAdmissionFromStream()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer cursor-pointer">
           <i class="fa-solid fa-file-pen text-amber-300"></i> এই বিভাগে আবেদন করুন
-        </a>
+        </button>
       </div>
     </div>
   </div>
@@ -1565,6 +1565,119 @@
         if (streamModal) streamModal.classList.add('hidden');
       });
     }
+  
+    // ================= IN-BROWSER ADMISSION MODAL SYSTEM =================
+    let inSafPhotoBase64 = "";
+
+    window.inSafUpdateClasses = function(category) {
+      const classSelect = document.getElementById('in-saf-class');
+      if (!classSelect) return;
+      classSelect.innerHTML = "";
+      
+      let classes = [];
+      if (category.indexOf('Non-Residential') !== -1 || category.indexOf('Day-Boarding') !== -1) {
+        classes = [
+          "Pre-Nursery", "Nursery", "LKG", "UKG",
+          "Class I", "Class II", "Class III", "Class IV",
+          "Class V", "Class VI", "Class VII", "Class VIII", "Class IX"
+        ];
+      } else {
+        // Residential Girls Mission
+        classes = [
+          "Class V", "Class VI", "Class VII", "Class VIII", "Class IX"
+        ];
+      }
+      
+      classes.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.innerText = c;
+        classSelect.appendChild(opt);
+      });
+    };
+
+    window.openAdmissionModal = function(category) {
+      const modal = document.getElementById('inbrowser-admission-modal');
+      if (!modal) return;
+      
+      if (category) {
+        const radios = document.getElementsByName('in_saf_cat');
+        for (let i = 0; i < radios.length; i++) {
+          if (radios[i].value.indexOf(category) !== -1) {
+            radios[i].checked = true;
+            break;
+          }
+        }
+      }
+      
+      // Determine checked category
+      let chosen = "Residential Girls Mission (আবাসিক)";
+      const checkedRadio = document.querySelector('input[name="in_saf_cat"]:checked');
+      if (checkedRadio) chosen = checkedRadio.value;
+      
+      inSafUpdateClasses(chosen);
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeAdmissionModal = function() {
+      const modal = document.getElementById('inbrowser-admission-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+    };
+
+    window.closeSuccessModal = function() {
+      const sm = document.getElementById('inbrowser-success-modal');
+      if (sm) sm.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    };
+
+    window.openAdmissionFromStream = function() {
+      const streamModal = document.getElementById('stream-details-modal');
+      if (streamModal) streamModal.classList.add('hidden');
+      openAdmissionModal();
+    };
+
+    window.inSafPreviewPhoto = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        alert("ছবির সাইজ ২ MB এর কম হতে হবে!");
+        event.target.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        inSafPhotoBase64 = e.target.result;
+        const previewDiv = document.getElementById('in-saf-photo-preview');
+        const previewImg = document.getElementById('in-saf-preview-img');
+        if (previewImg && previewDiv) {
+          previewImg.src = inSafPhotoBase64;
+          previewDiv.classList.remove('hidden');
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+
+    // Close on backdrop click
+    document.addEventListener('DOMContentLoaded', function() {
+      inSafUpdateClasses('Residential Girls Mission');
+      const admModal = document.getElementById('inbrowser-admission-modal');
+      if (admModal) {
+        admModal.addEventListener('click', function(e) {
+          if (e.target === admModal) closeAdmissionModal();
+        });
+      }
+      const succModal = document.getElementById('inbrowser-success-modal');
+      if (succModal) {
+        succModal.addEventListener('click', function(e) {
+          if (e.target === succModal) closeSuccessModal();
+        });
+      }
+    });
+
   </script>
 
   <!-- ================= FIREBASE REALTIME CLOUD SYNC ================= -->
