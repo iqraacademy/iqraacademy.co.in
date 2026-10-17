@@ -1240,6 +1240,10 @@
         </div>
 
         <div class="flex items-center gap-2">
+          <button id="btn-admin-logout" class="bg-slate-800 hover:bg-red-900 text-red-300 hover:text-white font-bold text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition border border-red-500/40">
+            <i class="fa-solid fa-lock"></i>
+            <span>লক / লগআউট</span>
+          </button>
           <button id="btn-admin-back-to-site" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-lg flex items-center gap-1.5 transition">
             <i class="fa-solid fa-arrow-left"></i>
             <span>ওয়েবসাইটে ফিরে যান</span>
@@ -1495,6 +1499,34 @@
             </button>
           </div>
         </div>
+        <!-- Change Admin Password Card -->
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-key text-amber-400"></i>
+              অ্যাডমিন পাসওয়ার্ড পরিবর্তন (Change Admin Password)
+            </h3>
+            <span class="text-xs text-amber-400">ডিফল্ট পাসওয়ার্ড: <b>iqra2015</b></span>
+          </div>
+
+          <form id="admin-change-password-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs text-slate-300 mb-1">বর্তমান পাসওয়ার্ড *</label>
+              <input type="password" id="input-current-password" required placeholder="বর্তমান পাসওয়ার্ড দিন" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-400">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-300 mb-1">নতুন পাসওয়ার্ড *</label>
+              <input type="password" id="input-new-password" required placeholder="নতুন পাসওয়ার্ড লিখুন" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-400">
+            </div>
+            <div class="sm:col-span-2 flex justify-end">
+              <button type="submit" id="btn-save-new-password" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow">
+                <i class="fa-solid fa-check"></i>
+                <span>পাসওয়ার্ড আপডেট করুন</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
       </div>
 
       <!-- TAB 5: BACKUP & EXPORT -->
@@ -1530,6 +1562,75 @@
   <!-- MODALS -->
   <!-- ======================================================== -->
   
+  <!-- 0. Admin Authentication / Password Gate Modal -->
+  <div id="admin-auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 text-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl relative border-2 border-amber-500/80">
+      <button id="btn-close-admin-auth" aria-label="Close Security Modal" class="absolute top-5 right-5 text-slate-400 hover:text-white text-2xl w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center focus:outline-none">
+        &times;
+      </button>
+
+      <div class="text-center space-y-3 mb-6">
+        <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-3xl mx-auto shadow-inner">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3 class="text-xl font-extrabold text-white">অ্যাডমিন সিকিউরিটি ভেরিফিকেশন</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          অননুমোদিত প্রবেশ সম্পূর্ণরূপে সংরক্ষিত। ডেটা এন্ট্রি পোর্টাল ব্যবহারের জন্য অনুগ্রহ করে পাসওয়ার্ড প্রদান করুন।
+        </p>
+      </div>
+
+      <form id="admin-login-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1.5 flex items-center justify-between">
+            <span>পাসওয়ার্ড লিখুন (Enter Password) *</span>
+            <span class="text-[11px] text-amber-400 font-normal">ডিফল্ট: <b>iqra2015</b></span>
+          </label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="admin-auth-password" 
+              required 
+              placeholder="পাসওয়ার্ড দিন..." 
+              class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 pr-10"
+            >
+            <button 
+              type="button" 
+              id="btn-toggle-auth-password" 
+              aria-label="Toggle password visibility"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-sm focus:outline-none"
+            >
+              <i class="fa-solid fa-eye" id="toggle-auth-password-icon"></i>
+            </button>
+          </div>
+          <p id="admin-auth-error-msg" class="hidden text-xs text-red-400 font-semibold mt-1.5 flex items-center gap-1">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>ভুল পাসওয়ার্ড! অনুগ্রহ করে সঠিক পাসওয়ার্ড দিন।</span>
+          </p>
+        </div>
+
+        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 text-[11px] text-slate-300 space-y-1">
+          <div class="flex items-center gap-1.5 text-amber-300 font-bold">
+            <i class="fa-solid fa-lock text-xs"></i>
+            <span>নিরাপত্তা সতর্কতা:</span>
+          </div>
+          <p class="text-slate-400">
+            সাধারণ ভিজিটরদের দ্বারা তথ্য পরিবর্তন রোধে এই নিরাপত্তা নিশ্চিত করা হয়েছে। ড্যাশবোর্ড থেকে পাসওয়ার্ড পরিবর্তন করা যাবে।
+          </p>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="btn-cancel-admin-auth" class="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold text-xs hover:bg-slate-800 transition">
+            বাতিল
+          </button>
+          <button type="submit" id="btn-submit-admin-auth" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
+            <i class="fa-solid fa-unlock-keyhole"></i>
+            <span>আনলক ও প্রবেশ করুন</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- 1. Admission Application Modal -->
   <div id="admission-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white text-slate-800 rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl relative my-8 max-h-[90vh] overflow-y-auto border border-slate-200">
@@ -1685,6 +1786,7 @@
   <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
     const DEFAULT_IQRA_STORE = {
+      adminPassword: "iqra2015",
       announcement: "📢 ভর্তি চলছে ২০২৭ শিক্ষাবর্ষে! Pre-Nursery থেকে Class IX পর্যন্ত অনাবাসিক, ডে-বোর্ডিং ও আবাসিক বালিকা বিভাগে (Class V-IX) সীমিত আসনে ভর্তি চলছে। যোগাযোগ: ৯৭৭৫১২৩০৯৬ / ৯৬৪৭১০৯৪৮১",
       banners: [
         { url: "https://res.cloudinary.com/u0z4riei/image/upload/v1792240665/3.jpg", title: "ইকরা অ্যাকাডেমি আবাসিক ক্যাম্পাস", subtitle: "কন্যাশিশুদের জন্য সম্পূর্ণ সুরক্ষিত, আদর্শ ও স্নেহময় পরিবেশ" },
@@ -1779,11 +1881,11 @@
       renderPublicSite();
     }
 
-    if (btnShowAdmin) btnShowAdmin.addEventListener('click', switchToAdmin);
-    if (btnNavAdmin) btnNavAdmin.addEventListener('click', switchToAdmin);
-    if (btnMobileAdmin) btnMobileAdmin.addEventListener('click', switchToAdmin);
-    if (btnFooterAdmin) btnFooterAdmin.addEventListener('click', switchToAdmin);
-    if (btnEditMarqueeQuick) btnEditMarqueeQuick.addEventListener('click', switchToAdmin);
+    if (btnShowAdmin) btnShowAdmin.addEventListener('click', requestAdminAccess);
+    if (btnNavAdmin) btnNavAdmin.addEventListener('click', requestAdminAccess);
+    if (btnMobileAdmin) btnMobileAdmin.addEventListener('click', requestAdminAccess);
+    if (btnFooterAdmin) btnFooterAdmin.addEventListener('click', requestAdminAccess);
+    if (btnEditMarqueeQuick) btnEditMarqueeQuick.addEventListener('click', requestAdminAccess);
     if (btnShowPublic) btnShowPublic.addEventListener('click', switchToPublic);
     if (btnAdminBack) btnAdminBack.addEventListener('click', switchToPublic);
 
@@ -1870,7 +1972,7 @@
 
     if (btnFastAddNotice) {
       btnFastAddNotice.addEventListener('click', () => {
-        switchToAdmin();
+        requestAdminAccess();
       });
     }
 
@@ -2348,6 +2450,112 @@
     }
     if (btnResetData) btnResetData.addEventListener('click', resetDemoData);
     if (btnFactoryReset) btnFactoryReset.addEventListener('click', resetDemoData);
+
+    
+    // --- Admin Security & Password Gate Logic ---
+    appState.adminPassword = appState.adminPassword || "iqra2015";
+
+    const adminAuthModal = document.getElementById('admin-auth-modal');
+    const adminPasswordInput = document.getElementById('admin-auth-password');
+    const adminAuthErrorMsg = document.getElementById('admin-auth-error-msg');
+    const btnCloseAdminAuth = document.getElementById('btn-close-admin-auth');
+    const btnCancelAdminAuth = document.getElementById('btn-cancel-admin-auth');
+    const adminLoginForm = document.getElementById('admin-login-form');
+    const btnToggleAuthPass = document.getElementById('btn-toggle-auth-password');
+    const toggleAuthPassIcon = document.getElementById('toggle-auth-password-icon');
+    const btnAdminLogout = document.getElementById('btn-admin-logout');
+
+    function openAdminAuthModal() {
+      if (adminAuthModal) {
+        adminAuthModal.classList.remove('hidden');
+        if (adminAuthErrorMsg) adminAuthErrorMsg.classList.add('hidden');
+        if (adminPasswordInput) {
+          adminPasswordInput.value = '';
+          setTimeout(() => adminPasswordInput.focus(), 100);
+        }
+      }
+    }
+
+    function closeAdminAuthModal() {
+      if (adminAuthModal) adminAuthModal.classList.add('hidden');
+    }
+
+    function requestAdminAccess() {
+      const isAuth = sessionStorage.getItem('iqra_admin_auth') === 'true';
+      if (isAuth) {
+        switchToAdmin();
+      } else {
+        openAdminAuthModal();
+      }
+    }
+
+    if (btnCloseAdminAuth) btnCloseAdminAuth.addEventListener('click', closeAdminAuthModal);
+    if (btnCancelAdminAuth) btnCancelAdminAuth.addEventListener('click', closeAdminAuthModal);
+
+    if (btnToggleAuthPass && adminPasswordInput && toggleAuthPassIcon) {
+      btnToggleAuthPass.addEventListener('click', () => {
+        const isPass = adminPasswordInput.type === 'password';
+        adminPasswordInput.type = isPass ? 'text' : 'password';
+        toggleAuthPassIcon.className = isPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+      });
+    }
+
+    if (adminLoginForm) {
+      adminLoginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inputPass = (adminPasswordInput?.value || '').trim();
+        const correctPass = appState.adminPassword || "iqra2015";
+
+        if (inputPass === correctPass) {
+          sessionStorage.setItem('iqra_admin_auth', 'true');
+          closeAdminAuthModal();
+          switchToAdmin();
+          showToast('স্বাগতম! অ্যাডমিন পোর্টাল সফলভাবে আনলক হয়েছে।');
+        } else {
+          if (adminAuthErrorMsg) {
+            adminAuthErrorMsg.classList.remove('hidden');
+          }
+          if (adminPasswordInput) {
+            adminPasswordInput.classList.add('border-red-500');
+            adminPasswordInput.focus();
+            setTimeout(() => adminPasswordInput.classList.remove('border-red-500'), 2000);
+          }
+        }
+      });
+    }
+
+    if (btnAdminLogout) {
+      btnAdminLogout.addEventListener('click', () => {
+        sessionStorage.removeItem('iqra_admin_auth');
+        switchToPublic();
+        showToast('অ্যাডমিন পোর্টাল নিরাপদে লক করা হয়েছে।');
+      });
+    }
+
+    // Change Password Form
+    const changePassForm = document.getElementById('admin-change-password-form');
+    if (changePassForm) {
+      changePassForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const curPass = document.getElementById('input-current-password')?.value.trim();
+        const newPass = document.getElementById('input-new-password')?.value.trim();
+        const realPass = appState.adminPassword || "iqra2015";
+
+        if (curPass !== realPass) {
+          showToast('বর্তমান পাসওয়ার্ড সঠিক নয়!', 'error');
+          return;
+        }
+        if (!newPass || newPass.length < 4) {
+          showToast('নতুন পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে!', 'error');
+          return;
+        }
+
+        appState.adminPassword = newPass;
+        saveStore(appState);
+        changePassForm.reset();
+        showToast('পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে!');
+      });
+    }
 
     renderPublicSite();
   </script>
