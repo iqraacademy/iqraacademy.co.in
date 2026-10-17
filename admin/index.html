@@ -7,11 +7,47 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
+    <style>
     body { font-family: 'Hind Siliguri', 'Inter', sans-serif; }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 8mm;
+      }
+      html, body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      body > *:not(#print-container) {
+        display: none !important;
+      }
+      #print-container {
+        display: block !important;
+        visibility: visible !important;
+        position: static !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      #print-container * {
+        visibility: visible !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- Printable A4 Admission Slip Container -->
+  <div id="print-container" class="hidden"></div>
+
 
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -634,6 +670,9 @@
                   <button onclick="viewAdmissionDetails('${a.docId}')" class="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold mr-1 cursor-pointer transition">
                     <i class="fa-solid fa-eye mr-1"></i>দেখুন
                   </button>
+                  <button onclick="printAdminAdmissionSlip('${a.docId}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg text-xs font-bold mr-1 cursor-pointer transition" title="A4 স্লিপ প্রিন্ট করুন">
+                    <i class="fa-solid fa-print"></i>
+                  </button>
                   <button onclick="deleteAdmission('${a.docId}')" class="px-2 py-1 bg-red-950 hover:bg-red-900 text-red-300 rounded-lg text-xs cursor-pointer transition" title="মুছে ফেলুন">
                     <i class="fa-solid fa-trash"></i>
                   </button>
@@ -651,6 +690,156 @@
 
     
     let currentAdmissionsMap = {};
+
+    // ================= DEDICATED A4 ADMISSION SLIP PRINTER =================
+    window.printAdminAdmissionSlip = function(docId) {
+      const data = currentAdmissionsMap[docId];
+      if (!data) return alert("আবেদনের তথ্য পাওয়া যায়নি!");
+
+      const container = document.getElementById('print-container');
+      if (!container) return;
+
+      const addr = data.address || {};
+      const addrStr = typeof addr === 'object' ? [
+        addr.village ? 'গ্রামঃ ' + addr.village : '',
+        addr.po ? 'পোঃ ' + addr.po : '',
+        addr.ps ? 'থানাঃ ' + addr.ps : '',
+        addr.dist ? 'জেলাঃ ' + addr.dist : 'উত্তর ২৪ পরগনা',
+        addr.state || 'West Bengal',
+        addr.pin ? 'পিন- ' + addr.pin : ''
+      ].filter(Boolean).join(', ') : String(addr || 'ঠিকানা দেওয়া হয়নি');
+
+      const photoHtml = data.photo 
+        ? `<img src="${data.photo}" style="width: 100%; height: 100%; object-fit: cover;">`
+        : `<span style="color: #94a3b8; font-size: 9px; font-weight: bold; text-align: center; display: block; padding: 4px;">পাসপোর্ট সাইজ ছবি</span>`;
+
+      const appId = data.id || data.applicationId || 'N/A';
+      const formNo = data.formNo || (appId.includes('-') ? appId.substring(appId.indexOf('-') + 1) : appId);
+
+      container.innerHTML = `
+        <div style="font-family: 'Hind Siliguri', 'Inter', Arial, sans-serif; max-width: 195mm; margin: 0 auto; padding: 14px; background: #ffffff; color: #111827; border: 2px solid #064e3b; border-radius: 10px; box-sizing: border-box;">
+          
+          <!-- HEADER -->
+          <table style="width: 100%; border-bottom: 2px solid #064e3b; padding-bottom: 8px; margin-bottom: 8px;">
+            <tr>
+              <td style="width: 70px; vertical-align: middle;">
+                <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" style="width: 65px; height: 65px; border-radius: 50%; border: 2px solid #064e3b; object-fit: cover;" alt="Logo">
+              </td>
+              <td style="text-align: center; vertical-align: middle; padding: 0 8px;">
+                <div style="font-size: 10px; font-weight: bold; background: #064e3b; color: #ffffff; display: inline-block; padding: 2px 10px; border-radius: 12px; letter-spacing: 0.5px;">
+                  UDISE: 19111008505 | স্থাপিত: ২০১৫ | WBBSE কারিকুলাম
+                </div>
+                <h1 style="margin: 3px 0 0 0; font-size: 21px; font-weight: 800; color: #064e3b; line-height: 1.2;">PVT. IQRA ACADEMY</h1>
+                <h2 style="margin: 2px 0 0 0; font-size: 13px; font-weight: 700; color: #1f2937;">ইকরা অ্যাকাডেমি — আবাসিক গার্লস মিশন</h2>
+                <p style="margin: 2px 0 0 0; font-size: 10px; color: #4b5563;">
+                  দক্ষিণ শিবপুর, যদুরহাটি, বাদুড়িয়া, উত্তর ২৪ পরগনা, পিন-৭৪৩২৯৩ | 📞 ৯৭৭৫১২৩০৯৬ / ৯৬৪৭১০৯৪৮১
+                </p>
+              </td>
+              <td style="width: 70px; vertical-align: middle; text-align: right;">
+                <div style="width: 65px; height: 80px; border: 1.5px dashed #9ca3af; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden;">
+                  ${photoHtml}
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- SLIP TITLE & SUMMARY BAR -->
+          <table style="width: 100%; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; margin-bottom: 8px; font-size: 11px;">
+            <tr>
+              <td style="padding: 5px 8px;">
+                <span style="color: #4b5563;">শিক্ষাবর্ষ:</span> <b style="color: #064e3b;">${data.academicYear || '2027'}</b>
+                &nbsp;|&nbsp;
+                <span style="color: #4b5563;">ফর্ম নম্বর:</span> <b style="color: #92400e; font-family: monospace; font-size: 13px; background: #fef3c7; padding: 1px 6px; border-radius: 4px; border: 1px solid #fcd34d;">${formNo}</b>
+                &nbsp;|&nbsp;
+                <span style="color: #4b5563;">আইডি:</span> <b style="color: #1e293b; font-family: monospace;">${appId}</b>
+              </td>
+              <td style="text-align: right; padding: 5px 8px; color: #4b5563;">
+                আবেদনের তারিখ: <b style="color: #111827;">${data.date || '-'}</b>
+              </td>
+            </tr>
+          </table>
+
+          <div style="text-align: center; font-weight: bold; font-size: 12px; color: #064e3b; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px; letter-spacing: 0.5px;">
+            ভর্তি আবেদন পত্র ও প্রাপ্তিস্বীকার রসিদ (ADMISSION APPLICATION & ACKNOWLEDGEMENT SLIP)
+          </div>
+
+          <!-- MAIN DATA TABLE -->
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 8px; border: 1px solid #cbd5e1;">
+            <tbody>
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="width: 25%; padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">শিক্ষার্থীর নাম</td>
+                <td style="width: 25%; padding: 5px 8px; font-weight: bold; border-right: 1px solid #cbd5e1; color: #0f172a;">${data.name || '-'}</td>
+                <td style="width: 25%; padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">জন্ম তারিখ</td>
+                <td style="width: 25%; padding: 5px 8px; font-family: monospace; color: #0f172a;">${data.dob || '-'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">পিতার নাম</td>
+                <td style="padding: 5px 8px; border-right: 1px solid #cbd5e1; color: #0f172a;">${data.fatherName || '-'}</td>
+                <td style="padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">আধার কার্ড নম্বর</td>
+                <td style="padding: 5px 8px; font-family: monospace; font-weight: bold; color: #92400e;">${data.aadhaar || '-'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">অভিভাবকের নাম</td>
+                <td style="padding: 5px 8px; border-right: 1px solid #cbd5e1; color: #0f172a;">${data.guardian || '-'}</td>
+                <td style="padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">ভর্তির শ্রেণি</td>
+                <td style="padding: 5px 8px; font-weight: bold; color: #064e3b;">${data.className || '-'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">মোবাইল নম্বর</td>
+                <td style="padding: 5px 8px; font-family: monospace; font-weight: bold; border-right: 1px solid #cbd5e1; color: #0f172a;">${data.phone || '-'}</td>
+                <td style="padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">শিক্ষাধারা / বিভাগ</td>
+                <td style="padding: 5px 8px; font-weight: bold; color: #064e3b;">${data.stream || '-'}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">হোয়াটসঅ্যাপ নম্বর</td>
+                <td style="padding: 5px 8px; font-family: monospace; border-right: 1px solid #cbd5e1; color: #0f172a;">${data.whatsapp || data.phone || '-'}</td>
+                <td style="padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">আবেদনের অবস্থা</td>
+                <td style="padding: 5px 8px; font-weight: bold; color: #15803d;">সফলভাবে গৃহীত (Live)</td>
+              </tr>
+              <tr>
+                <td style="padding: 5px 8px; background: #f8fafc; font-weight: bold; border-right: 1px solid #cbd5e1; color: #334155;">স্থায়ী ঠিকানা</td>
+                <td colspan="3" style="padding: 5px 8px; color: #1e293b; line-height: 1.4;">${addrStr}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- INSTRUCTIONS BOX -->
+          <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px; font-size: 10px; line-height: 1.4; color: #78350f;">
+            <b style="color: #92400e; display: block; margin-bottom: 2px;">📌 ভর্তির সময় প্রয়োজনীয় নির্দেশাবলী:</b>
+            <span>১. এই প্রিন্ট স্লিপটি ভর্তি প্রক্রিয়ার সময় বিদ্যালয় অফিসে প্রদর্শন করতে হবে।</span><br>
+            <span>২. শিক্ষার্থীর জন্ম সার্টিফিকেট ও আধার কার্ডের মূল কপি ও জেরক্স সাথে আনতে হবে।</span><br>
+            <span>৩. ৫ কপি পাসপোর্ট সাইজ রঙিন ছবি এবং পূর্ববর্তী ক্লাসের মার্কশিট/টি.সি. অফিসে জমা দিতে হবে।</span>
+          </div>
+
+          <!-- SIGNATURE BOXES -->
+          <table style="width: 100%; margin-top: 20px; text-align: center; font-size: 10px;">
+            <tr>
+              <td style="width: 33%; vertical-align: bottom;">
+                <div style="border-top: 1px solid #1f2937; margin: 0 15px; padding-top: 3px; font-weight: bold; color: #1f2937;">অভিভাবকের স্বাক্ষর</div>
+                <div style="font-size: 8.5px; color: #6b7280;">Signature of Guardian</div>
+              </td>
+              <td style="width: 33%; vertical-align: bottom;">
+                <div style="border-top: 1px solid #1f2937; margin: 0 15px; padding-top: 3px; font-weight: bold; color: #1f2937;">যাচাইকারী আধিকারিক</div>
+                <div style="font-size: 8.5px; color: #6b7280;">Verified By Admission Cell</div>
+              </td>
+              <td style="width: 33%; vertical-align: bottom;">
+                <div style="border-top: 1px solid #1f2937; margin: 0 15px; padding-top: 3px; font-weight: bold; color: #1f2937;">পরিচালক / প্রধান শিক্ষক</div>
+                <div style="font-size: 8.5px; color: #6b7280;">Director / Seal</div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- FOOTER -->
+          <div style="margin-top: 12px; padding-top: 4px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; font-size: 8px; color: #94a3b8;">
+            <span>PVT. IQRA ACADEMY · OFFICIAL ADMISSION PORTAL</span>
+            <span>COMPUTER GENERATED ACKNOWLEDGEMENT SLIP</span>
+          </div>
+        </div>
+      `;
+
+      window.print();
+    };
+
 
     window.viewAdmissionDetails = function(docId) {
       const data = currentAdmissionsMap[docId];
@@ -693,8 +882,8 @@
         <div class="flex justify-between items-center pt-3 border-t border-slate-800 text-xs">
           <span class="text-slate-500">জমা দেওয়ার তারিখ: <b class="text-slate-300">${data.date || '-'}</b></span>
           <div class="flex gap-2">
-            <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl cursor-pointer">
-              <i class="fa-solid fa-print mr-1"></i>প্রিন্ট
+            <button onclick="printAdminAdmissionSlip('${docId}')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl cursor-pointer flex items-center">
+              <i class="fa-solid fa-print mr-1.5 text-amber-400"></i>প্রিন্ট স্লিপ (A4)
             </button>
             <button onclick="closeAdmissionModal()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-xl cursor-pointer">
               বন্ধ করুন
