@@ -51,7 +51,7 @@
                 <li><a href="index.html#day-boarding" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> ডে-বোর্ডিং সুবিধা (সকাল ৮টা - সন্ধ্যা ৬টা)</a></li>
                 <li><a href="index.html#residential" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> আবাসিক বালিকা মিশন</a></li>
                 <li><a href="index.html#management" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> পরিচালনা ও বার্তা</a></li>
-                <li><a href="admin.html" class="hover:text-amber-300 transition flex items-center gap-2 text-amber-400 font-semibold"><i class="fa-solid fa-lock text-[10px]"></i> অ্যাডমিন ডেটা এন্ট্রি পোর্টাল</a></li>
+                <li><a href="#" class="hover:text-amber-300 transition flex items-center gap-2 text-amber-400 font-semibold"><i class="fa-solid fa-lock text-[10px]"></i> demo</a></li>
               </ul>
             </div>
 
