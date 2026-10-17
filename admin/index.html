@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🔐 দ্বি-স্তরীয় সুরক্ষিত অ্যাডমিন ডেটা এন্ট্রি পোর্টাল | PVT. IQRA ACADEMY</title>
+  <title>🔐 ইউনিভার্সাল ক্লাউড অ্যাডমিন পোর্টাল | PVT. IQRA ACADEMY</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome 6 CDN -->
@@ -40,6 +40,21 @@
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
+  <!-- Custom Confirmation Modal (Never use browser alert/confirm) -->
+  <div id="custom-confirm-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+      <div class="w-12 h-12 rounded-full bg-red-950 text-red-400 border border-red-800 flex items-center justify-center text-xl mx-auto">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 id="confirm-modal-title" class="text-base font-bold text-white">আপনি কি নিশ্চিত?</h3>
+      <p id="confirm-modal-desc" class="text-xs text-slate-400 leading-relaxed">এই কাজটি সম্পন্ন হলে ডেটা মুছে বা রিসেট হতে পারে।</p>
+      <div class="flex justify-center gap-3 pt-2">
+        <button id="btn-confirm-cancel" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">বাতিল</button>
+        <button id="btn-confirm-proceed" class="px-5 py-2 rounded-xl bg-red-700 hover:bg-red-600 text-white text-xs font-bold transition">নিশ্চিত করুন</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ======================================================== -->
   <!-- 1. MILITARY-GRADE DOUBLE-LAYER SECURITY GATE (LOCK SCREEN) -->
   <!-- ======================================================== -->
@@ -53,11 +68,11 @@
         </div>
         <div class="inline-flex items-center gap-1.5 bg-red-950/70 border border-red-500/40 text-red-300 text-[10px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider">
           <i class="fa-solid fa-lock text-red-400"></i>
-          <span>দ্বি-স্তরীয় এনক্রিপ্টেড নিরাপত্তা গেট</span>
+          <span>দ্বি-স্তরীয় এনক্রিপ্টেড ক্লাউড গেট</span>
         </div>
         <h1 class="text-2xl font-extrabold text-white mt-1">অ্যাডমিন ডেটা এন্ট্রি পোর্টাল</h1>
         <p class="text-xs text-slate-400 leading-relaxed">
-          ইকরা অ্যাকাডেমির ওয়েবসাইট ডেটা ও কন্ট্রোল প্যানেলে প্রবেশের জন্য নির্ধারিত দুটি স্তরের নিরাপত্তা কোড প্রদান করুন।
+          ইকরা অ্যাকাডেমির ওয়েবসাইট ডেটা ও কেন্দ্রীয় ক্লাউড ডেটাবেসে প্রবেশের জন্য নিরাপত্তা কোড প্রদান করুন।
         </p>
       </div>
 
@@ -70,7 +85,7 @@
               <span class="w-4 h-4 rounded-full bg-amber-500 text-slate-950 text-[10px] flex items-center justify-center font-extrabold">১</span>
               <span>লেয়ার ১: অ্যাডমিন পাসওয়ার্ড</span>
             </span>
-            <span class="text-[10px] text-slate-500 font-mono">SHA-256 সুরক্ষিত</span>
+            <span class="text-[10px] text-slate-500 font-mono">SHA-256 এনক্রিপ্টেড</span>
           </div>
           <div class="relative">
             <input 
@@ -151,9 +166,12 @@
           <div>
             <div class="flex items-center gap-2">
               <h2 class="text-base md:text-lg font-extrabold text-white leading-none">ইকরা অ্যাকাডেমি অ্যাডমিন পোর্টাল</h2>
-              <span class="bg-emerald-950 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full">Active</span>
+              <span id="cloud-sync-badge" class="bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>ক্লাউড লাইভ সিঙ্ক</span>
+              </span>
             </div>
-            <p class="text-xs text-amber-400 font-semibold mt-1">Data Entry & Management System (Estd: 2015)</p>
+            <p class="text-xs text-amber-400 font-semibold mt-1">Universal Real-time Data Sync System (Estd: 2015)</p>
           </div>
         </div>
 
@@ -196,7 +214,7 @@
         </button>
         <button data-tab="tab-backup" class="admin-tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-2 shrink-0">
           <i class="fa-solid fa-database text-teal-400"></i>
-          <span>ডেটা ব্যাকআপ ও রিস্টোর</span>
+          <span>ক্লাউড ব্যাকআপ ও রিস্টোর</span>
         </button>
       </div>
     </nav>
@@ -211,11 +229,11 @@
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-base font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-bullhorn text-amber-400"></i>
-              ওয়েবসাইটের হেডারে চলমান ঘোষণা (Live Marquee Announcement Editor)
+              হেডারে চলমান ঘোষণা (Universal Live Marquee Announcement)
             </h3>
             <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              লাইভ সাইটে রিয়েল-টাইম আপডেট হবে
+              সব ব্রাউজার ও ডিভাইসে সাথে সাথে পরিবর্তন হবে
             </span>
           </div>
 
@@ -224,10 +242,10 @@
             <textarea id="admin-marquee-input" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-400 font-medium"></textarea>
             
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-2">
-              <p class="text-xs text-slate-400">টিপ: ২০২৭ ভর্তি বিজ্ঞপ্তি, পরীক্ষার সূচি বা ছুটির ঘোষণা এখানে টাইপ করে সেভ করুন।</p>
+              <p class="text-xs text-slate-400">টিপ: ২০২৭ ভর্তি বিজ্ঞপ্তি, পরীক্ষার সূচি বা ছুটির ঘোষণা এখানে লিখে ক্লাউডে সেভ করুন।</p>
               <button id="btn-save-marquee" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg shrink-0">
-                <i class="fa-solid fa-floppy-disk"></i>
-                <span>সংরক্ষণ করুন (Save Marquee)</span>
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>ক্লাউডে সেভ করুন (Save to Cloud)</span>
               </button>
             </div>
           </div>
@@ -266,14 +284,14 @@
             <div class="md:col-span-4 flex justify-end pt-1">
               <button type="submit" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg">
                 <i class="fa-solid fa-plus"></i>
-                <span>নোটিশ তালিকায় যোগ করুন</span>
+                <span>ক্লাউড নোটিশ তালিকায় যোগ করুন</span>
               </button>
             </div>
           </form>
 
           <!-- Current Notices Table -->
           <div class="border-t border-slate-800 pt-6">
-            <h4 class="text-sm font-bold text-slate-300 mb-3">বর্তমান নোটিশ তালিকা:</h4>
+            <h4 class="text-sm font-bold text-slate-300 mb-3">বর্তমান ক্লাউড নোটিশ তালিকা:</h4>
             <div class="overflow-x-auto rounded-2xl border border-slate-800">
               <table class="w-full text-left text-xs">
                 <thead class="bg-slate-950 text-slate-400 uppercase font-bold">
@@ -301,9 +319,9 @@
             <div>
               <h3 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-users text-amber-400"></i>
-                অনলাইন ভর্তি আবেদন রেজিস্টার (Student Admissions Register)
+                অনলাইন ভর্তি আবেদন রেজিস্টার (Universal Student Admissions)
               </h3>
-              <p class="text-xs text-slate-400">ওয়েবসাইট থেকে অভিভাবকরা যে আবেদনগুলি জমা করেছেন তা নিচে তালিকাভুক্ত রয়েছে।</p>
+              <p class="text-xs text-slate-400">যেকোনো অভিভাবক ওয়েবসাইট থেকে আবেদন জমা দিলে তা রিয়েল-টাইমে ক্লাউড ডাটাবেস হয়ে এখানে দৃশ্যমান হবে।</p>
             </div>
 
             <div class="flex items-center gap-2">
@@ -369,7 +387,7 @@
               ৫টি ফটো ব্যানার ট্রানজিট লিংক ও ক্যাপশন ব্যবস্থাপনা
             </h3>
             <p class="text-xs text-slate-400 mt-1">
-              ওয়েবসাইটের হেডারের নিচে যে ৫টি ব্যানার ট্রানজিট অ্যানিমেশনে প্রদর্শিত হয়, তার ইমেজ লিংক ও বাংলা ক্যাপশন নিচে এডিট করতে পারবেন:
+              ওয়েবসাইটের হেডারের নিচে প্রদর্শিত ৫টি ব্যানারের লিংক ও ক্যাপশন এখানে এডিট করে সেভ করলে তা সব ভিজিটরের স্ক্রিনে তৎক্ষণাৎ দেখা যাবে:
             </p>
           </div>
 
@@ -379,8 +397,8 @@
 
           <div class="pt-4 border-t border-slate-800 flex justify-end">
             <button id="btn-save-banners" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg">
-              <i class="fa-solid fa-floppy-disk"></i>
-              <span>ব্যানার লিংক ও ক্যাপশন সেভ করুন</span>
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>ক্লাউডে ব্যানার তথ্য সেভ করুন</span>
             </button>
           </div>
         </div>
@@ -423,8 +441,8 @@
 
           <div class="pt-4 border-t border-slate-800 flex justify-end">
             <button id="btn-save-stats" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg">
-              <i class="fa-solid fa-floppy-disk"></i>
-              <span>পরিসংখ্যান ও ফোন সেভ করুন</span>
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>ক্লাউডে পরিসংখ্যান ও ফোন সেভ করুন</span>
             </button>
           </div>
         </div>
@@ -439,10 +457,10 @@
                 <i class="fa-solid fa-key text-amber-400"></i>
                 দ্বি-স্তরীয় নিরাপত্তা পাসওয়ার্ড ও মাস্টার পিন পরিবর্তন (Security Settings)
               </h3>
-              <p class="text-xs text-slate-400 mt-0.5">আপনার সুবিধামতো অ্যাডমিন পাসওয়ার্ড ও মাস্টার পিন আপডেট করতে পারেন।</p>
+              <p class="text-xs text-slate-400 mt-0.5">আপনার সুবিধামতো অ্যাডমিন পাসওয়ার্ড ও মাস্টার পিন ক্লাউডে আপডেট করতে পারেন।</p>
             </div>
             <span class="text-[10px] text-emerald-400 font-mono bg-emerald-950 px-2.5 py-1 rounded-full border border-emerald-500/30">
-              Cryptographic SHA-256
+              SHA-256 Cloud Encrypted
             </span>
           </div>
 
@@ -486,10 +504,10 @@
         <div class="bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-800 shadow-xl space-y-4">
           <h3 class="text-base font-bold text-white flex items-center gap-2">
             <i class="fa-solid fa-database text-amber-400"></i>
-            সম্পূর্ণ ডেটা ব্যাকআপ ও ফ্যাক্টরি রিসেট (JSON Backup & Restore)
+            সম্পূর্ণ ক্লাউড ডেটা ব্যাকআপ ও ফ্যাক্টরি রিসেট (JSON Backup & Restore)
           </h3>
           <p class="text-xs text-slate-400 leading-relaxed">
-            ইকরা অ্যাকাডেমির ওয়েবসাইট ডেটাস্টোর (ভর্তি আবেদন, নোটিশ, ব্যানার ও সেটিংস) আপনার কম্পিউটারে JSON ফাইল আকারে ব্যাকআপ করে রাখতে পারেন। প্রয়োজনে যেকোনো সময় ব্যাকআপ ডাউনলোড করে সংরক্ষণ করুন।
+            ইকরা অ্যাকাডেমির কেন্দ্রীয় ক্লাউড ডেটাস্টোর (ভর্তি আবেদন, নোটিশ, ব্যানার ও সেটিংস) আপনার কম্পিউটারে JSON ফাইল আকারে ব্যাকআপ করে রাখতে পারেন।
           </p>
 
           <div class="flex flex-wrap items-center gap-3 pt-3">
@@ -499,7 +517,7 @@
             </button>
             <button id="btn-factory-reset" class="bg-red-900/80 hover:bg-red-800 text-red-200 hover:text-white font-bold px-5 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 border border-red-700 shadow-lg">
               <i class="fa-solid fa-trash-can"></i>
-              <span>ফ্যাক্টরি রিসেট (ডিফল্ট ডেটা পুনঃস্থাপন)</span>
+              <span>ফ্যাক্টরি রিসেট (ডিফল্ট ক্লাউড ডেটা পুনঃস্থাপন)</span>
             </button>
           </div>
         </div>
@@ -569,12 +587,16 @@
 
   <!-- Footer -->
   <footer class="bg-slate-950 text-slate-500 py-4 px-4 text-center text-xs border-t border-slate-900">
-    <p>© ২০২৬-২০২৭ <b>PVT. IQRA ACADEMY</b> | সুরক্ষিত অ্যাডমিন ডাটা এন্ট্রি পোর্টাল</p>
+    <p>© ২০২৬-২০২৭ <b>PVT. IQRA ACADEMY</b> | ক্লাউড সুরক্ষিত অ্যাডমিন ডেটা এন্ট্রি পোর্টাল</p>
   </footer>
 
-  <!-- JAVASCRIPT APPLICATION LOGIC -->
-  <script>
-    /* Pure JavaScript SHA-256 Implementation (100% Zero crypto.subtle dependency) */
+  <!-- Firebase SDKs for Cross-Browser Cloud Storage -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    /* Pure JavaScript SHA-256 (HTTP & HTTPS Cross-Platform) */
     function sha256(ascii) {
       function rightRotate(value, amount) {
         return (value >>> amount) | (value << (32 - amount));
@@ -642,7 +664,9 @@
       return result;
     }
 
-    // Hashes guarantee ZERO plaintext passwords exist in source code or UI
+    // SHA-256 Hashes of default credentials:
+    // L1: "hide" -> 7bda0dabe8f37989ac3d9eaef164c2bcabf151eb5d18c63fc8519d54262dfd4e
+    // L2: "hide"        -> a85e9db4851f7cd3efb8db7bf69a07cfb97bc528b72785a9cff7bdfef7e2279d
     const DEFAULT_HASH_L1 = "7bda0dabe8f37989ac3d9eaef164c2bcabf151eb5d18c63fc8519d54262dfd4e";
     const DEFAULT_HASH_L2 = "a85e9db4851f7cd3efb8db7bf69a07cfb97bc528b72785a9cff7bdfef7e2279d";
 
@@ -678,37 +702,9 @@
       adminHashL2: DEFAULT_HASH_L2
     };
 
-    function loadStore() {
-      try {
-        const raw = localStorage.getItem('iqra_academy_data');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && typeof parsed === 'object') {
-            parsed.announcement = parsed.announcement || DEFAULT_IQRA_STORE.announcement;
-            parsed.banners = (Array.isArray(parsed.banners) && parsed.banners.length >= 5) ? parsed.banners : DEFAULT_IQRA_STORE.banners;
-            parsed.notices = Array.isArray(parsed.notices) ? parsed.notices : DEFAULT_IQRA_STORE.notices;
-            parsed.applications = Array.isArray(parsed.applications) ? parsed.applications : DEFAULT_IQRA_STORE.applications;
-            parsed.stats = parsed.stats || DEFAULT_IQRA_STORE.stats;
-            parsed.adminHashL1 = parsed.adminHashL1 || DEFAULT_HASH_L1;
-            parsed.adminHashL2 = parsed.adminHashL2 || DEFAULT_HASH_L2;
-            return parsed;
-          }
-        }
-      } catch(e) {}
-      try {
-        localStorage.setItem('iqra_academy_data', JSON.stringify(DEFAULT_IQRA_STORE));
-      } catch(e) {}
-      return DEFAULT_IQRA_STORE;
-    }
+    let appState = JSON.parse(JSON.stringify(DEFAULT_IQRA_STORE));
 
-    function saveStore(data) {
-      try {
-        localStorage.setItem('iqra_academy_data', JSON.stringify(data));
-      } catch(e) {}
-    }
-
-    let appState = loadStore();
-
+    // Toast Notification Utility
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       if (!container) return;
@@ -725,9 +721,126 @@
       }, 3500);
     }
 
+    // Custom Modal Confirmation (replacing alert/confirm)
+    let confirmCallback = null;
+    function openConfirm(title, desc, onConfirm) {
+      const modal = document.getElementById('custom-confirm-modal');
+      const t = document.getElementById('confirm-modal-title');
+      const d = document.getElementById('confirm-modal-desc');
+      if (t) t.textContent = title;
+      if (d) d.textContent = desc;
+      confirmCallback = onConfirm;
+      if (modal) modal.classList.remove('hidden');
+    }
+    const btnConfirmCancel = document.getElementById('btn-confirm-cancel');
+    const btnConfirmProceed = document.getElementById('btn-confirm-proceed');
+    if (btnConfirmCancel) {
+      btnConfirmCancel.addEventListener('click', () => {
+        const modal = document.getElementById('custom-confirm-modal');
+        if (modal) modal.classList.add('hidden');
+        confirmCallback = null;
+      });
+    }
+    if (btnConfirmProceed) {
+      btnConfirmProceed.addEventListener('click', () => {
+        const modal = document.getElementById('custom-confirm-modal');
+        if (modal) modal.classList.add('hidden');
+        if (confirmCallback) confirmCallback();
+        confirmCallback = null;
+      });
+    }
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'iqra-academy-global-app';
+    let db = null;
+    let auth = null;
+    let cloudDocRef = null;
+
+    async function initCloudSync() {
+      try {
+        if (typeof __firebase_config !== 'undefined') {
+          const config = JSON.parse(__firebase_config);
+          const app = initializeApp(config);
+          db = getFirestore(app);
+          auth = getAuth(app);
+
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+
+          cloudDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'iqra_global_data', 'main_store');
+
+          // Real-time Cloud Listener across all browsers
+          onSnapshot(cloudDocRef, (snap) => {
+            if (snap.exists()) {
+              const cloudData = snap.data();
+              if (cloudData) {
+                mergeCloudData(cloudData);
+                renderDashboard();
+              }
+            } else {
+              // Initial push to cloud
+              pushToCloud(appState);
+            }
+          }, (err) => {
+            console.warn('Realtime cloud listener warning:', err);
+          });
+        }
+      } catch (e) {
+        console.warn('Fallback to local mirror:', e);
+      }
+    }
+
+    function mergeCloudData(cloud) {
+      appState.announcement = cloud.announcement || appState.announcement;
+      appState.banners = (Array.isArray(cloud.banners) && cloud.banners.length >= 5) ? cloud.banners : appState.banners;
+      appState.notices = Array.isArray(cloud.notices) ? cloud.notices : appState.notices;
+      appState.applications = Array.isArray(cloud.applications) ? cloud.applications : appState.applications;
+      appState.stats = cloud.stats || appState.stats;
+      appState.adminHashL1 = cloud.adminHashL1 || appState.adminHashL1;
+      appState.adminHashL2 = cloud.adminHashL2 || appState.adminHashL2;
+
+      // Broadcast update to other tabs/browsers via BroadcastChannel
+      if (typeof BroadcastChannel !== 'undefined') {
+        const bc = new BroadcastChannel('iqra_sync_channel');
+        bc.postMessage({ type: 'SYNC_UPDATE', data: appState });
+      }
+    }
+
+    async function pushToCloud(data) {
+      try {
+        if (db && cloudDocRef && auth && auth.currentUser) {
+          await setDoc(cloudDocRef, data);
+        }
+      } catch (err) {
+        console.error('Cloud push error:', err);
+      }
+    }
+
+    // Save and Sync Data across everywhere
+    async function saveStateAndSync() {
+      renderDashboard();
+      await pushToCloud(appState);
+      if (typeof BroadcastChannel !== 'undefined') {
+        const bc = new BroadcastChannel('iqra_sync_channel');
+        bc.postMessage({ type: 'SYNC_UPDATE', data: appState });
+      }
+    }
+
+    // Listen for broadcast from other open tabs
+    if (typeof BroadcastChannel !== 'undefined') {
+      const bc = new BroadcastChannel('iqra_sync_channel');
+      bc.onmessage = (event) => {
+        if (event.data && event.data.type === 'SYNC_UPDATE' && event.data.data) {
+          mergeCloudData(event.data.data);
+          renderDashboard();
+        }
+      };
+    }
+
     const lockScreen = document.getElementById('admin-lock-screen');
     const mainDashboard = document.getElementById('admin-main-dashboard');
-    const loginForm = document.getElementById('admin-login-form');
     const passInput = document.getElementById('login-pass-input');
     const pinInput = document.getElementById('login-pin-input');
     const loginErrorMsg = document.getElementById('login-error-msg');
@@ -739,33 +852,29 @@
     const btnLogout = document.getElementById('btn-admin-logout');
 
     function checkAuth() {
-      try {
-        const isAuth = (sessionStorage.getItem('iqra_admin_auth') === 'true') || (localStorage.getItem('iqra_admin_temp_auth') === 'true');
-        if (isAuth) {
-          if (lockScreen) {
-            lockScreen.classList.add('hidden');
-            lockScreen.style.display = 'none';
-          }
-          if (mainDashboard) {
-            mainDashboard.classList.remove('hidden');
-            mainDashboard.style.display = 'block';
-          }
-          renderDashboard();
-        } else {
-          if (lockScreen) {
-            lockScreen.classList.remove('hidden');
-            lockScreen.style.display = 'flex';
-          }
-          if (mainDashboard) {
-            mainDashboard.classList.add('hidden');
-            mainDashboard.style.display = 'none';
-          }
-          if (passInput) passInput.value = '';
-          if (pinInput) pinInput.value = '';
-          if (loginErrorMsg) loginErrorMsg.classList.add('hidden');
+      const isAuth = sessionStorage.getItem('iqra_admin_auth') === 'true';
+      if (isAuth) {
+        if (lockScreen) {
+          lockScreen.classList.add('hidden');
+          lockScreen.style.display = 'none';
         }
-      } catch(err) {
-        console.error('checkAuth error:', err);
+        if (mainDashboard) {
+          mainDashboard.classList.remove('hidden');
+          mainDashboard.style.display = 'block';
+        }
+        renderDashboard();
+      } else {
+        if (lockScreen) {
+          lockScreen.classList.remove('hidden');
+          lockScreen.style.display = 'flex';
+        }
+        if (mainDashboard) {
+          mainDashboard.classList.add('hidden');
+          mainDashboard.style.display = 'none';
+        }
+        if (passInput) passInput.value = '';
+        if (pinInput) pinInput.value = '';
+        if (loginErrorMsg) loginErrorMsg.classList.add('hidden');
       }
     }
 
@@ -785,90 +894,74 @@
       });
     }
 
-    function handleLoginSubmit(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      try {
-        const p = (passInput ? passInput.value : '').trim();
-        const pin = (pinInput ? pinInput.value : '').trim();
+    function handleLoginSubmit() {
+      const p = (passInput ? passInput.value : '').trim();
+      const pin = (pinInput ? pinInput.value : '').trim();
 
-        if (!p || !pin) {
-          if (loginErrorText) loginErrorText.textContent = 'অনুগ্রহ করে পাসওয়ার্ড ও পিন উভয়ই লিখুন!';
-          if (loginErrorMsg) loginErrorMsg.classList.remove('hidden');
-          return false;
+      if (!p || !pin) {
+        if (loginErrorText) loginErrorText.textContent = 'অনুগ্রহ করে পাসওয়ার্ড ও পিন উভয়ই লিখুন!';
+        if (loginErrorMsg) loginErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      const hashedP = sha256(p);
+      const hashedPin = sha256(pin);
+
+      const targetHashL1 = appState.adminHashL1 || DEFAULT_HASH_L1;
+      const targetHashL2 = appState.adminHashL2 || DEFAULT_HASH_L2;
+
+      const passOk = (hashedP === targetHashL1);
+      const pinOk = (hashedPin === targetHashL2);
+
+      if (passOk && pinOk) {
+        sessionStorage.setItem('iqra_admin_auth', 'true');
+        if (loginErrorMsg) loginErrorMsg.classList.add('hidden');
+
+        if (lockScreen) {
+          lockScreen.classList.add('hidden');
+          lockScreen.style.display = 'none';
+        }
+        if (mainDashboard) {
+          mainDashboard.classList.remove('hidden');
+          mainDashboard.style.display = 'block';
         }
 
-        const hashedP = sha256(p);
-        const hashedPin = sha256(pin);
-
-        appState = loadStore();
-        const targetHashL1 = appState.adminHashL1 || DEFAULT_HASH_L1;
-        const targetHashL2 = appState.adminHashL2 || DEFAULT_HASH_L2;
-
-        const passOk = (hashedP === targetHashL1);
-        const pinOk = (hashedPin === targetHashL2);
-
-        if (passOk && pinOk) {
-          sessionStorage.setItem('iqra_admin_auth', 'true');
-          localStorage.setItem('iqra_admin_temp_auth', 'true');
-          
-          if (loginErrorMsg) loginErrorMsg.classList.add('hidden');
-
-          // Force Instant DOM Transition to Dashboard
-          if (lockScreen) {
-            lockScreen.classList.add('hidden');
-            lockScreen.style.display = 'none';
+        renderDashboard();
+        showToast('স্বাগতম! দ্বি-স্তরীয় ভেরিফিকেশন সফল। ক্লাউড পোর্টাল আনলক হয়েছে।');
+      } else {
+        if (loginErrorText) {
+          if (!passOk && !pinOk) {
+            loginErrorText.textContent = 'লেয়ার ১ পাসওয়ার্ড এবং লেয়ার ২ পিন উভয়ই ভুল!';
+          } else if (!passOk) {
+            loginErrorText.textContent = 'লেয়ার ১ অ্যাডমিন পাসওয়ার্ড ভুল!';
+          } else {
+            loginErrorText.textContent = 'লেয়ার ২ মাস্টার পিন ভুল!';
           }
-          if (mainDashboard) {
-            mainDashboard.classList.remove('hidden');
-            mainDashboard.style.display = 'block';
-          }
-
-          renderDashboard();
-          showToast('স্বাগতম! দ্বি-স্তরীয় ভেরিফিকেশন সফল। পোর্টাল আনলক হয়েছে।');
-          return false;
-        } else {
-          if (loginErrorText) {
-            if (!passOk && !pinOk) {
-              loginErrorText.textContent = 'লেয়ার ১ পাসওয়ার্ড এবং লেয়ার ২ পিন উভয়ই ভুল!';
-            } else if (!passOk) {
-              loginErrorText.textContent = 'লেয়ার ১ অ্যাডমিন পাসওয়ার্ড ভুল!';
-            } else {
-              loginErrorText.textContent = 'লেয়ার ২ মাস্টার পিন ভুল!';
-            }
-          }
-          if (loginErrorMsg) loginErrorMsg.classList.remove('hidden');
-          return false;
         }
-      } catch(err) {
-        console.error('Login error:', err);
-        return false;
+        if (loginErrorMsg) loginErrorMsg.classList.remove('hidden');
       }
-    }
-
-    if (loginForm) {
-      loginForm.addEventListener('submit', handleLoginSubmit);
     }
 
     const btnLoginSubmit = document.getElementById('btn-login-submit');
     if (btnLoginSubmit) {
-      btnLoginSubmit.addEventListener('click', (e) => {
-        handleLoginSubmit(e);
+      btnLoginSubmit.addEventListener('click', handleLoginSubmit);
+    }
+    const loginForm = document.getElementById('admin-login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleLoginSubmit();
       });
     }
 
     if (btnLogout) {
       btnLogout.addEventListener('click', () => {
         sessionStorage.removeItem('iqra_admin_auth');
-        localStorage.removeItem('iqra_admin_temp_auth');
         checkAuth();
         showToast('অ্যাডমিন পোর্টাল নিরাপদে লক করা হয়েছে।');
       });
     }
 
-    // --- Tab Switching ---
     document.querySelectorAll('.admin-tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const targetId = btn.getAttribute('data-tab');
@@ -886,33 +979,29 @@
     });
 
     function renderDashboard() {
-      try {
-        appState = loadStore();
+      // Marquee
+      const marqueeInput = document.getElementById('admin-marquee-input');
+      if (marqueeInput && document.activeElement !== marqueeInput) {
+        marqueeInput.value = appState.announcement || '';
+      }
 
-        // Marquee
-        const marqueeInput = document.getElementById('admin-marquee-input');
-        if (marqueeInput) marqueeInput.value = appState.announcement || '';
+      // Notices
+      renderNotices();
 
-        // Notices
-        renderNotices();
+      // Admissions
+      renderApplications();
 
-        // Admissions
-        renderApplications();
+      // Banners
+      renderBanners();
 
-        // Banners
-        renderBanners();
-
-        // Stats
-        if (appState.stats) {
-          if (document.getElementById('admin-stat-students')) document.getElementById('admin-stat-students').value = appState.stats.students || '৫০০+';
-          if (document.getElementById('admin-stat-teachers')) document.getElementById('admin-stat-teachers').value = appState.stats.teachers || '২৫+';
-          if (document.getElementById('admin-stat-pass')) document.getElementById('admin-stat-pass').value = appState.stats.passRate || '১০০%';
-          if (document.getElementById('admin-stat-phone1')) document.getElementById('admin-stat-phone1').value = appState.stats.helpline1 || '9775123096';
-          if (document.getElementById('admin-stat-phone2')) document.getElementById('admin-stat-phone2').value = appState.stats.helpline2 || '9647109481';
-          if (document.getElementById('admin-stat-estd')) document.getElementById('admin-stat-estd').value = appState.stats.estd || '২০১৫';
-        }
-      } catch(err) {
-        console.error('renderDashboard error:', err);
+      // Stats
+      if (appState.stats) {
+        if (document.getElementById('admin-stat-students')) document.getElementById('admin-stat-students').value = appState.stats.students || '৫০০+';
+        if (document.getElementById('admin-stat-teachers')) document.getElementById('admin-stat-teachers').value = appState.stats.teachers || '২৫+';
+        if (document.getElementById('admin-stat-pass')) document.getElementById('admin-stat-pass').value = appState.stats.passRate || '১০০%';
+        if (document.getElementById('admin-stat-phone1')) document.getElementById('admin-stat-phone1').value = appState.stats.helpline1 || '9775123096';
+        if (document.getElementById('admin-stat-phone2')) document.getElementById('admin-stat-phone2').value = appState.stats.helpline2 || '9647109481';
+        if (document.getElementById('admin-stat-estd')) document.getElementById('admin-stat-estd').value = appState.stats.estd || '২০১৫';
       }
     }
 
@@ -928,20 +1017,24 @@
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${n.priority === 'জরুরি' ? 'bg-red-950 text-red-300 border border-red-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'}">${n.priority}</span>
           </td>
           <td class="p-3 text-right">
-            <button class="text-red-400 hover:text-red-300 p-1 font-bold text-xs" onclick="deleteNotice(${idx})">
+            <button class="text-red-400 hover:text-red-300 p-1 font-bold text-xs" data-notice-index="${idx}">
               <i class="fa-solid fa-trash"></i>
             </button>
           </td>
         </tr>
       `).join('');
-    }
 
-    window.deleteNotice = function(index) {
-      appState.notices.splice(index, 1);
-      saveStore(appState);
-      renderNotices();
-      showToast('নোটিশটি মুছে ফেলা হয়েছে।');
-    };
+      noticeTbody.querySelectorAll('button[data-notice-index]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-notice-index'), 10);
+          openConfirm('নোটিশ অপসারণ', 'আপনি কি নিশ্চিত যে এই নোটিশটি ক্লাউড থেকে মুছে ফেলতে চান?', () => {
+            appState.notices.splice(idx, 1);
+            saveStateAndSync();
+            showToast('নোটিশটি ক্লাউড থেকে মুছে ফেলা হয়েছে।');
+          });
+        });
+      });
+    }
 
     const addNoticeForm = document.getElementById('admin-add-notice-form');
     if (addNoticeForm) {
@@ -959,10 +1052,9 @@
           title,
           priority
         });
-        saveStore(appState);
-        renderNotices();
+        saveStateAndSync();
         addNoticeForm.reset();
-        showToast('নতুন নোটিশ যোগ করা হয়েছে!');
+        showToast('নতুন নোটিশ ক্লাউডে যুক্ত হয়েছে!');
       });
     }
 
@@ -972,8 +1064,8 @@
         const val = document.getElementById('admin-marquee-input').value.trim();
         if (val) {
           appState.announcement = val;
-          saveStore(appState);
-          showToast('ঘোষণা সফলভাবে আপডেট করা হয়েছে!');
+          saveStateAndSync();
+          showToast('ঘোষণা ক্লাউডে সফলভাবে আপডেট হয়েছে!');
         }
       });
     }
@@ -1009,38 +1101,46 @@
           <td class="p-3 text-slate-300">${app.stream}</td>
           <td class="p-3 font-mono text-slate-300">${app.phone}</td>
           <td class="p-3">
-            <select class="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-[11px] font-bold ${
+            <select data-app-id="${app.id}" class="app-status-select bg-slate-950 border border-slate-700 rounded px-2 py-1 text-[11px] font-bold ${
               app.status === 'ভর্তি নিশ্চিত' ? 'text-emerald-400' : (app.status === 'যাচাই চলছে' ? 'text-amber-400' : 'text-blue-300')
-            }" onchange="updateAppStatus('${app.id}', this.value)">
+            }">
               <option value="নতুন আবেদন" ${app.status === 'নতুন আবেদন' ? 'selected' : ''}>নতুন আবেদন</option>
               <option value="যাচাই চলছে" ${app.status === 'যাচাই চলছে' ? 'selected' : ''}>যাচাই চলছে</option>
               <option value="ভর্তি নিশ্চিত" ${app.status === 'ভর্তি নিশ্চিত' ? 'selected' : ''}>ভর্তি নিশ্চিত</option>
             </select>
           </td>
           <td class="p-3 text-right">
-            <button class="text-red-400 hover:text-red-300 p-1" onclick="deleteApplication('${app.id}')">
+            <button data-delete-app-id="${app.id}" class="text-red-400 hover:text-red-300 p-1">
               <i class="fa-solid fa-trash"></i>
             </button>
           </td>
         </tr>
       `).join('');
+
+      tbody.querySelectorAll('.app-status-select').forEach(sel => {
+        sel.addEventListener('change', (e) => {
+          const appId = sel.getAttribute('data-app-id');
+          const newStatus = e.target.value;
+          const app = appState.applications.find(a => a.id === appId);
+          if (app) {
+            app.status = newStatus;
+            saveStateAndSync();
+            showToast(`${app.studentName}-এর স্ট্যাটাস: ${newStatus}`);
+          }
+        });
+      });
+
+      tbody.querySelectorAll('button[data-delete-app-id]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const appId = btn.getAttribute('data-delete-app-id');
+          openConfirm('আবেদন অপসারণ', 'আপনি কি নিশ্চিত যে এই আবেদনটি ক্লাউড তালিকা থেকে মুছে ফেলতে চান?', () => {
+            appState.applications = appState.applications.filter(a => a.id !== appId);
+            saveStateAndSync();
+            showToast('আবেদনটি ক্লাউড থেকে অপসারণ করা হয়েছে।');
+          });
+        });
+      });
     }
-
-    window.updateAppStatus = function(appId, newStatus) {
-      const app = appState.applications.find(a => a.id === appId);
-      if (app) {
-        app.status = newStatus;
-        saveStore(appState);
-        showToast(`${app.studentName}-এর স্ট্যাটাস: ${newStatus}`);
-      }
-    };
-
-    window.deleteApplication = function(appId) {
-      appState.applications = appState.applications.filter(a => a.id !== appId);
-      saveStore(appState);
-      renderApplications();
-      showToast('আবেদনটি অপসারণ করা হয়েছে।');
-    };
 
     const searchAppInput = document.getElementById('admin-search-applicant');
     const filterStreamSelect = document.getElementById('admin-filter-stream');
@@ -1068,7 +1168,6 @@
       });
     }
 
-    // Manual Admission Modal
     const manualModal = document.getElementById('manual-adm-modal');
     const btnOpenManual = document.getElementById('btn-add-manual-admission');
     const btnCloseManual = document.getElementById('btn-close-manual-modal');
@@ -1094,11 +1193,10 @@
           date: new Date().toISOString().split('T')[0]
         };
         appState.applications.unshift(newApp);
-        saveStore(appState);
-        renderApplications();
+        saveStateAndSync();
         manualForm.reset();
         manualModal.classList.add('hidden');
-        showToast('ম্যানুয়াল আবেদন সফলভাবে রেজিস্টারে অন্তর্ভুক্ত!');
+        showToast('ম্যানুয়াল আবেদন সফলভাবে ক্লাউডে যুক্ত হয়েছে!');
       });
     }
 
@@ -1128,8 +1226,8 @@
           if (u) b.url = u.value.trim();
           if (t) b.title = t.value.trim();
         });
-        saveStore(appState);
-        showToast('ব্যানার স্লাইডার তথ্য সংরক্ষিত হয়েছে!');
+        saveStateAndSync();
+        showToast('ব্যানার স্লাইডার ক্লাউডে সংরক্ষিত হয়েছে!');
       });
     }
 
@@ -1142,12 +1240,12 @@
         appState.stats.helpline1 = document.getElementById('admin-stat-phone1').value.trim();
         appState.stats.helpline2 = document.getElementById('admin-stat-phone2').value.trim();
         appState.stats.estd = document.getElementById('admin-stat-estd').value.trim();
-        saveStore(appState);
-        showToast('পরিসংখ্যান ও ফোন নম্বর সংরক্ষিত হয়েছে!');
+        saveStateAndSync();
+        showToast('পরিসংখ্যান ও ফোন নম্বর ক্লাউডে সংরক্ষিত হয়েছে!');
       });
     }
 
-    // Change Credentials Form (Pure JS SHA-256)
+    // Security Credentials Change Form
     const changePassForm = document.getElementById('admin-change-pass-form');
     if (changePassForm) {
       changePassForm.addEventListener('submit', (e) => {
@@ -1179,9 +1277,9 @@
 
         appState.adminHashL1 = sha256(newPass);
         appState.adminHashL2 = sha256(newPin);
-        saveStore(appState);
+        saveStateAndSync();
         changePassForm.reset();
-        showToast('লেয়ার ১ ও ২ নিরাপত্তা সফলভাবে আপডেট হয়েছে!');
+        showToast('লেয়ার ১ ও ২ নিরাপত্তা ক্লাউডে সফলভাবে আপডেট হয়েছে!');
       });
     }
 
@@ -1192,28 +1290,28 @@
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", `iqra_academy_backup_${new Date().toISOString().split('T')[0]}.json`);
+        link.setAttribute("download", `iqra_academy_cloud_backup_${new Date().toISOString().split('T')[0]}.json`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        showToast('JSON ব্যাকআপ ডাউনলোড সম্পন্ন হয়েছে!');
+        showToast('JSON ক্লাউড ব্যাকআপ ডাউনলোড সম্পন্ন হয়েছে!');
       });
     }
 
     const btnFactoryReset = document.getElementById('btn-factory-reset');
     if (btnFactoryReset) {
       btnFactoryReset.addEventListener('click', () => {
-        if (confirm('আপনি কি নিশ্চিত যে সকল ডেটা ফ্যাক্টরি ডিফল্টে ফিরিয়ে নিতে চান?')) {
+        openConfirm('ফ্যাক্টরি রিসেট', 'আপনি কি নিশ্চিত যে সকল ক্লাউড ডেটা প্রাথমিক ডিফল্ট অবস্থায় ফিরিয়ে নিতে চান?', () => {
           appState = JSON.parse(JSON.stringify(DEFAULT_IQRA_STORE));
-          saveStore(appState);
-          renderDashboard();
+          saveStateAndSync();
           showToast('ফ্যাক্টরি রিসেট সম্পন্ন হয়েছে!');
-        }
+        });
       });
     }
 
-    // Verify authentication immediately on page load
+    // Check Auth and Initialize Cloud Connection
     checkAuth();
+    initCloudSync();
   </script>
 </body>
 </html>
