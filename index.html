@@ -242,7 +242,7 @@
     </div>
   </nav>
 
-  <!-- Dynamic Cloud Marquee Announcement Ticker -->
+ <!-- Dynamic Cloud Marquee Announcement Ticker -->
   <div class="bg-amber-50 border-y border-amber-200 py-2 px-4 shadow-inner flex items-center overflow-hidden">
     <div class="max-w-7xl mx-auto w-full flex items-center">
       <div class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-md flex items-center gap-1.5 uppercase tracking-wider shrink-0 shadow-sm mr-3">
@@ -251,12 +251,11 @@
       </div>
       <div class="overflow-hidden relative flex-1 text-xs md:text-sm text-slate-800 font-bold">
         <div id="live-marquee-text" class="animate-marquee hover:pause">
-          📢 ভর্তি চলছে ২০২৭ শিক্ষাবর্ষে! Pre-Nursery থেকে Class IX পর্যন্ত অনাবাসিক, ডে-বোর্ডিং ও আবাসিক বালিকা বিভাগে (Class V-IX) সীমিত আসনে ভর্তি চলছে। যোগাযোগ: ৯৭৭৫১২৩০৯৬ / ৯৬৪৭১০৯৪৮১
+          📢 <span id="dynamic-marquee-content">লোড হচ্ছে...</span>
         </div>
       </div>
     </div>
   </div>
-
   <!-- HERO PHOTO BANNER CAROUSEL (5 LINKS TRANSIT) -->
   <section id="home" class="relative bg-slate-900 text-white overflow-hidden">
     <div class="relative h-[420px] md:h-[540px] lg:h-[620px] w-full">
@@ -1554,6 +1553,41 @@
     });
   </script>
   <!-- ================= FIREBASE CLOUD SYNC CODE END ================= -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_aNVt4kIackC9_QUnSf0dzf4PE-6PdRs",
+      authDomain: "iqra-academy-portal.firebaseapp.com",
+      projectId: "iqra-academy-portal",
+      storageBucket: "iqra-academy-portal.firebasestorage.app",
+      messagingSenderId: "141277803488",
+      appId: "1:141277803488:web:48dd362989fb8f0b6ff185",
+      measurementId: "G-WPBV5FKM18"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Realtime Firestore Listener
+    onSnapshot(doc(db, "school_data", "main_config"), (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        
+        // Admin panel theke jeta pathaben, seta '📢 ' er por boshe jabe
+        const marqueeSpan = document.getElementById('dynamic-marquee-content');
+        if (marqueeSpan && data.marquee) {
+          marqueeSpan.innerText = data.marquee;
+        }
+
+        // Helpline numbers sync
+        const phoneEl = document.getElementById('site-phone-display');
+        if (phoneEl && data.phone1 && data.phone2) {
+          phoneEl.innerText = `${data.phone1} / ${data.phone2}`;
+        }
+      }
+    });
+  </script>
 </body>
 </html>
