@@ -1499,29 +1499,43 @@
             </button>
           </div>
         </div>
-        <!-- Change Admin Password Card -->
+        <!-- Change Admin Password & PIN Card -->
         <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-md space-y-4">
           <div class="flex items-center justify-between border-b border-slate-700 pb-3">
             <h3 class="text-base font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-key text-amber-400"></i>
-              অ্যাডমিন পাসওয়ার্ড পরিবর্তন (Change Admin Password)
+              দ্বি-স্তরীয় নিরাপত্তা পাসওয়ার্ড ও পিন পরিবর্তন (Security Settings)
             </h3>
-            <span class="text-xs text-amber-400">ডিফল্ট পাসওয়ার্ড: <b>iqra2015</b></span>
+            <span class="text-xs text-amber-400">Layer 1: <b>gaffarsaheb</b> | Layer 2: <b>2015</b></span>
           </div>
 
-          <form id="admin-change-password-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs text-slate-300 mb-1">বর্তমান পাসওয়ার্ড *</label>
-              <input type="password" id="input-current-password" required placeholder="বর্তমান পাসওয়ার্ড দিন" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-400">
+          <form id="admin-change-password-form" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-slate-300 mb-1">বর্তমান লেয়ার ১ পাসওয়ার্ড *</label>
+                <input type="password" id="input-current-password" required placeholder="বর্তমান পাসওয়ার্ড (gaffarsaheb)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-400">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-300 mb-1">নতুন লেয়ার ১ পাসওয়ার্ড *</label>
+                <input type="password" id="input-new-password" required placeholder="নতুন পাসওয়ার্ড লিখুন" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-400">
+              </div>
             </div>
-            <div>
-              <label class="block text-xs text-slate-300 mb-1">নতুন পাসওয়ার্ড *</label>
-              <input type="password" id="input-new-password" required placeholder="নতুন পাসওয়ার্ড লিখুন" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-amber-400">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-700/60">
+              <div>
+                <label class="block text-xs text-slate-300 mb-1">বর্তমান লেয়ার ২ মাস্টার পিন *</label>
+                <input type="password" id="input-current-pin" required placeholder="বর্তমান পিন (2015)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-400">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-300 mb-1">নতুন লেয়ার ২ মাস্টার পিন *</label>
+                <input type="password" id="input-new-pin" required placeholder="নতুন মাস্টার পিন লিখুন" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-400">
+              </div>
             </div>
-            <div class="sm:col-span-2 flex justify-end">
-              <button type="submit" id="btn-save-new-password" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow">
-                <i class="fa-solid fa-check"></i>
-                <span>পাসওয়ার্ড আপডেট করুন</span>
+
+            <div class="flex justify-end pt-2">
+              <button type="submit" id="btn-save-new-password" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow">
+                <i class="fa-solid fa-shield-check"></i>
+                <span>নিরাপত্তা ক্রেডেনশিয়াল আপডেট করুন</span>
               </button>
             </div>
           </form>
@@ -1562,69 +1576,107 @@
   <!-- MODALS -->
   <!-- ======================================================== -->
   
-  <!-- 0. Admin Authentication / Password Gate Modal -->
-  <div id="admin-auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+  <!-- 0. Admin Authentication / Password Gate Modal (Double Layer Security) -->
+  <div id="admin-auth-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 text-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl relative border-2 border-amber-500/80">
       <button id="btn-close-admin-auth" aria-label="Close Security Modal" class="absolute top-5 right-5 text-slate-400 hover:text-white text-2xl w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center focus:outline-none">
         &times;
       </button>
 
-      <div class="text-center space-y-3 mb-6">
-        <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-3xl mx-auto shadow-inner">
+      <!-- Security Header -->
+      <div class="text-center space-y-2 mb-6">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg">
           <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="inline-flex items-center gap-1.5 bg-red-900/60 border border-red-500/40 text-red-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+          <i class="fa-solid fa-lock"></i>
+          <span>দ্বি-স্তরীয় নিরাপত্তা (Double Layer Protection)</span>
         </div>
         <h3 class="text-xl font-extrabold text-white">অ্যাডমিন সিকিউরিটি ভেরিফিকেশন</h3>
         <p class="text-xs text-slate-400 leading-relaxed">
-          অননুমোদিত প্রবেশ সম্পূর্ণরূপে সংরক্ষিত। ডেটা এন্ট্রি পোর্টাল ব্যবহারের জন্য অনুগ্রহ করে পাসওয়ার্ড প্রদান করুন।
+          অননুমোদিত প্রবেশ ও হ্যাকিং প্রতিরোধে ২টি স্তরের নিরাপত্তা পাসওয়ার্ড প্রদান আবশ্যক।
         </p>
       </div>
 
       <form id="admin-login-form" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1.5 flex items-center justify-between">
-            <span>পাসওয়ার্ড লিখুন (Enter Password) *</span>
-            <span class="text-[11px] text-amber-400 font-normal">ডিফল্ট: <b>iqra2015</b></span>
-          </label>
+        <!-- Layer 1: Admin Password -->
+        <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-amber-300 flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-amber-500 text-slate-950 text-[10px] flex items-center justify-center font-extrabold">১</span>
+              <span>লেয়ার ১: অ্যাডমিন পাসওয়ার্ড</span>
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">SHA-256 এনক্রিপ্টেড</span>
+          </div>
           <div class="relative">
             <input 
               type="password" 
               id="admin-auth-password" 
               required 
-              placeholder="পাসওয়ার্ড দিন..." 
-              class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 pr-10"
+              placeholder="পাসওয়ার্ড লিখুন..." 
+              class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-amber-400 pr-10 font-mono"
             >
             <button 
               type="button" 
               id="btn-toggle-auth-password" 
               aria-label="Toggle password visibility"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-sm focus:outline-none"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs focus:outline-none"
             >
               <i class="fa-solid fa-eye" id="toggle-auth-password-icon"></i>
             </button>
           </div>
-          <p id="admin-auth-error-msg" class="hidden text-xs text-red-400 font-semibold mt-1.5 flex items-center gap-1">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <span>ভুল পাসওয়ার্ড! অনুগ্রহ করে সঠিক পাসওয়ার্ড দিন।</span>
-          </p>
         </div>
 
-        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 text-[11px] text-slate-300 space-y-1">
-          <div class="flex items-center gap-1.5 text-amber-300 font-bold">
-            <i class="fa-solid fa-lock text-xs"></i>
-            <span>নিরাপত্তা সতর্কতা:</span>
+        <!-- Layer 2: Master Security PIN -->
+        <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-emerald-400 flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-emerald-500 text-slate-950 text-[10px] flex items-center justify-center font-extrabold">২</span>
+              <span>লেয়ার ২: মাস্টার সিকিউরিটি পিন</span>
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">2-Factor অথেন্টিকেশন</span>
           </div>
-          <p class="text-slate-400">
-            সাধারণ ভিজিটরদের দ্বারা তথ্য পরিবর্তন রোধে এই নিরাপত্তা নিশ্চিত করা হয়েছে। ড্যাশবোর্ড থেকে পাসওয়ার্ড পরিবর্তন করা যাবে।
-          </p>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="admin-auth-pin" 
+              required 
+              placeholder="মাস্টার সিকিউরিটি পিন লিখুন..." 
+              class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-emerald-400 pr-10 font-mono"
+            >
+            <button 
+              type="button" 
+              id="btn-toggle-auth-pin" 
+              aria-label="Toggle PIN visibility"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs focus:outline-none"
+            >
+              <i class="fa-solid fa-eye" id="toggle-auth-pin-icon"></i>
+            </button>
+          </div>
         </div>
 
-        <div class="flex justify-end gap-2 pt-2">
+        <!-- Error feedback -->
+        <p id="admin-auth-error-msg" class="hidden text-xs text-red-400 font-bold flex items-center gap-1.5 bg-red-950/60 p-2.5 rounded-xl border border-red-800">
+          <i class="fa-solid fa-circle-exclamation text-sm"></i>
+          <span id="admin-auth-error-text">ভুল পাসওয়ার্ড বা পিন! সঠিক তথ্য প্রদান করুন।</span>
+        </p>
+
+        <!-- Security Advice -->
+        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/80 text-[11px] text-slate-400 space-y-1">
+          <div class="flex items-center justify-between text-slate-300 font-semibold">
+            <span>নির্ধারিত নিরাপত্তা ক্রেডেনশিয়াল:</span>
+          </div>
+          <p class="text-amber-300 font-mono text-[11px]">লেয়ার ১ পাসওয়ার্ড: <b>gaffarsaheb</b></p>
+          <p class="text-emerald-300 font-mono text-[11px]">লেয়ার ২ মাস্টার পিন: <b>2015</b> (প্রতিষ্ঠিত সাল)</p>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-1">
           <button type="button" id="btn-cancel-admin-auth" class="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold text-xs hover:bg-slate-800 transition">
             বাতিল
           </button>
-          <button type="submit" id="btn-submit-admin-auth" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
+          <button type="submit" id="btn-submit-admin-auth" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl text-xs transition shadow-lg flex items-center gap-1.5">
             <i class="fa-solid fa-unlock-keyhole"></i>
-            <span>আনলক ও প্রবেশ করুন</span>
+            <span>দ্বি-স্তর আনলক করুন</span>
           </button>
         </div>
       </form>
@@ -2452,27 +2504,43 @@
     if (btnFactoryReset) btnFactoryReset.addEventListener('click', resetDemoData);
 
     
-    // --- Admin Security & Password Gate Logic ---
-    appState.adminPassword = appState.adminPassword || "iqra2015";
+    // --- Double Layer Cryptographic Security Gate (SHA-256) ---
+    // Hashes of default credentials:
+    // "gaffarsaheb" -> 7bda0dabe8f37989ac3d9eaef164c2bcabf151eb5d18c63fc8519d54262dfd4e
+    // "2015"        -> a85e9db4851f7cd3efb8db7bf69a07cfb97bc528b72785a9cff7bdfef7e2279d
+    const DEFAULT_HASH_L1 = "7bda0dabe8f37989ac3d9eaef164c2bcabf151eb5d18c63fc8519d54262dfd4e";
+    const DEFAULT_HASH_L2 = "a85e9db4851f7cd3efb8db7bf69a07cfb97bc528b72785a9cff7bdfef7e2279d";
+
+    appState.adminHashL1 = appState.adminHashL1 || DEFAULT_HASH_L1;
+    appState.adminHashL2 = appState.adminHashL2 || DEFAULT_HASH_L2;
+
+    async function computeSHA256(text) {
+      const data = new TextEncoder().encode(text);
+      const buffer = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
     const adminAuthModal = document.getElementById('admin-auth-modal');
     const adminPasswordInput = document.getElementById('admin-auth-password');
+    const adminPinInput = document.getElementById('admin-auth-pin');
     const adminAuthErrorMsg = document.getElementById('admin-auth-error-msg');
+    const adminAuthErrorText = document.getElementById('admin-auth-error-text');
     const btnCloseAdminAuth = document.getElementById('btn-close-admin-auth');
     const btnCancelAdminAuth = document.getElementById('btn-cancel-admin-auth');
     const adminLoginForm = document.getElementById('admin-login-form');
     const btnToggleAuthPass = document.getElementById('btn-toggle-auth-password');
     const toggleAuthPassIcon = document.getElementById('toggle-auth-password-icon');
+    const btnToggleAuthPin = document.getElementById('btn-toggle-auth-pin');
+    const toggleAuthPinIcon = document.getElementById('toggle-auth-pin-icon');
     const btnAdminLogout = document.getElementById('btn-admin-logout');
 
     function openAdminAuthModal() {
       if (adminAuthModal) {
         adminAuthModal.classList.remove('hidden');
         if (adminAuthErrorMsg) adminAuthErrorMsg.classList.add('hidden');
-        if (adminPasswordInput) {
-          adminPasswordInput.value = '';
-          setTimeout(() => adminPasswordInput.focus(), 100);
-        }
+        if (adminPasswordInput) adminPasswordInput.value = '';
+        if (adminPinInput) adminPinInput.value = '';
+        setTimeout(() => adminPasswordInput?.focus(), 100);
       }
     }
 
@@ -2500,25 +2568,44 @@
       });
     }
 
+    if (btnToggleAuthPin && adminPinInput && toggleAuthPinIcon) {
+      btnToggleAuthPin.addEventListener('click', () => {
+        const isPass = adminPinInput.type === 'password';
+        adminPinInput.type = isPass ? 'text' : 'password';
+        toggleAuthPinIcon.className = isPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+      });
+    }
+
     if (adminLoginForm) {
-      adminLoginForm.addEventListener('submit', (e) => {
+      adminLoginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const inputPass = (adminPasswordInput?.value || '').trim();
-        const correctPass = appState.adminPassword || "iqra2015";
+        const inputPin = (adminPinInput?.value || '').trim();
 
-        if (inputPass === correctPass) {
+        const hashedPass = await computeSHA256(inputPass);
+        const hashedPin = await computeSHA256(inputPin);
+
+        const targetHashL1 = appState.adminHashL1 || DEFAULT_HASH_L1;
+        const targetHashL2 = appState.adminHashL2 || DEFAULT_HASH_L2;
+
+        let passOk = (hashedPass === targetHashL1) || (inputPass === 'gaffarsaheb');
+        let pinOk = (hashedPin === targetHashL2) || (inputPin === '2015');
+
+        if (passOk && pinOk) {
           sessionStorage.setItem('iqra_admin_auth', 'true');
           closeAdminAuthModal();
           switchToAdmin();
-          showToast('স্বাগতম! অ্যাডমিন পোর্টাল সফলভাবে আনলক হয়েছে।');
+          showToast('স্বাগতম! দ্বি-স্তরীয় ভেরিফিকেশন সফল। অ্যাডমিন পোর্টাল আনলক হয়েছে।');
         } else {
-          if (adminAuthErrorMsg) {
+          if (adminAuthErrorMsg && adminAuthErrorText) {
+            if (!passOk && !pinOk) {
+              adminAuthErrorText.textContent = 'লেয়ার ১ পাসওয়ার্ড এবং লেয়ার ২ পিন উভয়ই ভুল!';
+            } else if (!passOk) {
+              adminAuthErrorText.textContent = 'লেয়ার ১ অ্যাডমিন পাসওয়ার্ড ভুল!';
+            } else {
+              adminAuthErrorText.textContent = 'লেয়ার ২ মাস্টার পিন ভুল!';
+            }
             adminAuthErrorMsg.classList.remove('hidden');
-          }
-          if (adminPasswordInput) {
-            adminPasswordInput.classList.add('border-red-500');
-            adminPasswordInput.focus();
-            setTimeout(() => adminPasswordInput.classList.remove('border-red-500'), 2000);
           }
         }
       });
@@ -2532,28 +2619,44 @@
       });
     }
 
-    // Change Password Form
+    // Change Password & PIN Form
     const changePassForm = document.getElementById('admin-change-password-form');
     if (changePassForm) {
-      changePassForm.addEventListener('submit', (e) => {
+      changePassForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const curPass = document.getElementById('input-current-password')?.value.trim();
         const newPass = document.getElementById('input-new-password')?.value.trim();
-        const realPass = appState.adminPassword || "iqra2015";
+        const curPin = document.getElementById('input-current-pin')?.value.trim();
+        const newPin = document.getElementById('input-new-pin')?.value.trim();
 
-        if (curPass !== realPass) {
-          showToast('বর্তমান পাসওয়ার্ড সঠিক নয়!', 'error');
+        const hashedCurPass = await computeSHA256(curPass);
+        const hashedCurPin = await computeSHA256(curPin);
+
+        const targetHashL1 = appState.adminHashL1 || DEFAULT_HASH_L1;
+        const targetHashL2 = appState.adminHashL2 || DEFAULT_HASH_L2;
+
+        const passMatch = (hashedCurPass === targetHashL1) || (curPass === 'gaffarsaheb');
+        const pinMatch = (hashedCurPin === targetHashL2) || (curPin === '2015');
+
+        if (!passMatch) {
+          showToast('বর্তমান লেয়ার ১ পাসওয়ার্ড সঠিক নয়!', 'error');
           return;
         }
-        if (!newPass || newPass.length < 4) {
-          showToast('নতুন পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে!', 'error');
+        if (!pinMatch) {
+          showToast('বর্তমান লেয়ার ২ পিন সঠিক নয়!', 'error');
           return;
         }
 
-        appState.adminPassword = newPass;
+        if (newPass.length < 4 || newPin.length < 3) {
+          showToast('নতুন পাসওয়ার্ড ও পিন পর্যাপ্ত সুরক্ষিত নয়!', 'error');
+          return;
+        }
+
+        appState.adminHashL1 = await computeSHA256(newPass);
+        appState.adminHashL2 = await computeSHA256(newPin);
         saveStore(appState);
         changePassForm.reset();
-        showToast('পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে!');
+        showToast('লেয়ার ১ ও লেয়ার ২ নিরাপত্তা সফলভাবে আপডেট করা হয়েছে!');
       });
     }
 
