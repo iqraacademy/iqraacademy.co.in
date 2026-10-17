@@ -1,1317 +1,357 @@
 <!DOCTYPE html>
-<html lang="bn" class="scroll-smooth">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🔐 ইউনিভার্সাল ক্লাউড অ্যাডমিন পোর্টাল | PVT. IQRA ACADEMY</title>
-  <!-- Tailwind CSS CDN -->
+  <title>অ্যাডমিন ডেটা এন্ট্রি পোর্টাল | ইকরা অ্যাকাডেমি</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome 6 CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts: Hind Siliguri & Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Hind Siliguri', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #0b1120;
-      color: #f1f5f9;
-      min-height: 100vh;
-    }
-    .custom-scrollbar::-webkit-scrollbar {
-      height: 6px;
-      width: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
+    body { font-family: 'Hind Siliguri', sans-serif; }
   </style>
 </head>
-<body class="antialiased selection:bg-amber-500 selection:text-slate-950 flex flex-col justify-between min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen">
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-  <!-- Custom Confirmation Modal (Never use browser alert/confirm) -->
-  <div id="custom-confirm-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
-      <div class="w-12 h-12 rounded-full bg-red-950 text-red-400 border border-red-800 flex items-center justify-center text-xl mx-auto">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-      </div>
-      <h3 id="confirm-modal-title" class="text-base font-bold text-white">আপনি কি নিশ্চিত?</h3>
-      <p id="confirm-modal-desc" class="text-xs text-slate-400 leading-relaxed">এই কাজটি সম্পন্ন হলে ডেটা মুছে বা রিসেট হতে পারে।</p>
-      <div class="flex justify-center gap-3 pt-2">
-        <button id="btn-confirm-cancel" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">বাতিল</button>
-        <button id="btn-confirm-proceed" class="px-5 py-2 rounded-xl bg-red-700 hover:bg-red-600 text-white text-xs font-bold transition">নিশ্চিত করুন</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ======================================================== -->
-  <!-- 1. MILITARY-GRADE DOUBLE-LAYER SECURITY GATE (LOCK SCREEN) -->
-  <!-- ======================================================== -->
-  <div id="admin-lock-screen" class="flex-1 flex items-center justify-center p-4 my-8">
-    <div class="bg-slate-900/95 backdrop-blur-xl p-6 md:p-9 rounded-3xl max-w-md w-full border-2 border-amber-500/80 shadow-[0_0_50px_rgba(245,158,11,0.15)] space-y-6 relative">
-      
-      <!-- Top Crest / Security Badge -->
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-xl">
+  <!-- লেয়ার ১ ও ২ দ্বি-স্তরীয় সিকিউরিটি গেট -->
+  <div id="security-screen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-slate-900 border border-amber-500/30 rounded-3xl p-8 shadow-2xl relative">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-gradient-to-tr from-amber-500 to-emerald-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl shadow-lg mb-4">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <div class="inline-flex items-center gap-1.5 bg-red-950/70 border border-red-500/40 text-red-300 text-[10px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider">
-          <i class="fa-solid fa-lock text-red-400"></i>
-          <span>দ্বি-স্তরীয় এনক্রিপ্টেড ক্লাউড গেট</span>
-        </div>
-        <h1 class="text-2xl font-extrabold text-white mt-1">অ্যাডমিন ডেটা এন্ট্রি পোর্টাল</h1>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          ইকরা অ্যাকাডেমির ওয়েবসাইট ডেটা ও কেন্দ্রীয় ক্লাউড ডেটাবেসে প্রবেশের জন্য নিরাপত্তা কোড প্রদান করুন।
-        </p>
+        <span class="inline-block px-3 py-1 bg-red-950 text-red-400 border border-red-800 text-xs font-semibold rounded-full mb-2">
+          <i class="fa-solid fa-lock mr-1"></i> দ্বি-স্তরীয় এনক্রিপ্টেড নিরাপত্তা গেট
+        </span>
+        <h1 class="text-2xl font-bold text-white">অ্যাডমিন ডেটা এন্ট্রি পোর্টাল</h1>
+        <p class="text-xs text-slate-400 mt-1">ইকরা অ্যাকাডেমির ক্লাউড কন্ট্রোল প্যানেলে প্রবেশের পাসকোড দিন</p>
       </div>
 
-      <!-- Login Form (Zero Plaintext Passwords / Cryptographically Checked) -->
       <form id="admin-login-form" class="space-y-4" onsubmit="return false;">
-        <!-- Layer 1: Admin Password -->
-        <div class="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-1.5 focus-within:border-amber-500/60 transition">
-          <div class="flex items-center justify-between text-xs">
-            <span class="font-bold text-amber-300 flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded-full bg-amber-500 text-slate-950 text-[10px] flex items-center justify-center font-extrabold">১</span>
-              <span>লেয়ার ১: অ্যাডমিন পাসওয়ার্ড</span>
-            </span>
-            <span class="text-[10px] text-slate-500 font-mono">SHA-256 এনক্রিপ্টেড</span>
-          </div>
+        <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+          <label class="block text-xs font-semibold text-amber-400 mb-1">
+            <span class="inline-block w-4 h-4 rounded-full bg-amber-500 text-slate-950 text-center leading-4 text-[10px] mr-1 font-bold">১</span>
+            লেয়ার ১: অ্যাডমিন পাসওয়ার্ড
+          </label>
           <div class="relative">
-            <input 
-              type="password" 
-              id="login-pass-input" 
-              required 
-              autocomplete="current-password"
-              placeholder="পাসওয়ার্ড লিখুন..." 
-              class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-amber-400 pr-10 font-mono tracking-wide"
-            >
-            <button type="button" id="btn-toggle-login-pass" aria-label="Toggle Password Visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">
-              <i class="fa-solid fa-eye" id="toggle-login-pass-icon"></i>
+            <input type="password" id="input-layer1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors" placeholder="পাসওয়ার্ড লিখুন...">
+            <button type="button" onclick="togglePass('input-layer1', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-white">
+              <i class="fa-solid fa-eye"></i>
             </button>
           </div>
         </div>
 
-        <!-- Layer 2: Master Security PIN -->
-        <div class="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-1.5 focus-within:border-emerald-500/60 transition">
-          <div class="flex items-center justify-between text-xs">
-            <span class="font-bold text-emerald-400 flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded-full bg-emerald-500 text-slate-950 text-[10px] flex items-center justify-center font-extrabold">২</span>
-              <span>লেয়ার ২: মাস্টার সিকিউরিটি পিন</span>
-            </span>
-            <span class="text-[10px] text-slate-500 font-mono">2-Factor প্রমাণীকরণ</span>
-          </div>
+        <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+          <label class="block text-xs font-semibold text-emerald-400 mb-1">
+            <span class="inline-block w-4 h-4 rounded-full bg-emerald-500 text-slate-950 text-center leading-4 text-[10px] mr-1 font-bold">২</span>
+            লেয়ার ২: মাস্টার সিকিউরিটি পিন
+          </label>
           <div class="relative">
-            <input 
-              type="password" 
-              id="login-pin-input" 
-              required 
-              autocomplete="off"
-              placeholder="মাস্টার সিকিউরিটি পিন লিখুন..." 
-              class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-emerald-400 pr-10 font-mono tracking-wide"
-            >
-            <button type="button" id="btn-toggle-login-pin" aria-label="Toggle PIN Visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">
-              <i class="fa-solid fa-eye" id="toggle-login-pin-icon"></i>
+            <input type="password" id="input-layer2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors" placeholder="মাস্টার সিকিউরিটি পিন লিখুন...">
+            <button type="button" onclick="togglePass('input-layer2', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-white">
+              <i class="fa-solid fa-eye"></i>
             </button>
           </div>
         </div>
 
-        <!-- Error Feedback Banner -->
-        <p id="login-error-msg" class="hidden text-xs text-red-400 font-bold flex items-center gap-1.5 bg-red-950/60 p-2.5 rounded-xl border border-red-800/80">
-          <i class="fa-solid fa-circle-exclamation text-sm shrink-0"></i>
-          <span id="login-error-text">ভুল পাসওয়ার্ড বা পিন! সঠিক তথ্য প্রদান করুন।</span>
-        </p>
+        <div id="login-error-msg" class="hidden p-3 bg-red-950/80 border border-red-800 text-red-300 text-xs rounded-xl text-center">
+          <i class="fa-solid fa-triangle-exclamation mr-1"></i> ভুল পাসওয়ার্ড অথবা পিন! পুনরায় চেষ্টা করুন।
+        </div>
 
-        <!-- Submit Unlock Button -->
-        <button type="button" id="btn-login-submit" class="w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold py-3 px-4 rounded-xl text-xs md:text-sm transition shadow-xl transform active:scale-98 flex items-center justify-center gap-2 cursor-pointer">
-          <i class="fa-solid fa-unlock-keyhole text-sm"></i>
+        <button type="button" id="btn-login-submit" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 cursor-pointer">
+          <i class="fa-solid fa-unlock"></i>
           <span>দ্বি-স্তর ভেরিফিকেশন ও আনলক করুন</span>
         </button>
       </form>
 
-      <!-- Back Link & Footer Note -->
-      <div class="pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
-        <a href="../index.html" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1.5 transition">
-          <i class="fa-solid fa-arrow-left"></i> ওয়েবসাইটে ফিরে যান
+      <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+        <a href="../index.html" class="hover:text-emerald-400 transition-colors flex items-center">
+          <i class="fa-solid fa-arrow-left mr-1"></i> ওয়েবসাইটে ফিরে যান
         </a>
-        <span class="font-mono text-[10px] text-slate-500">UDISE: 19111008505</span>
+        <span>UDISE: 19111008505</span>
       </div>
-
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- 2. FULL ADMIN DATA ENTRY DASHBOARD (UNLOCKED VIEW) -->
-  <!-- ======================================================== -->
-  <main id="admin-main-dashboard" class="hidden flex-1 w-full pb-16">
-    
-    <!-- Top Bar -->
-    <header class="bg-slate-950 border-b border-slate-800 px-4 py-3 sticky top-0 z-40 shadow-lg">
-      <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
-        <!-- Left: Branding -->
-        <div class="flex items-center gap-3.5">
-          <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl font-bold shadow-md">
-            <i class="fa-solid fa-gauge-high"></i>
+  <!-- অ্যাডমিন কন্ট্রোল ড্যাশবোর্ড -->
+  <div id="admin-dashboard-screen" class="hidden min-h-screen pb-12">
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-md">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center text-white font-bold text-xl shadow">
+            ই
           </div>
           <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-base md:text-lg font-extrabold text-white leading-none">ইকরা অ্যাকাডেমি অ্যাডমিন পোর্টাল</h2>
-              <span id="cloud-sync-badge" class="bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>ক্লাউড লাইভ সিঙ্ক</span>
-              </span>
-            </div>
-            <p class="text-xs text-amber-400 font-semibold mt-1">Universal Real-time Data Sync System (Estd: 2015)</p>
+            <h2 class="text-base font-bold text-white leading-tight">ইকরা অ্যাকাডেমি — ক্লাউড কন্ট্রোল ড্যাশবোর্ড</h2>
+            <p class="text-[11px] text-emerald-400 flex items-center">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping mr-1.5"></span> ফায়ারবেস ক্লাউড লাইভ সিঙ্ক সক্রিয়
+            </p>
           </div>
         </div>
-
-        <!-- Right: Actions -->
-        <div class="flex items-center gap-2">
-          <a href="../index.html" target="_blank" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition shadow">
-            <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
-            <span>লাইভ ওয়েবসাইট দেখুন</span>
+        <div class="flex items-center space-x-3">
+          <a href="../index.html" target="_blank" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-xl border border-slate-700 flex items-center">
+            <i class="fa-solid fa-globe mr-1.5"></i> পাবলিক সাইট দেখুন
           </a>
-          <button id="btn-admin-logout" class="bg-slate-800 hover:bg-red-950 text-red-300 hover:text-red-200 font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition border border-red-500/30 shadow">
-            <i class="fa-solid fa-lock text-[11px]"></i>
-            <span>লক / লগআউট</span>
+          <button onclick="logoutAdmin()" class="px-3.5 py-1.5 bg-red-950 hover:bg-red-900 text-red-200 text-xs rounded-xl border border-red-800 flex items-center">
+            <i class="fa-solid fa-power-off mr-1.5"></i> লক / লগআউট
           </button>
         </div>
       </div>
     </header>
 
-    <!-- Navigation Tabs Bar -->
-    <nav class="bg-slate-900/95 border-b border-slate-800 px-4 sticky top-[61px] z-30 backdrop-blur-md">
-      <div class="max-w-7xl mx-auto flex overflow-x-auto gap-2 py-2.5 custom-scrollbar">
-        <button data-tab="tab-marquee" class="admin-tab-btn active px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-amber-500 text-slate-950 transition flex items-center gap-2 shrink-0 shadow">
-          <i class="fa-solid fa-bullhorn"></i>
-          <span>স্ক্রলিং ঘোষণা ও নোটিশ</span>
-        </button>
-        <button data-tab="tab-admissions" class="admin-tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-2 shrink-0">
-          <i class="fa-solid fa-user-graduate text-emerald-400"></i>
-          <span>ভর্তি আবেদন তালিকা (<span id="admin-app-count">০</span>)</span>
-        </button>
-        <button data-tab="tab-banners" class="admin-tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-2 shrink-0">
-          <i class="fa-solid fa-images text-blue-400"></i>
-          <span>৫টি ব্যানার স্লাইডার ও ফটো</span>
-        </button>
-        <button data-tab="tab-stats" class="admin-tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-2 shrink-0">
-          <i class="fa-solid fa-chart-pie text-purple-400"></i>
-          <span>পরিসংখ্যান ও ফোন নম্বর</span>
-        </button>
-        <button data-tab="tab-security" class="admin-tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-2 shrink-0">
-          <i class="fa-solid fa-key text-amber-400"></i>
-          <span>দ্বি-স্তরীয় নিরাপত্তা সেটিংস</span>
-        </button>
-        <button data-tab="tab-backup" class="admin-tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-2 shrink-0">
-          <i class="fa-solid fa-database text-teal-400"></i>
-          <span>ক্লাউড ব্যাকআপ ও রিস্টোর</span>
-        </button>
-      </div>
-    </nav>
+    <main class="max-w-7xl mx-auto px-4 mt-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- নোটিশ এন্ট্রি কার্ড -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+          <h3 class="text-base font-bold text-amber-400 mb-4 flex items-center">
+            <i class="fa-solid fa-bullhorn mr-2"></i> চলমান ঘোষণা (Marquee) আপডেট
+          </h3>
+          <p class="text-xs text-slate-400 mb-3">ওয়েবসাইটের শীর্ষে চলমান নোটিশটি এখান থেকে লাইভ পরিবর্তন করুন:</p>
+          <textarea id="admin-marquee-text" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-amber-500"></textarea>
+          <button onclick="saveMarqueeToCloud()" class="mt-3 w-full py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition shadow flex items-center justify-center">
+            <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> ক্লাউডে সেভ করুন
+          </button>
+        </div>
 
-    <!-- Main Tab Content Area -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
-      
-      <!-- TAB 1: MARQUEE & NOTICES -->
-      <section id="tab-marquee" class="admin-tab-content block space-y-8">
-        <!-- Marquee Text Editor -->
-        <div class="bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-800 shadow-xl">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-base font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-bullhorn text-amber-400"></i>
-              হেডারে চলমান ঘোষণা (Universal Live Marquee Announcement)
-            </h3>
-            <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              সব ব্রাউজার ও ডিভাইসে সাথে সাথে পরিবর্তন হবে
-            </span>
-          </div>
-
+        <!-- যোগাযোগ নম্বর কার্ড -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+          <h3 class="text-base font-bold text-emerald-400 mb-4 flex items-center">
+            <i class="fa-solid fa-phone mr-2"></i> অফিশিয়াল হেল্পলাইন নম্বর
+          </h3>
           <div class="space-y-3">
-            <label class="block text-xs text-slate-300 font-semibold">চলমান বার্তার বাংলা টেক্সট লিখুন:</label>
-            <textarea id="admin-marquee-input" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-amber-400 font-medium"></textarea>
-            
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-2">
-              <p class="text-xs text-slate-400">টিপ: ২০২৭ ভর্তি বিজ্ঞপ্তি, পরীক্ষার সূচি বা ছুটির ঘোষণা এখানে লিখে ক্লাউডে সেভ করুন।</p>
-              <button id="btn-save-marquee" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg shrink-0">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                <span>ক্লাউডে সেভ করুন (Save to Cloud)</span>
-              </button>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">প্রাথমিক ফোন নম্বর:</label>
+              <input type="text" id="admin-phone-1" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
             </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">বিকল্প ফোন নম্বর:</label>
+              <input type="text" id="admin-phone-2" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            </div>
+            <button onclick="saveContactToCloud()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center">
+              <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> নম্বর আপডেট করুন
+            </button>
           </div>
         </div>
 
-        <!-- Add Notice Form -->
-        <div class="bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-800 shadow-xl space-y-6">
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-circle-plus text-emerald-400"></i>
-            নতুন নোটিশ বা পরিপত্র এন্ট্রি করুন
+        <!-- নোটিশ আপলোড কার্ড -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+          <h3 class="text-base font-bold text-cyan-400 mb-4 flex items-center">
+            <i class="fa-solid fa-file-circle-plus mr-2"></i> নতুন নোটিশ পোস্ট করুন
           </h3>
-
-          <form id="admin-add-notice-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="md:col-span-2">
-              <label class="block text-xs text-slate-300 mb-1 font-semibold">নোটিশের শিরোনাম *</label>
-              <input type="text" id="admin-notice-title" required placeholder="উদা: ২০২৭ শিক্ষাবর্ষে ভর্তি নির্দেশিকা..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-amber-400">
-            </div>
-            <div>
-              <label class="block text-xs text-slate-300 mb-1 font-semibold">বিভাগ / ক্যাটাগরি</label>
-              <select id="admin-notice-cat" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-amber-400 bg-slate-950">
-                <option value="ভর্তি">ভর্তি (Admission)</option>
-                <option value="আবাসিক">আবাসিক হোস্টেল</option>
-                <option value="ডে-বোর্ডিং">ডে-বোর্ডিং</option>
-                <option value="পরীক্ষা">পরীক্ষা ও মূল্যায়ন</option>
-                <option value="সাধারণ">সাধারণ নোটিশ</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-300 mb-1 font-semibold">গুরুত্ব (Priority)</label>
-              <select id="admin-notice-priority" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-amber-400 bg-slate-950">
-                <option value="জরুরি">জরুরি (Urgent)</option>
-                <option value="উচ্চ">উচ্চ (High)</option>
-                <option value="সাধারণ">সাধারণ (Normal)</option>
-              </select>
-            </div>
-            <div class="md:col-span-4 flex justify-end pt-1">
-              <button type="submit" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg">
-                <i class="fa-solid fa-plus"></i>
-                <span>ক্লাউড নোটিশ তালিকায় যোগ করুন</span>
-              </button>
-            </div>
-          </form>
-
-          <!-- Current Notices Table -->
-          <div class="border-t border-slate-800 pt-6">
-            <h4 class="text-sm font-bold text-slate-300 mb-3">বর্তমান ক্লাউড নোটিশ তালিকা:</h4>
-            <div class="overflow-x-auto rounded-2xl border border-slate-800">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-950 text-slate-400 uppercase font-bold">
-                  <tr>
-                    <th class="p-3">তারিখ</th>
-                    <th class="p-3">ক্যাটাগরি</th>
-                    <th class="p-3">শিরোনাম</th>
-                    <th class="p-3">গুরুত্ব</th>
-                    <th class="p-3 text-right">অ্যাকশন</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-notice-table-body" class="divide-y divide-slate-800 bg-slate-900/60">
-                  <!-- Rendered by JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 2: ADMISSION APPLICATIONS REGISTER -->
-      <section id="tab-admissions" class="admin-tab-content hidden space-y-6">
-        <div class="bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-800 shadow-xl space-y-6">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h3 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-users text-amber-400"></i>
-                অনলাইন ভর্তি আবেদন রেজিস্টার (Universal Student Admissions)
-              </h3>
-              <p class="text-xs text-slate-400">যেকোনো অভিভাবক ওয়েবসাইট থেকে আবেদন জমা দিলে তা রিয়েল-টাইমে ক্লাউড ডাটাবেস হয়ে এখানে দৃশ্যমান হবে।</p>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <button id="btn-add-manual-admission" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition shadow">
-                <i class="fa-solid fa-plus"></i>
-                <span>ম্যানুয়াল আবেদন যোগ</span>
-              </button>
-              <button id="btn-export-admissions-csv" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition border border-slate-700 shadow">
-                <i class="fa-solid fa-file-csv text-emerald-400"></i>
-                <span>CSV এক্সপোর্ট</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Filters -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <input type="text" id="admin-search-applicant" placeholder="শিক্ষার্থী, অভিভাবক বা ফোন খুঁজুন..." class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400">
-            
-            <select id="admin-filter-stream" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400">
-              <option value="ALL">সকল বিভাগ (All Streams)</option>
-              <option value="অনাবাসিক (Day Scholar)">অনাবাসিক (Day Scholar)</option>
-              <option value="ডে-বোর্ডিং (Day Boarding)">ডে-বোর্ডিং (Day Boarding)</option>
-              <option value="আবাসিক (Residential Girls)">আবাসিক (Residential Girls)</option>
-            </select>
-
-            <select id="admin-filter-status" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400">
-              <option value="ALL">সকল স্ট্যাটাস (All Status)</option>
-              <option value="নতুন আবেদন">নতুন আবেদন</option>
-              <option value="যাচাই চলছে">যাচাই চলছে</option>
-              <option value="ভর্তি নিশ্চিত">ভর্তি নিশ্চিত</option>
-            </select>
-          </div>
-
-          <!-- Table -->
-          <div class="overflow-x-auto rounded-2xl border border-slate-800">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-950 text-slate-300 uppercase font-bold">
-                <tr>
-                  <th class="p-3">রেজি. আইডি</th>
-                  <th class="p-3">শিক্ষার্থীর নাম</th>
-                  <th class="p-3">অভিভাবক</th>
-                  <th class="p-3">শ্রেণি</th>
-                  <th class="p-3">বিভাগ</th>
-                  <th class="p-3">ফোন</th>
-                  <th class="p-3">স্ট্যাটাস</th>
-                  <th class="p-3 text-right">অ্যাকশন</th>
-                </tr>
-              </thead>
-              <tbody id="admin-applications-tbody" class="divide-y divide-slate-800 bg-slate-900/60">
-                <!-- Injected via JS -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 3: BANNERS -->
-      <section id="tab-banners" class="admin-tab-content hidden space-y-6">
-        <div class="bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-800 shadow-xl space-y-6">
-          <div>
-            <h3 class="text-base font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-images text-amber-400"></i>
-              ৫টি ফটো ব্যানার ট্রানজিট লিংক ও ক্যাপশন ব্যবস্থাপনা
-            </h3>
-            <p class="text-xs text-slate-400 mt-1">
-              ওয়েবসাইটের হেডারের নিচে প্রদর্শিত ৫টি ব্যানারের লিংক ও ক্যাপশন এখানে এডিট করে সেভ করলে তা সব ভিজিটরের স্ক্রিনে তৎক্ষণাৎ দেখা যাবে:
-            </p>
-          </div>
-
-          <div id="admin-banner-list" class="space-y-4">
-            <!-- 5 Banner Rows Injected by JS -->
-          </div>
-
-          <div class="pt-4 border-t border-slate-800 flex justify-end">
-            <button id="btn-save-banners" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg">
-              <i class="fa-solid fa-cloud-arrow-up"></i>
-              <span>ক্লাউডে ব্যানার তথ্য সেভ করুন</span>
+          <div class="space-y-2">
+            <input type="text" id="new-notice-title" placeholder="নোটিশের শিরোনাম..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+            <input type="text" id="new-notice-date" placeholder="তারিখ (যেমন: ১৭ অক্টোবর, ২০২৬)..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+            <button onclick="addNoticeToCloud()" class="w-full py-2 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center">
+              <i class="fa-solid fa-plus mr-1.5"></i> নোটিশ বোর্ডে যোগ করুন
             </button>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- TAB 4: STATS & CONTACT NUMBERS -->
-      <section id="tab-stats" class="admin-tab-content hidden space-y-6">
-        <div class="bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-800 shadow-xl space-y-6">
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-sliders text-amber-400"></i>
-            প্রতিষ্ঠান পরিসংখ্যান ও হেল্পলাইন ফোন নম্বর এডিটর
+      <!-- সক্রিয় নোটিশ তালিকা -->
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl mb-8">
+        <h3 class="text-base font-bold text-white mb-4 flex items-center">
+          <i class="fa-solid fa-list-check text-cyan-400 mr-2"></i> বর্তমানে সক্রিয় নোটিশসমূহ
+        </h3>
+        <div id="admin-notice-list" class="space-y-2">
+          <!-- ডায়নামিক নোটিশ তালিকা এখানে আসবে -->
+        </div>
+      </div>
+
+      <!-- ভর্তি আবেদন তালিকা -->
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-base font-bold text-white flex items-center">
+            <i class="fa-solid fa-user-graduate text-emerald-400 mr-2"></i> অনলাইনে জমা পড়া ভর্তি আবেদনসমূহ
           </h3>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs text-slate-300 mb-1 font-semibold">মোট শিক্ষার্থী সংখ্যা</label>
-              <input type="text" id="admin-stat-students" value="৫০০+" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-amber-400">
-            </div>
-            <div>
-              <label class="block text-xs text-slate-300 mb-1 font-semibold">মোট শিক্ষক-শিক্ষিকা</label>
-              <input type="text" id="admin-stat-teachers" value="২৫+" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-amber-400">
-            </div>
-            <div>
-              <label class="block text-xs text-slate-300 mb-1 font-semibold">পাসের হার ও সাফল্য</label>
-              <input type="text" id="admin-stat-pass" value="১০০%" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-amber-400">
-            </div>
-            <div>
-              <label class="block text-xs text-slate-300 mb-1 font-semibold">প্রাথমিক হেল্পলাইন ফোন</label>
-              <input type="text" id="admin-stat-phone1" value="9775123096" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-amber-400">
-            </div>
-            <div>
-              <label class="block text-xs text-slate-300 mb-1 font-semibold">দ্বিতীয় হেল্পলাইন ফোন</label>
-              <input type="text" id="admin-stat-phone2" value="9647109481" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-amber-400">
-            </div>
-            <div>
-              <label class="block text-xs text-slate-300 mb-1 font-semibold">প্রতিষ্ঠার সাল</label>
-              <input type="text" id="admin-stat-estd" value="২০১৫" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-amber-400">
-            </div>
-          </div>
-
-          <div class="pt-4 border-t border-slate-800 flex justify-end">
-            <button id="btn-save-stats" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg">
-              <i class="fa-solid fa-cloud-arrow-up"></i>
-              <span>ক্লাউডে পরিসংখ্যান ও ফোন সেভ করুন</span>
-            </button>
-          </div>
+          <span id="admission-counter" class="text-xs bg-emerald-950 text-emerald-300 border border-emerald-800 px-3 py-1 rounded-full font-bold">মোট: ০ জন</span>
         </div>
-      </section>
-
-      <!-- TAB 5: SECURITY CREDENTIALS (CHANGE PASSWORD & PIN) -->
-      <section id="tab-security" class="admin-tab-content hidden space-y-6">
-        <div class="bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-800 shadow-xl space-y-5">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div>
-              <h3 class="text-base font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-key text-amber-400"></i>
-                দ্বি-স্তরীয় নিরাপত্তা পাসওয়ার্ড ও মাস্টার পিন পরিবর্তন (Security Settings)
-              </h3>
-              <p class="text-xs text-slate-400 mt-0.5">আপনার সুবিধামতো অ্যাডমিন পাসওয়ার্ড ও মাস্টার পিন ক্লাউডে আপডেট করতে পারেন।</p>
-            </div>
-            <span class="text-[10px] text-emerald-400 font-mono bg-emerald-950 px-2.5 py-1 rounded-full border border-emerald-500/30">
-              SHA-256 Cloud Encrypted
-            </span>
-          </div>
-
-          <form id="admin-change-pass-form" class="space-y-5">
-            <!-- Layer 1 Password -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs text-slate-300 mb-1 font-semibold">বর্তমান লেয়ার ১ পাসওয়ার্ড *</label>
-                <input type="password" id="input-curr-pass" required placeholder="বর্তমান পাসওয়ার্ড লিখুন..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-amber-400 font-mono">
-              </div>
-              <div>
-                <label class="block text-xs text-slate-300 mb-1 font-semibold">নতুন লেয়ার ১ পাসওয়ার্ড *</label>
-                <input type="password" id="input-new-pass" required placeholder="নতুন পাসওয়ার্ড লিখুন..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-amber-400 font-mono">
-              </div>
-            </div>
-
-            <!-- Layer 2 Master PIN -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-800/80">
-              <div>
-                <label class="block text-xs text-slate-300 mb-1 font-semibold">বর্তমান লেয়ার ২ মাস্টার পিন *</label>
-                <input type="password" id="input-curr-pin" required placeholder="বর্তমান মাস্টার পিন লিখুন..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-emerald-400 font-mono">
-              </div>
-              <div>
-                <label class="block text-xs text-slate-300 mb-1 font-semibold">নতুন লেয়ার ২ মাস্টার পিন *</label>
-                <input type="password" id="input-new-pin" required placeholder="নতুন মাস্টার পিন লিখুন..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-emerald-400 font-mono">
-              </div>
-            </div>
-
-            <div class="flex justify-end pt-2">
-              <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg">
-                <i class="fa-solid fa-shield-check"></i>
-                <span>নিরাপত্তা ক্রেডেনশিয়াল আপডেট করুন</span>
-              </button>
-            </div>
-          </form>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                <th class="p-3">আইডি</th>
+                <th class="p-3">ছাত্রীর নাম</th>
+                <th class="p-3">অভিভাবকের নাম</th>
+                <th class="p-3">শ্রেণি</th>
+                <th class="p-3">বিভাগ</th>
+                <th class="p-3">যোগাযোগ</th>
+                <th class="p-3">আবেদনের তারিখ</th>
+              </tr>
+            </thead>
+            <tbody id="admission-table-body" class="divide-y divide-slate-800">
+              <tr>
+                <td colspan="7" class="p-4 text-center text-slate-500">এখনও কোনো অনলাইন আবেদন জমা পড়েনি।</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </section>
-
-      <!-- TAB 6: BACKUP & RESTORE -->
-      <section id="tab-backup" class="admin-tab-content hidden space-y-6">
-        <div class="bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-800 shadow-xl space-y-4">
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-database text-amber-400"></i>
-            সম্পূর্ণ ক্লাউড ডেটা ব্যাকআপ ও ফ্যাক্টরি রিসেট (JSON Backup & Restore)
-          </h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            ইকরা অ্যাকাডেমির কেন্দ্রীয় ক্লাউড ডেটাস্টোর (ভর্তি আবেদন, নোটিশ, ব্যানার ও সেটিংস) আপনার কম্পিউটারে JSON ফাইল আকারে ব্যাকআপ করে রাখতে পারেন।
-          </p>
-
-          <div class="flex flex-wrap items-center gap-3 pt-3">
-            <button id="btn-download-json" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg">
-              <i class="fa-solid fa-download"></i>
-              <span>JSON ব্যাকআপ ডাউনলোড করুন</span>
-            </button>
-            <button id="btn-factory-reset" class="bg-red-900/80 hover:bg-red-800 text-red-200 hover:text-white font-bold px-5 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 border border-red-700 shadow-lg">
-              <i class="fa-solid fa-trash-can"></i>
-              <span>ফ্যাক্টরি রিসেট (ডিফল্ট ক্লাউড ডেটা পুনঃস্থাপন)</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- ======================================================== -->
-  <!-- 3. MANUAL ADMISSION ENTRY MODAL (FOR ADMIN USE) -->
-  <!-- ======================================================== -->
-  <div id="manual-adm-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-slate-900 text-white rounded-3xl max-w-lg w-full p-6 md:p-8 shadow-2xl relative border border-slate-700 my-8">
-      <button id="btn-close-manual-modal" class="absolute top-5 right-5 text-slate-400 hover:text-white text-2xl w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">&times;</button>
-      <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-emerald-400">
-        <i class="fa-solid fa-user-plus"></i>
-        ম্যানুয়াল ভর্তি আবেদন এন্ট্রি
-      </h3>
-
-      <form id="manual-adm-form" class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-300 mb-1 font-semibold">শিক্ষার্থীর নাম *</label>
-          <input type="text" id="m-student-name" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1 font-semibold">অভিভাবকের নাম *</label>
-          <input type="text" id="m-guardian-name" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-slate-300 mb-1 font-semibold">শ্রেণি *</label>
-            <select id="m-class" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
-              <option value="Pre-Nursery">Pre-Nursery</option>
-              <option value="Nursery">Nursery</option>
-              <option value="KG">KG</option>
-              <option value="Class I">Class I</option>
-              <option value="Class II">Class II</option>
-              <option value="Class III">Class III</option>
-              <option value="Class IV">Class IV</option>
-              <option value="Class V">Class V</option>
-              <option value="Class VI">Class VI</option>
-              <option value="Class VII">Class VII</option>
-              <option value="Class VIII">Class VIII</option>
-              <option value="Class IX">Class IX</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-slate-300 mb-1 font-semibold">বিভাগ *</label>
-            <select id="m-stream" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
-              <option value="অনাবাসিক (Day Scholar)">অনাবাসিক</option>
-              <option value="ডে-বোর্ডিং (Day Boarding)">ডে-বোর্ডিং</option>
-              <option value="আবাসিক (Residential Girls)">আবাসিক</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1 font-semibold">মোবাইল নম্বর *</label>
-          <input type="tel" id="m-phone" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
-        </div>
-        <div class="pt-2 flex justify-end gap-2">
-          <button type="button" id="btn-cancel-manual-modal" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold hover:bg-slate-700">বাতিল</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-700 text-white font-bold hover:bg-emerald-600">সংরক্ষণ করুন</button>
-        </div>
-      </form>
-    </div>
+      </div>
+    </main>
   </div>
 
-  <!-- Footer -->
-  <footer class="bg-slate-950 text-slate-500 py-4 px-4 text-center text-xs border-t border-slate-900">
-    <p>© ২০২৬-২০২৭ <b>PVT. IQRA ACADEMY</b> | ক্লাউড সুরক্ষিত অ্যাডমিন ডেটা এন্ট্রি পোর্টাল</p>
-  </footer>
-
-  <!-- Firebase SDKs for Cross-Browser Cloud Storage -->
+  <!-- Firebase v10 SDK -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-    /* Pure JavaScript SHA-256 (HTTP & HTTPS Cross-Platform) */
-    function sha256(ascii) {
-      function rightRotate(value, amount) {
-        return (value >>> amount) | (value << (32 - amount));
-      }
-      var mathPow = Math.pow;
-      var maxWord = mathPow(2, 32);
-      var lengthProperty = 'length';
-      var i, j;
-      var result = '';
-      var words = [];
-      var asciiBitLength = ascii[lengthProperty] * 8;
-      var hash = [];
-      var k = [];
-      var primeCounter = 0;
-      var isComposite = {};
-      for (var candidate = 2; primeCounter < 64; candidate++) {
-        if (!isComposite[candidate]) {
-          for (i = 0; i < 313; i += candidate) {
-            isComposite[i] = candidate;
-          }
-          hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
-          k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
-        }
-      }
-      ascii += '\x80';
-      while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
-      for (i = 0; i < ascii[lengthProperty]; i++) {
-        j = ascii.charCodeAt(i);
-        if (j >> 8) return '';
-        words[i >> 2] |= j << ((3 - i) % 4) * 8;
-      }
-      words[words[lengthProperty]] = (asciiBitLength / maxWord) | 0;
-      words[words[lengthProperty]] = asciiBitLength;
-      for (j = 0; j < words[lengthProperty];) {
-        var w = words.slice(j, j += 16);
-        var oldHash = hash;
-        hash = hash.slice(0, 8);
-        for (i = 0; i < 64; i++) {
-          var w15 = w[i - 15], w2 = w[i - 2];
-          var temp1 = hash[7]
-            + (rightRotate(hash[4], 6) ^ rightRotate(hash[4], 11) ^ rightRotate(hash[4], 25))
-            + ((hash[4] & hash[5]) ^ ((~hash[4]) & hash[6]))
-            + k[i]
-            + (w[i] = (i < 16) ? w[i] : (
-                w[i - 16]
-                + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
-                + w[i - 7]
-                + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
-              ) | 0);
-          var temp2 = (rightRotate(hash[0], 2) ^ rightRotate(hash[0], 13) ^ rightRotate(hash[0], 22))
-            + ((hash[0] & hash[1]) ^ (hash[0] & hash[2]) ^ (hash[1] & hash[2]));
-          hash = [(temp1 + temp2) | 0].concat(hash);
-          hash[4] = (hash[4] + temp1) | 0;
-        }
-        for (i = 0; i < 8; i++) {
-          hash[i] = (hash[i] + oldHash[i]) | 0;
-        }
-      }
-      for (i = 0; i < 8; i++) {
-        for (j = 3; j + 1; j--) {
-          var b = (hash[i] >> (j * 8)) & 255;
-          result += ((b < 16) ? 0 : '') + b.toString(16);
-        }
-      }
-      return result;
-    }
-
-    // SHA-256 Hashes of default credentials:
-    // L1: "hide" -> 7bda0dabe8f37989ac3d9eaef164c2bcabf151eb5d18c63fc8519d54262dfd4e
-    // L2: "hide"        -> a85e9db4851f7cd3efb8db7bf69a07cfb97bc528b72785a9cff7bdfef7e2279d
-    const DEFAULT_HASH_L1 = "7bda0dabe8f37989ac3d9eaef164c2bcabf151eb5d18c63fc8519d54262dfd4e";
-    const DEFAULT_HASH_L2 = "a85e9db4851f7cd3efb8db7bf69a07cfb97bc528b72785a9cff7bdfef7e2279d";
-
-    const DEFAULT_IQRA_STORE = {
-      announcement: "📢 ভর্তি চলছে ২০২৭ শিক্ষাবর্ষে! Pre-Nursery থেকে Class IX পর্যন্ত অনাবাসিক, ডে-বোর্ডিং ও আবাসিক বালিকা বিভাগে (Class V-IX) সীমিত আসনে ভর্তি চলছে। যোগাযোগ: ৯৭৭৫১২৩০৯৬ / ৯৬৪৭১০৯৪৮১",
-      banners: [
-        { url: "https://res.cloudinary.com/u0z4riei/image/upload/v1792240665/3.jpg", title: "ইকরা অ্যাকাডেমি আবাসিক ক্যাম্পাস" },
-        { url: "https://res.cloudinary.com/u0z4riei/image/upload/v1792240666/2.jpg", title: "আধুনিক শ্রেণিকক্ষে পাঠদান" },
-        { url: "https://res.cloudinary.com/u0z4riei/image/upload/v1792240666/4.jpg", title: "সুপারভাইজড স্টাডি ও হোস্টেল কেয়ার" },
-        { url: "https://res.cloudinary.com/u0z4riei/image/upload/v1792240666/1.jpg", title: "দ্বীনি ও নৈতিক মূল্যবোধের বিকাশ" },
-        { url: "https://res.cloudinary.com/u0z4riei/image/upload/v1792240666/5.jpg", title: "ডে-বোর্ডিং ও সহশিক্ষা কার্যক্রম" }
-      ],
-      notices: [
-        { id: "not-1", date: "২০২৬-১০-১৫", category: "ভর্তি", title: "২০২৭ শিক্ষাবর্ষে নতুন ভর্তি ফরম বিতরণ চলছে (Pre-Nursery - Class IX)", priority: "উচ্চ" },
-        { id: "not-2", date: "২০২৬-১০-১০", category: "আবাসিক", title: "আবাসিক বালিকা বিভাগের আসন সংরক্ষণ ও হোস্টেল নির্দেশিকা প্রকাশ", priority: "জরুরি" },
-        { id: "not-3", date: "২০২৬-১০-০৫", category: "ডে-বোর্ডিং", title: "ডে-বোর্ডিং শিক্ষার্থীদের জন্য পুষ্টিকর খাদ্য তালিকা ও স্টাডি রুটিন হালনাগাদ", priority: "সাধারণ" },
-        { id: "not-4", date: "২০২৬-০৯-২৮", category: "পরীক্ষা", title: "আসন্ন মূল্যায়নী পরীক্ষার সময়সূচি ও অভিভাবক সমন্বয় সভা", priority: "সাধারণ" }
-      ],
-      applications: [
-        { id: "IQRA-2027-101", studentName: "আফরোজা খাতুন", guardianName: "মতিউর রহমান", stream: "আবাসিক (Residential Girls)", classApply: "Class VI", phone: "9832104567", status: "ভর্তি নিশ্চিত", date: "২০২৬-১০-১৪" },
-        { id: "IQRA-2027-102", studentName: "সামিয়া পারভীন", guardianName: "রফিকুল ইসলাম", stream: "ডে-বোর্ডিং (Day Boarding)", classApply: "Class III", phone: "9733458912", status: "যাচাই চলছে", date: "২০২৬-১০-১৬" },
-        { id: "IQRA-2027-103", studentName: "ফারহানা সুলতানা", guardianName: "আকবর আলী", stream: "অনাবাসিক (Day Scholar)", classApply: "Class I", phone: "9647890123", status: "নতুন আবেদন", date: "২০২৬-১০-১৭" }
-      ],
-      stats: {
-        students: "৫০০+",
-        teachers: "২৫+",
-        passRate: "১০০%",
-        estd: "২০১৫",
-        helpline1: "9775123096",
-        helpline2: "9647109481"
-      },
-      adminHashL1: DEFAULT_HASH_L1,
-      adminHashL2: DEFAULT_HASH_L2
+    // আপনার ফায়ারবেস প্রজেক্ট কনফিগারেশন
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_aNVt4kIackC9_QUnSf0dzf4PE-6PdRs",
+      authDomain: "iqra-academy-portal.firebaseapp.com",
+      projectId: "iqra-academy-portal",
+      storageBucket: "iqra-academy-portal.firebasestorage.app",
+      messagingSenderId: "141277803488",
+      appId: "1:141277803488:web:48dd362989fb8f0b6ff185",
+      measurementId: "G-WPBV5FKM18"
     };
 
-    let appState = JSON.parse(JSON.stringify(DEFAULT_IQRA_STORE));
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    // Toast Notification Utility
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toast-container');
-      if (!container) return;
-      const toast = document.createElement('div');
-      toast.className = `px-4 py-3 rounded-xl shadow-xl text-xs md:text-sm font-bold flex items-center gap-2 transform transition-all duration-300 pointer-events-auto ${
-        type === 'success' ? 'bg-emerald-800 text-white border border-emerald-600' : 'bg-red-800 text-white border border-red-600'
-      }`;
-      toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-amber-300' : 'fa-circle-exclamation text-amber-300'}"></i> <span>${message}</span>`;
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+    // সিকিউরিটি হ্যাশ (gaffarsaheb & 2015)
+    const HASH1 = "1bb7cb6c599723ec04ce195f2fc8c665e751d38706059d0f772ffc7a109ecf38";
+    const HASH2 = "f11a4154fa734b46c646ef5881aa5ec55d7870ba90c7ea50ccf4900222a10c73";
+
+    async function sha256(text) {
+      const msgUint8 = new TextEncoder().encode(text);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    // Custom Modal Confirmation (replacing alert/confirm)
-    let confirmCallback = null;
-    function openConfirm(title, desc, onConfirm) {
-      const modal = document.getElementById('custom-confirm-modal');
-      const t = document.getElementById('confirm-modal-title');
-      const d = document.getElementById('confirm-modal-desc');
-      if (t) t.textContent = title;
-      if (d) d.textContent = desc;
-      confirmCallback = onConfirm;
-      if (modal) modal.classList.remove('hidden');
-    }
-    const btnConfirmCancel = document.getElementById('btn-confirm-cancel');
-    const btnConfirmProceed = document.getElementById('btn-confirm-proceed');
-    if (btnConfirmCancel) {
-      btnConfirmCancel.addEventListener('click', () => {
-        const modal = document.getElementById('custom-confirm-modal');
-        if (modal) modal.classList.add('hidden');
-        confirmCallback = null;
-      });
-    }
-    if (btnConfirmProceed) {
-      btnConfirmProceed.addEventListener('click', () => {
-        const modal = document.getElementById('custom-confirm-modal');
-        if (modal) modal.classList.add('hidden');
-        if (confirmCallback) confirmCallback();
-        confirmCallback = null;
-      });
-    }
+    // অথেন্টিকেশন হ্যান্ডলার
+    document.getElementById('btn-login-submit').addEventListener('click', async () => {
+      const p1 = document.getElementById('input-layer1').value.trim();
+      const p2 = document.getElementById('input-layer2').value.trim();
+      const h1 = await sha256(p1);
+      const h2 = await sha256(p2);
 
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'iqra-academy-global-app';
-    let db = null;
-    let auth = null;
-    let cloudDocRef = null;
-
-    async function initCloudSync() {
-      try {
-        if (typeof __firebase_config !== 'undefined') {
-          const config = JSON.parse(__firebase_config);
-          const app = initializeApp(config);
-          db = getFirestore(app);
-          auth = getAuth(app);
-
-          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            await signInWithCustomToken(auth, __initial_auth_token);
-          } else {
-            await signInAnonymously(auth);
-          }
-
-          cloudDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'iqra_global_data', 'main_store');
-
-          // Real-time Cloud Listener across all browsers
-          onSnapshot(cloudDocRef, (snap) => {
-            if (snap.exists()) {
-              const cloudData = snap.data();
-              if (cloudData) {
-                mergeCloudData(cloudData);
-                renderDashboard();
-              }
-            } else {
-              // Initial push to cloud
-              pushToCloud(appState);
-            }
-          }, (err) => {
-            console.warn('Realtime cloud listener warning:', err);
-          });
-        }
-      } catch (e) {
-        console.warn('Fallback to local mirror:', e);
-      }
-    }
-
-    function mergeCloudData(cloud) {
-      appState.announcement = cloud.announcement || appState.announcement;
-      appState.banners = (Array.isArray(cloud.banners) && cloud.banners.length >= 5) ? cloud.banners : appState.banners;
-      appState.notices = Array.isArray(cloud.notices) ? cloud.notices : appState.notices;
-      appState.applications = Array.isArray(cloud.applications) ? cloud.applications : appState.applications;
-      appState.stats = cloud.stats || appState.stats;
-      appState.adminHashL1 = cloud.adminHashL1 || appState.adminHashL1;
-      appState.adminHashL2 = cloud.adminHashL2 || appState.adminHashL2;
-
-      // Broadcast update to other tabs/browsers via BroadcastChannel
-      if (typeof BroadcastChannel !== 'undefined') {
-        const bc = new BroadcastChannel('iqra_sync_channel');
-        bc.postMessage({ type: 'SYNC_UPDATE', data: appState });
-      }
-    }
-
-    async function pushToCloud(data) {
-      try {
-        if (db && cloudDocRef && auth && auth.currentUser) {
-          await setDoc(cloudDocRef, data);
-        }
-      } catch (err) {
-        console.error('Cloud push error:', err);
-      }
-    }
-
-    // Save and Sync Data across everywhere
-    async function saveStateAndSync() {
-      renderDashboard();
-      await pushToCloud(appState);
-      if (typeof BroadcastChannel !== 'undefined') {
-        const bc = new BroadcastChannel('iqra_sync_channel');
-        bc.postMessage({ type: 'SYNC_UPDATE', data: appState });
-      }
-    }
-
-    // Listen for broadcast from other open tabs
-    if (typeof BroadcastChannel !== 'undefined') {
-      const bc = new BroadcastChannel('iqra_sync_channel');
-      bc.onmessage = (event) => {
-        if (event.data && event.data.type === 'SYNC_UPDATE' && event.data.data) {
-          mergeCloudData(event.data.data);
-          renderDashboard();
-        }
-      };
-    }
-
-    const lockScreen = document.getElementById('admin-lock-screen');
-    const mainDashboard = document.getElementById('admin-main-dashboard');
-    const passInput = document.getElementById('login-pass-input');
-    const pinInput = document.getElementById('login-pin-input');
-    const loginErrorMsg = document.getElementById('login-error-msg');
-    const loginErrorText = document.getElementById('login-error-text');
-    const btnTogglePass = document.getElementById('btn-toggle-login-pass');
-    const togglePassIcon = document.getElementById('toggle-login-pass-icon');
-    const btnTogglePin = document.getElementById('btn-toggle-login-pin');
-    const togglePinIcon = document.getElementById('toggle-login-pin-icon');
-    const btnLogout = document.getElementById('btn-admin-logout');
-
-    function checkAuth() {
-      const isAuth = sessionStorage.getItem('iqra_admin_auth') === 'true';
-      if (isAuth) {
-        if (lockScreen) {
-          lockScreen.classList.add('hidden');
-          lockScreen.style.display = 'none';
-        }
-        if (mainDashboard) {
-          mainDashboard.classList.remove('hidden');
-          mainDashboard.style.display = 'block';
-        }
-        renderDashboard();
-      } else {
-        if (lockScreen) {
-          lockScreen.classList.remove('hidden');
-          lockScreen.style.display = 'flex';
-        }
-        if (mainDashboard) {
-          mainDashboard.classList.add('hidden');
-          mainDashboard.style.display = 'none';
-        }
-        if (passInput) passInput.value = '';
-        if (pinInput) pinInput.value = '';
-        if (loginErrorMsg) loginErrorMsg.classList.add('hidden');
-      }
-    }
-
-    if (btnTogglePass && passInput && togglePassIcon) {
-      btnTogglePass.addEventListener('click', () => {
-        const isPass = passInput.type === 'password';
-        passInput.type = isPass ? 'text' : 'password';
-        togglePassIcon.className = isPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-      });
-    }
-
-    if (btnTogglePin && pinInput && togglePinIcon) {
-      btnTogglePin.addEventListener('click', () => {
-        const isPass = pinInput.type === 'password';
-        pinInput.type = isPass ? 'text' : 'password';
-        togglePinIcon.className = isPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-      });
-    }
-
-    function handleLoginSubmit() {
-      const p = (passInput ? passInput.value : '').trim();
-      const pin = (pinInput ? pinInput.value : '').trim();
-
-      if (!p || !pin) {
-        if (loginErrorText) loginErrorText.textContent = 'অনুগ্রহ করে পাসওয়ার্ড ও পিন উভয়ই লিখুন!';
-        if (loginErrorMsg) loginErrorMsg.classList.remove('hidden');
-        return;
-      }
-
-      const hashedP = sha256(p);
-      const hashedPin = sha256(pin);
-
-      const targetHashL1 = appState.adminHashL1 || DEFAULT_HASH_L1;
-      const targetHashL2 = appState.adminHashL2 || DEFAULT_HASH_L2;
-
-      const passOk = (hashedP === targetHashL1);
-      const pinOk = (hashedPin === targetHashL2);
-
-      if (passOk && pinOk) {
+      if (h1 === HASH1 && h2 === HASH2) {
+        document.getElementById('security-screen').classList.add('hidden');
+        document.getElementById('admin-dashboard-screen').classList.remove('hidden');
         sessionStorage.setItem('iqra_admin_auth', 'true');
-        if (loginErrorMsg) loginErrorMsg.classList.add('hidden');
-
-        if (lockScreen) {
-          lockScreen.classList.add('hidden');
-          lockScreen.style.display = 'none';
-        }
-        if (mainDashboard) {
-          mainDashboard.classList.remove('hidden');
-          mainDashboard.style.display = 'block';
-        }
-
-        renderDashboard();
-        showToast('স্বাগতম! দ্বি-স্তরীয় ভেরিফিকেশন সফল। ক্লাউড পোর্টাল আনলক হয়েছে।');
+        listenToCloudData();
       } else {
-        if (loginErrorText) {
-          if (!passOk && !pinOk) {
-            loginErrorText.textContent = 'লেয়ার ১ পাসওয়ার্ড এবং লেয়ার ২ পিন উভয়ই ভুল!';
-          } else if (!passOk) {
-            loginErrorText.textContent = 'লেয়ার ১ অ্যাডমিন পাসওয়ার্ড ভুল!';
-          } else {
-            loginErrorText.textContent = 'লেয়ার ২ মাস্টার পিন ভুল!';
-          }
-        }
-        if (loginErrorMsg) loginErrorMsg.classList.remove('hidden');
+        document.getElementById('login-error-msg').classList.remove('hidden');
       }
-    }
-
-    const btnLoginSubmit = document.getElementById('btn-login-submit');
-    if (btnLoginSubmit) {
-      btnLoginSubmit.addEventListener('click', handleLoginSubmit);
-    }
-    const loginForm = document.getElementById('admin-login-form');
-    if (loginForm) {
-      loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        handleLoginSubmit();
-      });
-    }
-
-    if (btnLogout) {
-      btnLogout.addEventListener('click', () => {
-        sessionStorage.removeItem('iqra_admin_auth');
-        checkAuth();
-        showToast('অ্যাডমিন পোর্টাল নিরাপদে লক করা হয়েছে।');
-      });
-    }
-
-    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetId = btn.getAttribute('data-tab');
-        document.querySelectorAll('.admin-tab-btn').forEach(b => {
-          b.classList.remove('active', 'bg-amber-500', 'text-slate-950');
-          b.classList.add('bg-slate-800', 'text-slate-300');
-        });
-        btn.classList.add('active', 'bg-amber-500', 'text-slate-950');
-        btn.classList.remove('bg-slate-800', 'text-slate-300');
-
-        document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
-        const activeContent = document.getElementById(targetId);
-        if (activeContent) activeContent.classList.remove('hidden');
-      });
     });
 
-    function renderDashboard() {
-      // Marquee
-      const marqueeInput = document.getElementById('admin-marquee-input');
-      if (marqueeInput && document.activeElement !== marqueeInput) {
-        marqueeInput.value = appState.announcement || '';
+    if (sessionStorage.getItem('iqra_admin_auth') === 'true') {
+      document.getElementById('security-screen').classList.add('hidden');
+      document.getElementById('admin-dashboard-screen').classList.remove('hidden');
+      listenToCloudData();
+    }
+
+    window.logoutAdmin = function() {
+      sessionStorage.removeItem('iqra_admin_auth');
+      window.location.reload();
+    };
+
+    window.togglePass = function(id, btn) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+      } else {
+        input.type = 'password';
+        btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
       }
+    };
 
-      // Notices
-      renderNotices();
+    // রিয়েল-টাইম ক্লাউড সিঙ্ক
+    let globalSchoolData = {
+      marquee: "২০২৭ শিক্ষাবর্ষে প্রি-নার্সারি থেকে দশম শ্রেণি পর্যন্ত আবাসিক বালিকা বিভাগে ভর্তি চলছে! আসন সংখ্যা সীমিত।",
+      phone1: "9775123096",
+      phone2: "9647109481",
+      notices: [
+        { id: 1, title: "২০২৭ শিক্ষাবর্ষে আবাসিক বালিকা শাখায় ভর্তি বিজ্ঞপ্তি ও প্রসপেক্টাস প্রকাশ।", date: "১৭ অক্টোবর, ২০২৬" },
+        { id: 2, title: "অভিভাবকদের জন্য বিশেষ নির্দেশনাবলী ও ভিজিটিং আওয়ার সংক্রান্ত নোটিশ।", date: "১৫ অক্টোবর, ২০২৬" }
+      ],
+      admissions: []
+    };
 
-      // Admissions
-      renderApplications();
-
-      // Banners
-      renderBanners();
-
-      // Stats
-      if (appState.stats) {
-        if (document.getElementById('admin-stat-students')) document.getElementById('admin-stat-students').value = appState.stats.students || '৫০০+';
-        if (document.getElementById('admin-stat-teachers')) document.getElementById('admin-stat-teachers').value = appState.stats.teachers || '২৫+';
-        if (document.getElementById('admin-stat-pass')) document.getElementById('admin-stat-pass').value = appState.stats.passRate || '১০০%';
-        if (document.getElementById('admin-stat-phone1')) document.getElementById('admin-stat-phone1').value = appState.stats.helpline1 || '9775123096';
-        if (document.getElementById('admin-stat-phone2')) document.getElementById('admin-stat-phone2').value = appState.stats.helpline2 || '9647109481';
-        if (document.getElementById('admin-stat-estd')) document.getElementById('admin-stat-estd').value = appState.stats.estd || '২০১৫';
-      }
-    }
-
-    function renderNotices() {
-      const noticeTbody = document.getElementById('admin-notice-table-body');
-      if (!noticeTbody || !appState.notices) return;
-      noticeTbody.innerHTML = appState.notices.map((n, idx) => `
-        <tr class="hover:bg-slate-800/40 transition">
-          <td class="p-3 font-mono text-slate-400">${n.date}</td>
-          <td class="p-3"><span class="bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-amber-300 text-[11px]">${n.category}</span></td>
-          <td class="p-3 font-medium text-white">${n.title}</td>
-          <td class="p-3">
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${n.priority === 'জরুরি' ? 'bg-red-950 text-red-300 border border-red-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'}">${n.priority}</span>
-          </td>
-          <td class="p-3 text-right">
-            <button class="text-red-400 hover:text-red-300 p-1 font-bold text-xs" data-notice-index="${idx}">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      `).join('');
-
-      noticeTbody.querySelectorAll('button[data-notice-index]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const idx = parseInt(btn.getAttribute('data-notice-index'), 10);
-          openConfirm('নোটিশ অপসারণ', 'আপনি কি নিশ্চিত যে এই নোটিশটি ক্লাউড থেকে মুছে ফেলতে চান?', () => {
-            appState.notices.splice(idx, 1);
-            saveStateAndSync();
-            showToast('নোটিশটি ক্লাউড থেকে মুছে ফেলা হয়েছে।');
-          });
-        });
-      });
-    }
-
-    const addNoticeForm = document.getElementById('admin-add-notice-form');
-    if (addNoticeForm) {
-      addNoticeForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const title = document.getElementById('admin-notice-title').value.trim();
-        const category = document.getElementById('admin-notice-cat').value;
-        const priority = document.getElementById('admin-notice-priority').value;
-        const today = new Date().toISOString().split('T')[0];
-
-        appState.notices.unshift({
-          id: `not-${Date.now()}`,
-          date: today,
-          category,
-          title,
-          priority
-        });
-        saveStateAndSync();
-        addNoticeForm.reset();
-        showToast('নতুন নোটিশ ক্লাউডে যুক্ত হয়েছে!');
-      });
-    }
-
-    const btnSaveMarquee = document.getElementById('btn-save-marquee');
-    if (btnSaveMarquee) {
-      btnSaveMarquee.addEventListener('click', () => {
-        const val = document.getElementById('admin-marquee-input').value.trim();
-        if (val) {
-          appState.announcement = val;
-          saveStateAndSync();
-          showToast('ঘোষণা ক্লাউডে সফলভাবে আপডেট হয়েছে!');
+    function listenToCloudData() {
+      onSnapshot(doc(db, "school_data", "main_config"), (snapshot) => {
+        if (snapshot.exists()) {
+          globalSchoolData = { ...globalSchoolData, ...snapshot.data() };
         }
+        renderDashboardData();
       });
     }
 
-    function renderApplications() {
-      const tbody = document.getElementById('admin-applications-tbody');
-      const countEl = document.getElementById('admin-app-count');
-      if (countEl && appState.applications) countEl.textContent = appState.applications.length;
-      if (!tbody || !appState.applications) return;
+    function renderDashboardData() {
+      document.getElementById('admin-marquee-text').value = globalSchoolData.marquee;
+      document.getElementById('admin-phone-1').value = globalSchoolData.phone1;
+      document.getElementById('admin-phone-2').value = globalSchoolData.phone2;
 
-      const search = (document.getElementById('admin-search-applicant')?.value || '').toLowerCase();
-      const streamFilter = document.getElementById('admin-filter-stream')?.value || 'ALL';
-      const statusFilter = document.getElementById('admin-filter-status')?.value || 'ALL';
-
-      const filtered = appState.applications.filter(app => {
-        const matchesSearch = !search || app.studentName.toLowerCase().includes(search) || app.guardianName.toLowerCase().includes(search) || app.phone.includes(search);
-        const matchesStream = streamFilter === 'ALL' || app.stream.includes(streamFilter);
-        const matchesStatus = statusFilter === 'ALL' || app.status === statusFilter;
-        return matchesSearch && matchesStream && matchesStatus;
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500">কোনো ভর্তি আবেদন পাওয়া যায়নি।</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map((app) => `
-        <tr class="hover:bg-slate-800/40 transition">
-          <td class="p-3 font-mono text-amber-300 font-bold">${app.id}</td>
-          <td class="p-3 font-bold text-white">${app.studentName}</td>
-          <td class="p-3 text-slate-300">${app.guardianName}</td>
-          <td class="p-3 font-semibold text-emerald-300">${app.classApply}</td>
-          <td class="p-3 text-slate-300">${app.stream}</td>
-          <td class="p-3 font-mono text-slate-300">${app.phone}</td>
-          <td class="p-3">
-            <select data-app-id="${app.id}" class="app-status-select bg-slate-950 border border-slate-700 rounded px-2 py-1 text-[11px] font-bold ${
-              app.status === 'ভর্তি নিশ্চিত' ? 'text-emerald-400' : (app.status === 'যাচাই চলছে' ? 'text-amber-400' : 'text-blue-300')
-            }">
-              <option value="নতুন আবেদন" ${app.status === 'নতুন আবেদন' ? 'selected' : ''}>নতুন আবেদন</option>
-              <option value="যাচাই চলছে" ${app.status === 'যাচাই চলছে' ? 'selected' : ''}>যাচাই চলছে</option>
-              <option value="ভর্তি নিশ্চিত" ${app.status === 'ভর্তি নিশ্চিত' ? 'selected' : ''}>ভর্তি নিশ্চিত</option>
-            </select>
-          </td>
-          <td class="p-3 text-right">
-            <button data-delete-app-id="${app.id}" class="text-red-400 hover:text-red-300 p-1">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      `).join('');
-
-      tbody.querySelectorAll('.app-status-select').forEach(sel => {
-        sel.addEventListener('change', (e) => {
-          const appId = sel.getAttribute('data-app-id');
-          const newStatus = e.target.value;
-          const app = appState.applications.find(a => a.id === appId);
-          if (app) {
-            app.status = newStatus;
-            saveStateAndSync();
-            showToast(`${app.studentName}-এর স্ট্যাটাস: ${newStatus}`);
-          }
-        });
-      });
-
-      tbody.querySelectorAll('button[data-delete-app-id]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const appId = btn.getAttribute('data-delete-app-id');
-          openConfirm('আবেদন অপসারণ', 'আপনি কি নিশ্চিত যে এই আবেদনটি ক্লাউড তালিকা থেকে মুছে ফেলতে চান?', () => {
-            appState.applications = appState.applications.filter(a => a.id !== appId);
-            saveStateAndSync();
-            showToast('আবেদনটি ক্লাউড থেকে অপসারণ করা হয়েছে।');
-          });
-        });
-      });
-    }
-
-    const searchAppInput = document.getElementById('admin-search-applicant');
-    const filterStreamSelect = document.getElementById('admin-filter-stream');
-    const filterStatusSelect = document.getElementById('admin-filter-status');
-    if (searchAppInput) searchAppInput.addEventListener('input', renderApplications);
-    if (filterStreamSelect) filterStreamSelect.addEventListener('change', renderApplications);
-    if (filterStatusSelect) filterStatusSelect.addEventListener('change', renderApplications);
-
-    const btnExportCsv = document.getElementById('btn-export-admissions-csv');
-    if (btnExportCsv) {
-      btnExportCsv.addEventListener('click', () => {
-        let csv = "ID,Student Name,Guardian Name,Class,Stream,Phone,Status,Date\n";
-        appState.applications.forEach(a => {
-          csv += `"${a.id}","${a.studentName}","${a.guardianName}","${a.classApply}","${a.stream}","${a.phone}","${a.status}","${a.date}"\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `iqra_admissions_${new Date().toISOString().split('T')[0]}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showToast('CSV ফাইল সফলভাবে ডাউনলোড হয়েছে!');
-      });
-    }
-
-    const manualModal = document.getElementById('manual-adm-modal');
-    const btnOpenManual = document.getElementById('btn-add-manual-admission');
-    const btnCloseManual = document.getElementById('btn-close-manual-modal');
-    const btnCancelManual = document.getElementById('btn-cancel-manual-modal');
-    const manualForm = document.getElementById('manual-adm-form');
-
-    if (btnOpenManual) btnOpenManual.addEventListener('click', () => manualModal.classList.remove('hidden'));
-    if (btnCloseManual) btnCloseManual.addEventListener('click', () => manualModal.classList.add('hidden'));
-    if (btnCancelManual) btnCancelManual.addEventListener('click', () => manualModal.classList.add('hidden'));
-
-    if (manualForm) {
-      manualForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const randId = `IQRA-2027-${Math.floor(1000 + Math.random() * 9000)}`;
-        const newApp = {
-          id: randId,
-          studentName: document.getElementById('m-student-name').value.trim(),
-          guardianName: document.getElementById('m-guardian-name').value.trim(),
-          classApply: document.getElementById('m-class').value,
-          stream: document.getElementById('m-stream').value,
-          phone: document.getElementById('m-phone').value.trim(),
-          status: "নতুন আবেদন",
-          date: new Date().toISOString().split('T')[0]
-        };
-        appState.applications.unshift(newApp);
-        saveStateAndSync();
-        manualForm.reset();
-        manualModal.classList.add('hidden');
-        showToast('ম্যানুয়াল আবেদন সফলভাবে ক্লাউডে যুক্ত হয়েছে!');
-      });
-    }
-
-    function renderBanners() {
-      const bannerList = document.getElementById('admin-banner-list');
-      if (!bannerList || !appState.banners) return;
-      bannerList.innerHTML = appState.banners.map((b, idx) => `
-        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row items-center gap-4">
-          <img src="${b.url}" alt="Banner ${idx+1}" class="w-24 h-16 rounded-xl object-cover border border-slate-700 shrink-0">
-          <div class="flex-1 w-full space-y-2">
-            <div class="flex justify-between items-center">
-              <span class="text-xs font-bold text-amber-400">ব্যানার স্লাইড #${idx+1}</span>
-            </div>
-            <input type="text" id="admin-banner-url-${idx}" value="${b.url}" placeholder="ছবির লিংক URL..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white">
-            <input type="text" id="admin-banner-title-${idx}" value="${b.title}" placeholder="ক্যাপশন শিরোনাম..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-300">
+      // নোটিশ রেন্ডার
+      const noticeList = document.getElementById('admin-notice-list');
+      noticeList.innerHTML = (globalSchoolData.notices || []).map(n => `
+        <div class="flex justify-between items-center p-3 bg-slate-950 border border-slate-800 rounded-xl">
+          <div>
+            <p class="text-xs font-semibold text-slate-200">${n.title}</p>
+            <p class="text-[10px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${n.date}</p>
           </div>
+          <button onclick="deleteNoticeFromCloud(${n.id})" class="text-red-400 hover:text-red-300 text-xs px-2 py-1">
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </div>
       `).join('');
+
+      // আবেদন তালিকা
+      const admBody = document.getElementById('admission-table-body');
+      const counter = document.getElementById('admission-counter');
+      const adms = globalSchoolData.admissions || [];
+      counter.innerText = `মোট: ${adms.length} জন`;
+
+      if (adms.length === 0) {
+        admBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">এখনও কোনো অনলাইন আবেদন জমা পড়েনি।</td></tr>`;
+      } else {
+        admBody.innerHTML = adms.map(a => `
+          <tr class="hover:bg-slate-800/50">
+            <td class="p-3 text-amber-400 font-mono font-bold">${a.id}</td>
+            <td class="p-3 text-white font-semibold">${a.name}</td>
+            <td class="p-3 text-slate-300">${a.guardian}</td>
+            <td class="p-3">${a.className}</td>
+            <td class="p-3 text-emerald-400">${a.stream}</td>
+            <td class="p-3 font-mono">${a.phone}</td>
+            <td class="p-3 text-slate-400">${a.date}</td>
+          </tr>
+        `).join('');
+      }
     }
 
-    const btnSaveBanners = document.getElementById('btn-save-banners');
-    if (btnSaveBanners) {
-      btnSaveBanners.addEventListener('click', () => {
-        appState.banners.forEach((b, idx) => {
-          const u = document.getElementById(`admin-banner-url-${idx}`);
-          const t = document.getElementById(`admin-banner-title-${idx}`);
-          if (u) b.url = u.value.trim();
-          if (t) b.title = t.value.trim();
-        });
-        saveStateAndSync();
-        showToast('ব্যানার স্লাইডার ক্লাউডে সংরক্ষিত হয়েছে!');
-      });
-    }
+    window.saveMarqueeToCloud = async function() {
+      const text = document.getElementById('admin-marquee-text').value.trim();
+      globalSchoolData.marquee = text;
+      await setDoc(doc(db, "school_data", "main_config"), globalSchoolData);
+      alert("ঘোষণা সফলভাবে ক্লাউডে সেভ হয়েছে!");
+    };
 
-    const btnSaveStats = document.getElementById('btn-save-stats');
-    if (btnSaveStats) {
-      btnSaveStats.addEventListener('click', () => {
-        appState.stats.students = document.getElementById('admin-stat-students').value.trim();
-        appState.stats.teachers = document.getElementById('admin-stat-teachers').value.trim();
-        appState.stats.passRate = document.getElementById('admin-stat-pass').value.trim();
-        appState.stats.helpline1 = document.getElementById('admin-stat-phone1').value.trim();
-        appState.stats.helpline2 = document.getElementById('admin-stat-phone2').value.trim();
-        appState.stats.estd = document.getElementById('admin-stat-estd').value.trim();
-        saveStateAndSync();
-        showToast('পরিসংখ্যান ও ফোন নম্বর ক্লাউডে সংরক্ষিত হয়েছে!');
-      });
-    }
+    window.saveContactToCloud = async function() {
+      globalSchoolData.phone1 = document.getElementById('admin-phone-1').value.trim();
+      globalSchoolData.phone2 = document.getElementById('admin-phone-2').value.trim();
+      await setDoc(doc(db, "school_data", "main_config"), globalSchoolData);
+      alert("হেল্পলাইন নম্বর সফলভাবে সেভ হয়েছে!");
+    };
 
-    // Security Credentials Change Form
-    const changePassForm = document.getElementById('admin-change-pass-form');
-    if (changePassForm) {
-      changePassForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const curPass = document.getElementById('input-curr-pass').value.trim();
-        const newPass = document.getElementById('input-new-pass').value.trim();
-        const curPin = document.getElementById('input-curr-pin').value.trim();
-        const newPin = document.getElementById('input-new-pin').value.trim();
+    window.addNoticeToCloud = async function() {
+      const title = document.getElementById('new-notice-title').value.trim();
+      const date = document.getElementById('new-notice-date').value.trim();
+      if (!title) return alert("নোটিশের শিরোনাম লিখুন!");
+      const newN = { id: Date.now(), title, date: date || "আজকের তারিখ" };
+      globalSchoolData.notices = [newN, ...(globalSchoolData.notices || [])];
+      await setDoc(doc(db, "school_data", "main_config"), globalSchoolData);
+      document.getElementById('new-notice-title').value = '';
+      alert("নতুন নোটিশ ক্লাউডে যোগ হয়েছে!");
+    };
 
-        const hashedCurPass = sha256(curPass);
-        const hashedCurPin = sha256(curPin);
-
-        const targetL1 = appState.adminHashL1 || DEFAULT_HASH_L1;
-        const targetL2 = appState.adminHashL2 || DEFAULT_HASH_L2;
-
-        if (hashedCurPass !== targetL1) {
-          showToast('বর্তমান লেয়ার ১ পাসওয়ার্ড সঠিক নয়!', 'error');
-          return;
-        }
-        if (hashedCurPin !== targetL2) {
-          showToast('বর্তমান লেয়ার ২ পিন সঠিক নয়!', 'error');
-          return;
-        }
-
-        if (newPass.length < 4 || newPin.length < 3) {
-          showToast('নতুন পাসওয়ার্ড বা পিন পর্যাপ্ত সুরক্ষিত নয়!', 'error');
-          return;
-        }
-
-        appState.adminHashL1 = sha256(newPass);
-        appState.adminHashL2 = sha256(newPin);
-        saveStateAndSync();
-        changePassForm.reset();
-        showToast('লেয়ার ১ ও ২ নিরাপত্তা ক্লাউডে সফলভাবে আপডেট হয়েছে!');
-      });
-    }
-
-    const btnDownloadJson = document.getElementById('btn-download-json');
-    if (btnDownloadJson) {
-      btnDownloadJson.addEventListener('click', () => {
-        const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `iqra_academy_cloud_backup_${new Date().toISOString().split('T')[0]}.json`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showToast('JSON ক্লাউড ব্যাকআপ ডাউনলোড সম্পন্ন হয়েছে!');
-      });
-    }
-
-    const btnFactoryReset = document.getElementById('btn-factory-reset');
-    if (btnFactoryReset) {
-      btnFactoryReset.addEventListener('click', () => {
-        openConfirm('ফ্যাক্টরি রিসেট', 'আপনি কি নিশ্চিত যে সকল ক্লাউড ডেটা প্রাথমিক ডিফল্ট অবস্থায় ফিরিয়ে নিতে চান?', () => {
-          appState = JSON.parse(JSON.stringify(DEFAULT_IQRA_STORE));
-          saveStateAndSync();
-          showToast('ফ্যাক্টরি রিসেট সম্পন্ন হয়েছে!');
-        });
-      });
-    }
-
-    // Check Auth and Initialize Cloud Connection
-    checkAuth();
-    initCloudSync();
+    window.deleteNoticeFromCloud = async function(id) {
+      if (!confirm("আপনি কি নিশ্চিতভাবে এই নোটিশটি মুছতে চান?")) return;
+      globalSchoolData.notices = globalSchoolData.notices.filter(n => n.id !== id);
+      await setDoc(doc(db, "school_data", "main_config"), globalSchoolData);
+    };
   </script>
 </body>
 </html>
