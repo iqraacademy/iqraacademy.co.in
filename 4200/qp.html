@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQRA ACADEMY - Question Paper Maker</title>
+    <!-- বাংলা যুক্তাক্ষর নিখুঁত দেখানোর জন্য গুগল ফন্ট Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Hind Siliguri', 'Times New Roman', serif; }
+        body { background-color: #f0fdf4; color: #1e293b; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .top-nav { width: 100%; max-width: 1550px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .brand-badge { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #065f46; font-size: 1.15rem; }
+        .brand-badge img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #059669; object-fit: cover; }
+
+        .header { margin-bottom: 1.5rem; text-align: center; width: 100%; }
+        .header h2 { color: #065f46; font-size: 1.8rem; font-weight: 800; }
+        .header p { color: #047857; font-size: 0.9rem; font-weight: 600; margin-top: 2px; }
+
+        .container { display: flex; gap: 1.8rem; max-width: 1550px; width: 100%; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+        
+        /* কন্ট্রোল প্যানেল */
+        .form-section { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08); flex: 1; min-width: 350px; max-width: 440px; max-height: 88vh; overflow-y: auto; border: 1px solid #d1fae5; }
+        .form-title { font-size: 1.05rem; font-weight: bold; margin-bottom: 0.9rem; color: #065f46; border-bottom: 2px solid #a7f3d0; padding-bottom: 0.4rem; margin-top: 1.3rem; }
+        .form-title:first-child { margin-top: 0; }
+        .form-group { margin-bottom: 0.85rem; }
+        .row { display: flex; gap: 10px; }
+        .col { flex: 1; }
+        label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.3rem; color: #334155; }
+        input[type="text"], input[type="file"], textarea { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.88rem; transition: border 0.2s; font-family: 'Hind Siliguri', sans-serif; }
+        input[type="text"]:focus, textarea:focus { border-color: #059669; box-shadow: 0 0 0 2px rgba(5,150,105,0.2); }
+        textarea { resize: vertical; min-height: 65px; }
+        input[type="file"] { background: #f8fafc; border: 1px dashed #94a3b8; cursor: pointer; }
+        
+        /* প্রশ্ন বিল্ডার আইটেম */
+        .builder-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 12px; position: relative; }
+        .builder-item.group-item { border-left: 4px solid #d97706; background: #fffbeb; }
+        .builder-item.q-item { border-left: 4px solid #059669; }
+        .btn-remove { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
+        .btn-remove:hover { background: #dc2626; }
+
+        /* বাটন */
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
+        .btn { padding: 0.75rem 1rem; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; flex: 1; text-align: center; font-size: 0.9rem; transition: 0.2s; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Hind Siliguri', sans-serif; }
+        .btn-add-g { background: #d97706; } .btn-add-g:hover { background: #b45309; }
+        .btn-add-q { background: #059669; } .btn-add-q:hover { background: #047857; }
+        .btn-print { background: #0284c7; } .btn-print:hover { background: #0369a1; }
+        .btn-pdf { background: #e11d48; } .btn-pdf:hover { background: #be123c; }
+
+        /* প্রিভিউ সেকশন */
+        .preview-section { flex: 2.5; display: flex; flex-direction: column; align-items: center; width: 100%; overflow-x: auto; background: #e2e8f0; padding: 1.5rem; border-radius: 12px; max-height: 88vh; overflow-y: auto; }
+        
+        /* A4 পোর্ট্রেট প্রশ্নপত্র ডিজাইন */
+        #print-area { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        
+        .qp-card { 
+            width: 210mm; 
+            min-height: 297mm; 
+            background: white; 
+            padding: 18mm 20mm; 
+            box-shadow: 0 8px 25px rgba(6,95,70,0.15); 
+            position: relative; 
+            box-sizing: border-box;
+            flex-shrink: 0;
+            margin: 0 auto;
+            border-radius: 4px;
+        }
+
+        /* ওয়াটারমার্ক */
+        .qp-watermark {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;
+            pointer-events: none; opacity: 0.04;
+        }
+        
+        .qp-content { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; color: #000; }
+
+        /* হেডার লেআউট */
+        .qp-header-wrap { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #065f46; padding-bottom: 10px; margin-bottom: 12px; }
+        .qp-logo-box { width: 68px; height: 68px; display: flex; justify-content: center; align-items: center; }
+        .qp-logo { max-width: 100%; max-height: 100%; object-fit: cover; border-radius: 50%; border: 2px solid #059669; }
+        .qp-title-box { text-align: center; flex: 1; padding: 0 10px; }
+        .qp-inst-name { font-size: 26px; font-weight: 900; color: #065f46; text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.15; }
+        .qp-inst-sub { font-size: 12px; font-weight: 700; color: #b45309; margin-top: 2px; }
+        .qp-inst-address { font-size: 11px; color: #475569; margin-top: 1px; font-weight: 600; }
+        .qp-exam-title { font-size: 17px; font-weight: 800; color: #0f172a; margin-top: 4px; text-decoration: underline; text-underline-offset: 3px; }
+
+        /* মেটা ইনফরমেশন গ্রিড */
+        .qp-meta { display: flex; justify-content: space-between; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 16px; font-size: 14.5px; font-weight: bold; color: #0f172a; }
+        .qp-meta-col { line-height: 1.6; }
+        .qp-meta span { font-weight: 800; color: #065f46; }
+
+        /* নির্দেশাবলী */
+        .qp-instructions { font-size: 12.5px; font-style: italic; color: #334155; margin-bottom: 14px; padding: 4px 8px; background: #f8fafc; border-left: 3px solid #059669; border-radius: 3px; }
+
+        /* প্রশ্নপত্র বডি */
+        .qp-body { flex: 1; font-size: 15.5px; line-height: 1.55; color: #0f172a; }
+        
+        .qp-group-title { 
+            text-align: center; 
+            font-weight: 800; 
+            font-size: 16px; 
+            color: #065f46; 
+            text-decoration: underline; 
+            margin: 18px 0 12px 0; 
+            page-break-after: avoid; 
+            letter-spacing: 0.3px;
+        }
+
+        .qp-q-row { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 14px; 
+            align-items: flex-start; 
+            page-break-inside: avoid; 
+        }
+
+        .qp-q-text { flex: 1; white-space: pre-wrap; padding-right: 15px; font-weight: 500; }
+        .qp-q-marks { font-weight: 800; white-space: nowrap; font-size: 14.5px; color: #065f46; }
+
+        .qp-footer-note { text-align: center; margin-top: 30px; font-weight: 700; font-size: 13.5px; color: #475569; letter-spacing: 1px; border-top: 1px dashed #cbd5e1; padding-top: 12px; }
+
+        /* স্ক্রোলবার */
+        .form-section::-webkit-scrollbar, .preview-section::-webkit-scrollbar { width: 6px; }
+        .form-section::-webkit-scrollbar-thumb, .preview-section::-webkit-scrollbar-thumb { background: #a7f3d0; border-radius: 10px; }
+
+        /* প্রিন্ট সিএসএস */
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white; }
+            .preview-section { max-height: none; overflow: visible; padding: 0; background: white; border: none; }
+            
+            .qp-card { 
+                box-shadow: none; 
+                margin: 0; 
+                padding: 0 !important; 
+                width: 100%; 
+                min-height: auto; 
+            } 
+            
+            @page { size: A4 portrait; margin: 15mm 18mm; }
+            html, body { height: auto; min-height: 0; background: white; margin: 0; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <div class="brand-badge">
+            <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="Logo">
+            <span>IQRA ACADEMY</span>
+        </div>
+        <div style="font-size: 0.85rem; color: #047857; font-weight: 600;">
+            UDISE: 19111008505 | Estd: 2015
+        </div>
+    </div>
+
+    <div class="header">
+        <h2>প্রশ্নপত্র জেনারেটর (IQRA ACADEMY)</h2>
+        <p>অনাবাসিক • ডে-বোর্ডিং • আবাসিক গার্লস মিশন | A4 পোর্ট্রেট প্রিন্ট ও PDF মেকার</p>
+    </div>
+
+    <div class="container">
+        <!-- কন্ট্রোল প্যানেল -->
+        <div class="form-section">
+            <div class="form-title" style="margin-top: 0;">প্রতিষ্ঠানের বিবরণ</div>
+            <div class="form-group">
+                <label>প্রতিষ্ঠানের নাম</label>
+                <input type="text" id="instName" value="IQRA ACADEMY" oninput="updatePreview()">
+            </div>
+            <div class="form-group">
+                <label>লোগো URL</label>
+                <input type="text" id="logoUrl" value="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" oninput="updateLogoFromUrl()">
+            </div>
+            <div class="form-group">
+                <label>কম্পিউটার থেকে লোগো আপলোড</label>
+                <input type="file" accept="image/*" onchange="handleLogoUpload(event)">
+            </div>
+            <div class="form-group">
+                <label>ঠিকানা ও UDISE কোড</label>
+                <input type="text" id="instAddress" value="Dakshin Shibpur, Jadurhati, Baduria, N 24 Pgs - 743293 | UDISE: 19111008505" oninput="updatePreview()">
+            </div>
+            <div class="form-group">
+                <label>পরীক্ষার নাম</label>
+                <input type="text" id="examName" value="১ম পর্যায়ক্রমিক মূল্যায়ন - ২০২৬ (1st Summative Evaluation)" oninput="updatePreview()">
+            </div>
+
+            <div class="form-title">বিষয় ও মেটা তথ্য</div>
+            <div class="row">
+                <div class="col form-group">
+                    <label>বিষয় (Subject)</label>
+                    <input type="text" id="subjectName" value="বাংলা (Bengali)" oninput="updatePreview()">
+                </div>
+                <div class="col form-group">
+                    <label>শ্রেণী (Class)</label>
+                    <input type="text" id="className" value="দশম শ্রেণী (Class X)" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-group">
+                    <label>সময় (Time)</label>
+                    <input type="text" id="examTime" value="১ ঘণ্টা ৩০ মিনিট" oninput="updatePreview()">
+                </div>
+                <div class="col form-group">
+                    <label>পূর্ণমান (Full Marks)</label>
+                    <input type="text" id="fullMarks" value="৪০" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>সাধারণ নির্দেশাবলী (Instructions)</label>
+                <input type="text" id="examInstructions" value="* সমস্ত প্রশ্নের উত্তর দেওয়া আবশ্যিক। প্রতিটি প্রশ্নের ডানদিকে মান নির্দেশ করা আছে।" oninput="updatePreview()">
+            </div>
+
+            <hr style="border: 1px solid #e2e8f0; margin: 1.2rem 0;">
+
+            <div class="form-title">প্রশ্ন তৈরি করুন (Question Builder)</div>
+
+            <div id="builder-container">
+                <!-- ডায়নামিক আইটেম -->
+            </div>
+
+            <div class="btn-group" style="margin-top: 0.8rem; margin-bottom: 1.2rem;">
+                <button class="btn btn-add-g" onclick="addGroup()">+ বিভাগ যোগ (Group)</button>
+                <button class="btn btn-add-q" onclick="addQuestion()">+ প্রশ্ন যোগ (Question)</button>
+            </div>
+
+            <div class="form-title">প্রিন্ট ও ডাউনলোড</div>
+            <div class="btn-group">
+                <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট প্রশ্নপত্র</button>
+                
+            </div>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px; text-align: center;">মাল্টি-পেজ প্রশ্নপত্রের ক্ষেত্রে পেজ ব্রেক এবং মার্জিন স্বয়ংক্রিয়ভাবে অ্যাডজাস্ট হবে।</p>
+        </div>
+
+        <!-- প্রিভিউ সেকশন -->
+        <div class="preview-section">
+            <div id="print-area">
+                <div class="qp-card" id="qp-sheet">
+                    <div class="qp-watermark" id="outWatermark"></div>
+                    <div class="qp-content">
+                        
+                        <!-- হেডার -->
+                        <div class="qp-header-wrap">
+                            <div class="qp-logo-box">
+                                <img id="outLogoImg" class="qp-logo" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="Logo">
+                            </div>
+                            <div class="qp-title-box">
+                                <div class="qp-inst-name" id="outInstName">IQRA ACADEMY</div>
+                                <div class="qp-inst-sub">অনাবাসিক • ডে-বোর্ডিং • আবাসিক গার্লস মিশন (ESTD: 2015)</div>
+                                <div class="qp-inst-address" id="outInstAddress">Dakshin Shibpur, Jadurhati, Baduria, N 24 Pgs - 743293 | UDISE: 19111008505</div>
+                                <div class="qp-exam-title" id="outExamName">১ম পর্যায়ক্রমিক মূল্যায়ন - ২০২৬</div>
+                            </div>
+                            <div class="qp-logo-box"></div>
+                        </div>
+                        
+                        <!-- মেটা তথ্য -->
+                        <div class="qp-meta">
+                            <div class="qp-meta-col">
+                                <div>বিষয় (Subject): <span id="outSubject">বাংলা (Bengali)</span></div>
+                                <div>শ্রেণী (Class): <span id="outClass">দশম শ্রেণী (Class X)</span></div>
+                            </div>
+                            <div class="qp-meta-col" style="text-align: right;">
+                                <div>সময় (Time): <span id="outTime">১ ঘণ্টা ৩০ মিনিট</span></div>
+                                <div>পূর্ণমান (Full Marks): <span id="outMarks">৪০</span></div>
+                            </div>
+                        </div>
+
+                        <!-- নির্দেশাবলী -->
+                        <div class="qp-instructions" id="outInstructions">
+                            * সমস্ত প্রশ্নের উত্তর দেওয়া আবশ্যিক। প্রতিটি প্রশ্নের ডানদিকে মান নির্দেশ করা আছে।
+                        </div>
+
+                        <!-- প্রশ্ন তালিকা -->
+                        <div class="qp-body" id="outQuestions">
+                            <!-- JS দিয়ে রেন্ডার হবে -->
+                        </div>
+
+                        <!-- ফুটার নোট -->
+                        <div class="qp-footer-note">
+                            --- শিক্ষার্থীদের উজ্জ্বল ভবিষ্যৎ ও সাফল্য কামনা করি (IQRA ACADEMY) ---
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let itemCount = 0;
+
+        window.onload = () => {
+            // ডিফল্ট ডেমো প্রশ্ন লোড করা
+            addGroup("বিভাগ - 'ক' (সঠিক উত্তরটি নির্বাচন করো)");
+            addQuestion("১.১ 'তপনের লেখা গল্পের নাম ছিল—'\n(ক) প্রথম গল্প  (খ) প্রথম দিন  (গ) প্রথম সৃষ্টি  (ঘ) নতুন সৃষ্টি", "১");
+            addQuestion("১.২ 'অদল বদল' গল্পটি মূল কোন ভাষায় রচিত?\n(ক) বাংলা  (খ) হিন্দি  (গ) গুজরাটি  (ঘ) মারাঠি", "১");
+            
+            addGroup("বিভাগ - 'খ' (সংক্ষিপ্ত উত্তরভিত্তিক প্রশ্ন)");
+            addQuestion("২.১ 'পত্রিকায় লেখা প্রকাশের পর তপনের কী অভিজ্ঞতা হয়েছিল?' সংক্ষেপে লেখো।", "২");
+            addQuestion("২.২ 'অমৃত ও ইসাবের মধ্যে বন্ধুত্বের পরিচয় কীভাবে ফুটে উঠেছে?'", "৩");
+
+            addGroup("বিভাগ - 'গ' (ব্যাখ্যামূলক ও রচনাধর্মী প্রশ্ন)");
+            addQuestion("৩.১ 'জ্ঞানচক্ষু' গল্পে তপনের কীভাবে প্রকৃত জ্ঞানচক্ষু উন্মীলিত হয়েছিল—তা নিজের ভাষায় আলোচনা করো।", "৫");
+
+            updatePreview();
+        };
+
+        function generateWatermark(text) {
+            let encodedText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            let svg = `<svg xmlns='http://www.w3.org/2000/svg' width='450' height='300'>
+                <text x='50%' y='50%' transform='translate(225,150) rotate(-35) translate(-225,-150)' 
+                      fill='#065f46' font-size='30' font-family='Arial, sans-serif' 
+                      text-anchor='middle' font-weight='bold'>${encodedText}</text>
+            </svg>`;
+            return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+        }
+
+        function updatePreview() {
+            const instName = document.getElementById('instName').value || 'IQRA ACADEMY';
+            document.getElementById('outInstName').innerText = instName;
+            document.getElementById('outInstAddress').innerText = document.getElementById('instAddress').value || '';
+            document.getElementById('outExamName').innerText = document.getElementById('examName').value || 'Examination Name';
+            document.getElementById('outSubject').innerText = document.getElementById('subjectName').value || '---';
+            document.getElementById('outClass').innerText = document.getElementById('className').value || '---';
+            document.getElementById('outTime').innerText = document.getElementById('examTime').value || '---';
+            document.getElementById('outMarks').innerText = document.getElementById('fullMarks').value || '---';
+            
+            const instText = document.getElementById('examInstructions').value;
+            const instElem = document.getElementById('outInstructions');
+            if (instText) {
+                instElem.innerText = instText;
+                instElem.style.display = 'block';
+            } else {
+                instElem.style.display = 'none';
+            }
+            
+            document.getElementById('outWatermark').style.backgroundImage = generateWatermark(instName);
+
+            // প্রশ্নসমূহ রেন্ডার করা
+            const outBody = document.getElementById('outQuestions');
+            outBody.innerHTML = '';
+
+            const items = document.querySelectorAll('.builder-item');
+            items.forEach(item => {
+                if(item.classList.contains('group-item')) {
+                    let val = item.querySelector('.inp-group').value;
+                    if(val) outBody.innerHTML += `<div class="qp-group-title">${val}</div>`;
+                } else if(item.classList.contains('q-item')) {
+                    let qText = item.querySelector('.inp-q-text').value;
+                    let qMarks = item.querySelector('.inp-q-marks').value;
+                    if(qText || qMarks) {
+                        outBody.innerHTML += `
+                            <div class="qp-q-row">
+                                <div class="qp-q-text">${escapeHtml(qText)}</div>
+                                <div class="qp-q-marks">${qMarks ? '[' + qMarks + ']' : ''}</div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function updateLogoFromUrl() {
+            const url = document.getElementById('logoUrl').value;
+            if (url) {
+                document.getElementById('outLogoImg').src = url;
+            }
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('outLogoImg').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addGroup(defaultVal = "") {
+            itemCount++;
+            const container = document.getElementById('builder-container');
+            const html = `
+                <div class="builder-item group-item" id="item-${itemCount}">
+                    <button class="btn-remove" onclick="removeItem('item-${itemCount}')">✕ মুছুন</button>
+                    <label>বিভাগ বা গ্রুপ শিরোনাম (Group / Section Title)</label>
+                    <input type="text" class="inp-group" value="${defaultVal}" placeholder="e.g. বিভাগ - 'ক' (সঠিক উত্তরটি নির্বাচন করো)" oninput="updatePreview()">
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            updatePreview();
+        }
+
+        function addQuestion(defaultQ = "", defaultM = "") {
+            itemCount++;
+            const container = document.getElementById('builder-container');
+            const html = `
+                <div class="builder-item q-item" id="item-${itemCount}">
+                    <button class="btn-remove" onclick="removeItem('item-${itemCount}')">✕ মুছুন</button>
+                    <div class="row">
+                        <div style="flex: 3.5;">
+                            <label>প্রশ্নের বিবরণ (নতুন লাইনের জন্য Enter চাপুন)</label>
+                            <textarea class="inp-q-text" placeholder="প্রশ্ন ও অপশন এখানে লিখুন..." oninput="updatePreview()">${defaultQ}</textarea>
+                        </div>
+                        <div style="flex: 1.2;">
+                            <label>নম্বর (Marks)</label>
+                            <input type="text" class="inp-q-marks" value="${defaultM}" placeholder="e.g. 1 / 1x5=5" oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            updatePreview();
+        }
+
+        function removeItem(id) {
+            document.getElementById(id).remove();
+            updatePreview();
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('qp-sheet');
+            
+            const originalPadding = element.style.padding;
+            element.style.padding = '0';
+
+            const sub = (document.getElementById('subjectName').value || 'Subject').replace(/\s+/g, '_');
+            const cls = (document.getElementById('className').value || 'Class').replace(/\s+/g, '_');
+            
+            const opt = {
+                margin:       [15, 18, 15, 18], // Top, Left, Bottom, Right মার্জিন প্রতিটি পৃষ্ঠার জন্য
+                filename:     `IQRA_Question_${cls}_${sub}.pdf`,
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { 
+                    scale: 2.2, 
+                    useCORS: true, 
+                    letterRendering: true,
+                    scrollY: 0,
+                    scrollX: 0
+                },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.padding = originalPadding;
+            });
+        }
+    </script>
+</body>
+</html>
