@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQRA ACADEMY - Professional Class Routine Maker</title>
+    <!-- বাংলা যুক্তাক্ষর নিখুঁত দেখানোর জন্য গুগল ফন্ট Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Hind Siliguri', 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: #f0fdf4; color: #1e293b; padding: 1.2rem; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .top-nav { width: 100%; max-width: 1550px; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
+        .brand-badge { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #065f46; font-size: 1.1rem; }
+        .brand-badge img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #059669; object-fit: cover; }
+        
+        .header { margin-bottom: 1.2rem; text-align: center; width: 100%; }
+        .header h2 { color: #065f46; font-size: 1.7rem; font-weight: 800; }
+        .header p { color: #047857; font-size: 0.85rem; font-weight: 600; margin-top: 2px; }
+
+        .container { display: flex; gap: 1.5rem; max-width: 1550px; width: 100%; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+        
+        /* কন্ট্রোল প্যানেল */
+        .form-section { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08); flex: 1; min-width: 340px; max-width: 380px; max-height: 88vh; overflow-y: auto; border: 1px solid #d1fae5; }
+        .form-title { font-size: 1rem; font-weight: bold; margin-bottom: 0.8rem; color: #065f46; border-bottom: 2px solid #a7f3d0; padding-bottom: 0.35rem; margin-top: 1.2rem; }
+        .form-title:first-child { margin-top: 0; }
+        .form-group { margin-bottom: 0.8rem; }
+        .row { display: flex; gap: 8px; }
+        .col { flex: 1; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.3rem; color: #334155; }
+        
+        /* ফর্মের ইনপুট ফিল্ড */
+        .form-section input[type="text"], .form-section select { width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 0.85rem; background: white; transition: border 0.2s; font-family: 'Hind Siliguri', sans-serif; }
+        .form-section input[type="text"]:focus, .form-section select:focus { border-color: #059669; box-shadow: 0 0 0 2px rgba(5,150,105,0.2); }
+        .form-section input[type="file"] { width: 100%; padding: 0.45rem; border: 1px dashed #94a3b8; border-radius: 6px; background: #f8fafc; cursor: pointer; }
+        
+        /* বাটন */
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 0.8rem; }
+        .btn { padding: 0.7rem 0.9rem; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; flex: 1; text-align: center; font-size: 0.88rem; transition: 0.2s; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-family: 'Hind Siliguri', sans-serif; }
+        .btn-add { background: #059669; } .btn-add:hover { background: #047857; }
+        .btn-remove { background: #ef4444; } .btn-remove:hover { background: #dc2626; }
+        .btn-print { background: #0284c7; } .btn-print:hover { background: #0369a1; }
+        .btn-pdf { background: #d97706; } .btn-pdf:hover { background: #b45309; }
+
+        /* প্রিভিউ সেকশন */
+        .preview-section { flex: 2.8; display: flex; flex-direction: column; align-items: center; width: 100%; overflow-x: auto; background: #e2e8f0; padding: 1.2rem; border-radius: 12px; max-height: 88vh; overflow-y: auto; }
+        
+        /* A4 ল্যান্ডস্কেপ শীট ডিজাইন */
+        #print-area { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        
+        .routine-card { 
+            width: 297mm; 
+            min-height: 198mm; 
+            background: white; 
+            padding: 4mm 8mm;
+            box-shadow: 0 8px 20px rgba(6,95,70,0.15); 
+            position: relative; 
+            box-sizing: border-box;
+            flex-shrink: 0;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 2px solid #065f46;
+            border-radius: 6px;
+        }
+
+        /* ওয়াটারমার্ক */
+        .r-watermark {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;
+            pointer-events: none; opacity: 0.03;
+        }
+        
+        .r-content { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+
+        /* হেডার */
+        .r-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #065f46; padding-bottom: 3px; margin-bottom: 4px; }
+        .r-logo-area { width: 58px; height: 58px; display: flex; justify-content: center; align-items: center; }
+        .r-logo { max-width: 100%; max-height: 100%; object-fit: cover; border-radius: 50%; border: 2px solid #059669; }
+        .r-title-area { text-align: center; flex: 1; padding: 0 10px; }
+        .r-inst-name { font-size: 1.55rem; font-weight: 900; color: #065f46; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.15; }
+        .r-inst-sub { font-size: 0.72rem; font-weight: 700; color: #b45309; margin-top: 1px; letter-spacing: 0.3px; }
+        .r-inst-address { font-size: 0.64rem; color: #475569; margin-top: 1px; font-weight: 600; }
+        
+        .r-doc-badge-wrap { margin-top: 2px; }
+        .r-doc-badge { font-size: 0.8rem; font-weight: 800; background: #065f46; color: white; display: inline-block; padding: 2px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; border: 1px solid #fef08a; }
+        
+        /* তথ্য সারি */
+        .r-info { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-bottom: 4px; background: #f0fdf4; padding: 4px 10px; border-radius: 5px; border: 1px solid #d1fae5; }
+        .r-info div span { color: #065f46; font-weight: 800; }
+
+        /* টেবিল লেআউট */
+        .r-table { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; }
+        .r-table th, .r-table td { border: 1.5px solid #065f46; padding: 2px 3px; }
+        
+        /* টেবিল হেডার */
+        .r-table th { background: #065f46 !important; color: white !important; height: 35px; vertical-align: middle; }
+        
+        /* দিন / সময় কলাম হেডার */
+        .r-table th.col-day-th { 
+            background: #044e38 !important; 
+            color: #ffffff !important; 
+            font-weight: 900; 
+            font-size: 0.85rem; 
+            width: 12%; 
+            letter-spacing: 0.5px;
+        }
+
+        /* হেডার ইনপুট ও স্প্যান */
+        .r-table th input.period-name, .r-table th span.period-name { 
+            font-weight: 800 !important; 
+            font-size: 0.82rem !important; 
+            width: 100% !important; 
+            border: none !important; 
+            background: transparent !important; 
+            text-align: center !important; 
+            outline: none !important; 
+            color: #ffffff !important; 
+            padding: 1px 0 !important; 
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            font-family: 'Hind Siliguri', sans-serif !important;
+            line-height: 1.2 !important;
+        }
+        
+        .r-table th input.period-time, .r-table th span.period-time { 
+            font-size: 0.68rem !important; 
+            color: #fef08a !important; 
+            width: 100% !important; 
+            border: none !important; 
+            background: transparent !important; 
+            text-align: center !important; 
+            outline: none !important; 
+            margin-top: 1px !important; 
+            font-weight: 700 !important; 
+            padding: 1px 0 !important; 
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            font-family: 'Hind Siliguri', sans-serif !important;
+            line-height: 1.2 !important;
+        }
+        
+        /* দিন কলাম (বডি সেল) */
+        .r-table td.col-day { 
+            width: 12%; 
+            font-weight: 800; 
+            font-size: 0.84rem; 
+            background: #e6f4ea !important; 
+            color: #065f46 !important; 
+            text-transform: uppercase; 
+        }
+        
+        /* পিরিয়ড সেল ভেতরের ইনপুট ও স্প্যান */
+        .r-table td { height: 42px; vertical-align: middle; background: white; }
+        
+        .r-table td input.sub-input, .r-table td span.sub-input { 
+            font-weight: 700 !important; 
+            font-size: 0.84rem !important; 
+            color: #0f172a !important; 
+            width: 100% !important; 
+            border: none !important; 
+            background: transparent !important; 
+            text-align: center !important; 
+            outline: none !important; 
+            padding: 1px !important; 
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            font-family: 'Hind Siliguri', sans-serif !important;
+            line-height: 1.2 !important;
+        }
+        
+        .r-table td input.teach-input, .r-table td span.teach-input { 
+            font-size: 0.72rem !important; 
+            color: #047857 !important; 
+            width: 100% !important; 
+            border: none !important; 
+            background: transparent !important; 
+            text-align: center !important; 
+            outline: none !important; 
+            margin-top: 1px !important; 
+            font-weight: 600 !important; 
+            padding: 1px !important; 
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            font-family: 'Hind Siliguri', sans-serif !important;
+            line-height: 1.2 !important;
+        }
+        
+        .r-table th input:focus { background: rgba(255, 255, 255, 0.25) !important; border-radius: 4px !important; }
+        .r-table td input:focus { background: #fef9c3 !important; border-radius: 4px !important; }
+
+        /* ফুটার স্বাক্ষর এরিয়া */
+        .r-footer { 
+            margin-top: auto; 
+            padding-top: 14px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+            padding-left: 15px; 
+            padding-right: 15px; 
+        }
+        
+        .r-sign-box { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 190px; 
+            text-align: center; 
+        }
+        
+        .r-sign-space { 
+            height: 38px; 
+            width: 100%; 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: center; 
+            margin-bottom: 2px; 
+        }
+        
+        .r-sign-line { 
+            border-top: 1.5px solid #065f46; 
+            width: 100%; 
+            text-align: center; 
+            padding-top: 4px; 
+            font-size: 0.8rem; 
+            font-weight: 800; 
+            color: #065f46; 
+            letter-spacing: 0.2px; 
+        }
+
+        /* স্ক্রোলবার */
+        .form-section::-webkit-scrollbar, .preview-section::-webkit-scrollbar { width: 6px; }
+        .form-section::-webkit-scrollbar-thumb, .preview-section::-webkit-scrollbar-thumb { background: #a7f3d0; border-radius: 10px; }
+
+        /* প্রিন্ট সিএসএস (১টি পেজ নিশ্চিত করার জন্য) */
+        @page {
+            size: A4 landscape;
+            margin: 4mm 6mm;
+        }
+
+        @media print {
+            html, body {
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                overflow: hidden !important;
+            }
+
+            body * { visibility: hidden; }
+
+            #print-area, #print-area * {
+                visibility: visible;
+            }
+
+            #print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+
+            .preview-section {
+                max-height: none !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                background: white !important;
+                border: none !important;
+            }
+
+            .routine-card {
+                width: 100% !important;
+                max-width: 285mm !important;
+                height: 198mm !important;
+                max-height: 198mm !important;
+                min-height: 0 !important;
+                box-shadow: none !important;
+                margin: 0 auto !important;
+                padding: 3mm 6mm !important;
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+                border: 2px solid #065f46 !important;
+                border-radius: 0 !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+            }
+
+            .r-table td {
+                height: 38px !important;
+            }
+
+            .r-sign-space {
+                height: 32px !important;
+            }
+
+            .r-footer {
+                padding-top: 10px !important;
+            }
+
+            input::placeholder { color: transparent !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <div class="brand-badge">
+            <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="Logo">
+            <span>IQRA ACADEMY</span>
+        </div>
+        <div style="font-size: 0.85rem; color: #047857; font-weight: 600;">
+            UDISE: 19111008505 | Estd: 2015
+        </div>
+    </div>
+
+    <div class="header">
+        <h2>ক্লাস রুটিন মেকার (IQRA ACADEMY)</h2>
+        <p>অনাবাসিক • ডে-বোর্ডিং • আবাসিক গার্লস মিশন | A4 ল্যান্ডস্কেপ প্রিন্ট ও PDF জেনারেটর</p>
+    </div>
+
+    <div class="container">
+        <!-- কন্ট্রোল প্যানেল -->
+        <div class="form-section">
+            <div class="form-title" style="margin-top: 0;">প্রতিষ্ঠানের বিবরণ</div>
+            <div class="form-group">
+                <label>প্রতিষ্ঠানের নাম</label>
+                <input type="text" id="instName" value="IQRA ACADEMY" oninput="updateHeader()">
+            </div>
+            <div class="form-group">
+                <label>লোগো URL (বা ছবি পরিবর্তন)</label>
+                <input type="text" id="logoUrl" value="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" oninput="updateLogoFromUrl()">
+            </div>
+            <div class="form-group">
+                <label>কম্পিউটার থেকে লোগো আপলোড</label>
+                <input type="file" accept="image/*" onchange="handleLogoUpload(event)">
+            </div>
+            <div class="form-group">
+                <label>ঠিকানা ও UDISE কোড</label>
+                <input type="text" id="instAddress" value="Dakshin Shibpur, Jadurhati, Baduria, N 24 Pgs - 743293 | UDISE: 19111008505" oninput="updateHeader()">
+            </div>
+
+            <div class="form-title">রুটিন ও ক্লাসের বিবরণ</div>
+            <div class="form-group">
+                <label>বিভাগ / ক্যাটাগরি *</label>
+                <select id="routineCategory" onchange="updateHeader()">
+                    <option value="আবাসিক গার্লস মিশন (Residential Girls)">আবাসিক গার্লস মিশন (Residential Girls)</option>
+                    <option value="ডে-বোর্ডিং (Day Boarding - Boys & Girls)">ডে-বোর্ডিং (Day Boarding - Boys & Girls)</option>
+                    <option value="অনাবাসিক (Non-Residential - Boys & Girls)" selected>অনাবাসিক (Non-Residential - Boys & Girls)</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col form-group">
+                    <label>শ্রেণী (Class)</label>
+                    <input type="text" id="className" value="Class X" oninput="updateHeader()">
+                </div>
+                <div class="col form-group">
+                    <label>সেকশন (Section)</label>
+                    <input type="text" id="sectionName" value="A" oninput="updateHeader()">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-group">
+                    <label>শিক্ষাবর্ষ (Session)</label>
+                    <input type="text" id="sessionName" value="2026-2027" oninput="updateHeader()">
+                </div>
+                <div class="col form-group">
+                    <label>কার্যকর তারিখ</label>
+                    <input type="text" id="effectiveDate" value="02/01/2026" oninput="updateHeader()">
+                </div>
+            </div>
+
+            <div class="form-title">পিরিয়ড (কলাম) ম্যানেজমেন্ট</div>
+            <div class="btn-group" style="margin-bottom: 1rem;">
+                <button class="btn btn-add" onclick="addPeriod()">+ পিরিয়ড যোগ</button>
+                <button class="btn btn-remove" onclick="removePeriod()">- শেষ পিরিয়ড মুছুন</button>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: #475569; text-align: center; margin-bottom: 1.2rem; line-height: 1.4; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                💡 <b>সরাসরি সম্পাদনা:</b> রুটিনের যেকোনো ঘরে (পিরিয়ডের সময়, বিষয়, শিক্ষকের নাম) ক্লিক করে সরাসরি টাইপ করুন।
+            </p>
+
+            <div class="form-title">প্রিন্ট ও ডাউনলোড</div>
+            <div class="btn-group">
+                <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট রুটিন (১ পৃষ্ঠা)</button>
+                
+            </div>
+        </div>
+
+        <!-- প্রিভিউ সেকশন -->
+        <div class="preview-section">
+            <div id="print-area">
+                <div class="routine-card" id="routine-sheet">
+                    <div class="r-watermark" id="outWatermark"></div>
+                    <div class="r-content">
+                        
+                        <!-- হেডার -->
+                        <div class="r-header">
+                            <div class="r-logo-area">
+                                <img id="outLogoImg" class="r-logo" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="Iqra Logo">
+                            </div>
+                            <div class="r-title-area">
+                                <div class="r-inst-name" id="outInstName">IQRA ACADEMY</div>
+                                <div class="r-inst-sub" id="outInstSub">অনাবাসিক • ডে-বোর্ডিং • আবাসিক গার্লস মিশন (ESTD: 2015)</div>
+                                <div class="r-inst-address" id="outInstAddress">Dakshin Shibpur, Jadurhati, Baduria, N 24 Pgs - 743293 | UDISE: 19111008505</div>
+                                <div class="r-doc-badge-wrap">
+                                    <span class="r-doc-badge" id="outDocBadge">CLASS ROUTINE • অনাবাসিক</span>
+                                </div>
+                            </div>
+                            <div class="r-logo-area"></div>
+                        </div>
+                        
+                        <!-- তথ্য সারি -->
+                        <div class="r-info">
+                            <div>শ্রেণী (Class): <span id="outClass">Class X</span></div>
+                            <div>সেকশন (Sec): <span id="outSection">A</span></div>
+                            <div>বিভাগ (Type): <span id="outCategoryText">অনাবাসিক</span></div>
+                            <div>শিক্ষাবর্ষ (Session): <span id="outSession">2026-2027</span></div>
+                            <div>কার্যকর (Date): <span id="outDate">02/01/2026</span></div>
+                        </div>
+
+                        <!-- রুটিন টেবিল -->
+                        <table class="r-table" id="routineTable">
+                            <thead>
+                                <tr id="headerRow">
+                                    <th class="col-day-th">দিন / সময়</th>
+                                    <th>
+                                        <input type="text" class="period-name" value="1st Period">
+                                        <input type="text" class="period-time" value="10:30 - 11:15">
+                                    </th>
+                                    <th>
+                                        <input type="text" class="period-name" value="2nd Period">
+                                        <input type="text" class="period-time" value="11:15 - 12:00">
+                                    </th>
+                                    <th>
+                                        <input type="text" class="period-name" value="3rd Period">
+                                        <input type="text" class="period-time" value="12:00 - 12:45">
+                                    </th>
+                                    <th>
+                                        <input type="text" class="period-name" value="4th Period">
+                                        <input type="text" class="period-time" value="12:45 - 01:30">
+                                    </th>
+                                    <th style="background: #047857 !important;">
+                                        <input type="text" class="period-name" style="color: #fef08a !important;" value="টিফিন / নামাজ">
+                                        <input type="text" class="period-time" style="color: #ffffff !important;" value="01:30 - 02:00">
+                                    </th>
+                                    <th>
+                                        <input type="text" class="period-name" value="5th Period">
+                                        <input type="text" class="period-time" value="02:00 - 02:40">
+                                    </th>
+                                    <th>
+                                        <input type="text" class="period-name" value="6th Period">
+                                        <input type="text" class="period-time" value="02:40 - 03:20">
+                                    </th>
+                                    <th>
+                                        <input type="text" class="period-name" value="7th Period">
+                                        <input type="text" class="period-time" value="03:20 - 04:00">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="routineBody">
+                                <!-- ডেমো ডাটা JS দিয়ে ইনজেক্ট হবে -->
+                            </tbody>
+                        </table>
+
+                        <!-- ফুটার স্বাক্ষর এরিয়া -->
+                        <div class="r-footer">
+                            <div class="r-sign-box">
+                                <div class="r-sign-space"></div>
+                                <div class="r-sign-line">শ্রেণী শিক্ষক / শিক্ষিকা</div>
+                            </div>
+                            <div class="r-sign-box">
+                                <div class="r-sign-space"></div>
+                                <div class="r-sign-line">রুটিন ইন-চার্জ</div>
+                            </div>
+                            <div class="r-sign-box">
+                                <div class="r-sign-space"></div>
+                                <div class="r-sign-line">প্রধান শিক্ষিকা / সম্পাদক</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const days = ['সোমবার (MON)', 'মঙ্গলবার (TUE)', 'বুধবার (WED)', 'বৃহস্পতিবার (THU)', 'শুক্রবার (FRI)', 'শনিবার (SAT)'];
+        let periodCount = 8;
+
+        const sampleSubjects = [
+            ['বাংলা', 'ইংরেজি', 'গণিত', 'ইতিহাস', 'বিরতি', 'ভূগোল', 'জীবন বিজ্ঞান', 'ভৌত বিজ্ঞান'],
+            ['ইংরেজি', 'গণিত', 'বাংলা', 'জীবন বিজ্ঞান', 'বিরতি', 'ইতিহাস', 'ভৌত বিজ্ঞান', 'ইসলামিক শিক্ষা'],
+            ['গণিত', 'বাংলা', 'ইংরেজি', 'ভৌত বিজ্ঞান', 'বিরতি', 'জীবন বিজ্ঞান', 'ভূগোল', 'ইতিহাস'],
+            ['ইতিহাস', 'ভূগোল', 'গণিত', 'বাংলা', 'বিরতি', 'ইংরেজি', 'ভৌত বিজ্ঞান', 'জীবন বিজ্ঞান'],
+            ['ভৌত বিজ্ঞান', 'জীবন বিজ্ঞান', 'ইংরেজি', 'গণিত', 'বিরতি', 'আরবি / ধর্ম', 'বাংলা', 'ড্রয়িং / পিটি'],
+            ['গণিত', 'ইংরেজি', 'বাংলা', 'বিজ্ঞান', 'বিরতি', 'সাধারণ জ্ঞান', 'কম্পিউটার', 'সাপ্তাহিক মূল্যায়ন']
+        ];
+
+        const sampleTeachers = [
+            ['(T-1)', '(T-2)', '(T-3)', '(T-4)', '', '(T-5)', '(T-6)', '(T-7)'],
+            ['(T-2)', '(T-3)', '(T-1)', '(T-6)', '', '(T-4)', '(T-7)', '(T-8)'],
+            ['(T-3)', '(T-1)', '(T-2)', '(T-7)', '', '(T-6)', '(T-5)', '(T-4)'],
+            ['(T-4)', '(T-5)', '(T-3)', '(T-1)', '', '(T-2)', '(T-7)', '(T-6)'],
+            ['(T-7)', '(T-6)', '(T-2)', '(T-3)', '', '(T-8)', '(T-1)', '(T-9)'],
+            ['(T-3)', '(T-2)', '(T-1)', '(T-6)', '', '(T-5)', '(T-9)', '(T-All)']
+        ];
+
+        window.onload = () => {
+            updateHeader();
+            initializeTableBody();
+        };
+
+        function updateHeader() {
+            const instName = document.getElementById('instName').value || 'IQRA ACADEMY';
+            document.getElementById('outInstName').innerText = instName;
+            document.getElementById('outInstAddress').innerText = document.getElementById('instAddress').value || '';
+            document.getElementById('outClass').innerText = document.getElementById('className').value || '---';
+            document.getElementById('outSection').innerText = document.getElementById('sectionName').value || '---';
+            document.getElementById('outSession').innerText = document.getElementById('sessionName').value || '---';
+            document.getElementById('outDate').innerText = document.getElementById('effectiveDate').value || '---';
+
+            const catFull = document.getElementById('routineCategory').value;
+            let shortCat = "অনাবাসিক";
+            if (catFull.includes("আবাসিক")) shortCat = "আবাসিক গার্লস মিশন";
+            else if (catFull.includes("ডে-বোর্ডিং")) shortCat = "ডে-বোর্ডিং";
+            
+            document.getElementById('outCategoryText').innerText = shortCat;
+            document.getElementById('outDocBadge').innerText = "CLASS ROUTINE • " + shortCat;
+            
+            document.getElementById('outWatermark').style.backgroundImage = generateWatermark(instName);
+        }
+
+        function updateLogoFromUrl() {
+            const url = document.getElementById('logoUrl').value;
+            if (url) {
+                document.getElementById('outLogoImg').src = url;
+            }
+        }
+
+        function generateWatermark(text) {
+            let encodedText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            let svg = `<svg xmlns='http://www.w3.org/2000/svg' width='500' height='300'>
+                <text x='50%' y='50%' transform='translate(250,150) rotate(-30) translate(-250,-150)' 
+                    fill='#065f46' font-size='32' font-family='Arial, sans-serif' 
+                    text-anchor='middle' font-weight='900'>${encodedText}</text>
+            </svg>`;
+            return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('outLogoImg').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function getCellHTML(sub = '', teach = '', isBreak = false) {
+            if (isBreak) {
+                return `<td>
+                    <input type="text" class="sub-input" style="color:#b45309 !important; font-weight:800 !important;" value="নামাজ ও টিফিন">
+                    <input type="text" class="teach-input" style="color:#92400e !important;" value="(বিরতি)">
+                </td>`;
+            }
+            return `
+                <td>
+                    <input type="text" class="sub-input" value="${sub}" placeholder="বিষয়">
+                    <input type="text" class="teach-input" value="${teach}" placeholder="শিক্ষক">
+                </td>
+            `;
+        }
+
+        function initializeTableBody() {
+            const tbody = document.getElementById('routineBody');
+            tbody.innerHTML = '';
+            days.forEach((day, dayIndex) => {
+                let tr = document.createElement('tr');
+                let html = `<td class="col-day">${day}</td>`;
+                for(let i=0; i<periodCount; i++) {
+                    const sub = (sampleSubjects[dayIndex] && sampleSubjects[dayIndex][i]) || '';
+                    const teach = (sampleTeachers[dayIndex] && sampleTeachers[dayIndex][i]) || '';
+                    const isBreak = (i === 4);
+                    html += getCellHTML(sub, teach, isBreak);
+                }
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addPeriod() {
+            if(periodCount >= 10) { alert("A4 প্রিন্টের সর্বোচ্চ পরিচ্ছন্নতার জন্য সর্বোচ্চ ১০টি পিরিয়ড রাখা যাবে।"); return; }
+            periodCount++;
+            
+            const hRow = document.getElementById('headerRow');
+            hRow.insertAdjacentHTML('beforeend', `
+                <th>
+                    <input type="text" class="period-name" value="${periodCount}th Period">
+                    <input type="text" class="period-time" value="সময়">
+                </th>
+            `);
+
+            const rows = document.querySelectorAll('#routineBody tr');
+            rows.forEach(row => {
+                row.insertAdjacentHTML('beforeend', getCellHTML('', ''));
+            });
+        }
+
+        function removePeriod() {
+            if(periodCount <= 2) { alert("কমপক্ষে ২টি পিরিয়ড থাকা আবশ্যক।"); return; }
+            periodCount--;
+            
+            const hRow = document.getElementById('headerRow');
+            hRow.lastElementChild.remove();
+
+            const rows = document.querySelectorAll('#routineBody tr');
+            rows.forEach(row => {
+                row.lastElementChild.remove();
+            });
+        }
+
+        // বাংলা ফন্ট ও ১ পেজে PDF নিশ্চিত করার ফাংশন
+        function downloadPDF() {
+            const element = document.getElementById('routine-sheet');
+            const cls = (document.getElementById('className').value || 'Class').replace(/\s+/g, '_');
+            const sec = (document.getElementById('sectionName').value || 'Sec').replace(/\s+/g, '_');
+            const cat = (document.getElementById('outCategoryText').innerText || 'Iqra').replace(/\s+/g, '_');
+            
+            const opt = {
+                margin:       [3, 4, 3, 4],
+                filename:     `IQRA_Routine_${cls}_${sec}_${cat}.pdf`,
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { 
+                    scale: 2.2, 
+                    useCORS: true, 
+                    letterRendering: true,
+                    scrollY: 0,
+                    scrollX: 0,
+                    onclone: function(clonedDoc) {
+                        // PDF রেন্ডারিং-এর সময় ইনপুটগুলোকে টেক্সট স্প্যানে রূপান্তর করা হয় যাতে বাংলা কার ও যুক্তাক্ষর না ভাঙে
+                        const target = clonedDoc.getElementById('routine-sheet');
+                        const inputs = target.querySelectorAll('input');
+                        inputs.forEach(inp => {
+                            const span = clonedDoc.createElement('span');
+                            span.textContent = inp.value || '';
+                            span.className = inp.className;
+                            span.style.cssText = inp.style.cssText;
+                            span.style.display = 'block';
+                            span.style.width = '100%';
+                            span.style.textAlign = 'center';
+                            span.style.lineHeight = '1.2';
+                            span.style.fontFamily = "'Hind Siliguri', sans-serif";
+                            inp.parentNode.replaceChild(span, inp);
+                        });
+                    }
+                },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
