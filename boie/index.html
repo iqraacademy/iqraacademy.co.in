@@ -497,6 +497,29 @@
                         </div>
                     </div>
 
+                    <!-- Single Student Photo Upload Option -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <div id="studentPhotoThumbBox" class="w-11 h-14 rounded border border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400 text-center leading-tight">
+                                No Photo
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-slate-800">Student Photo (Single Student Entry)</div>
+                                <p class="text-[11px] text-slate-500 leading-snug">
+                                    Displays on the <strong>right side</strong> of the marksheet header (left side keeps Board Logo). Remains blank on Bulk Upload.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label for="studentPhotoInput" class="cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-xs px-3 py-1.5 rounded-lg shadow-sm transition inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                <span>Upload Photo</span>
+                            </label>
+                            <input type="file" id="studentPhotoInput" accept="image/*" class="hidden">
+                            <button type="button" id="btnRemoveStudentPhoto" class="text-xs text-rose-600 hover:underline font-medium">Clear</button>
+                        </div>
+                    </div>
+
                     <!-- Live Subject Marks Entry Table -->
                     <div>
                         <div class="flex items-center justify-between mb-1.5">
@@ -553,14 +576,14 @@
                     </div>
                 </div>
 
-                <!-- Principal Signature Configuration -->
+                <!-- Director Signature Configuration -->
                 <div class="border border-slate-200 rounded-xl p-3.5 space-y-2.5">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Signature of Principal (Pre-linked + Upload Override)</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Signature of Director — Board Of Islamic Education (Pre-linked)</label>
                     <input type="url" id="inpPrincipalSigUrl" value="https://res.cloudinary.com/u0z4riei/image/upload/v1792327065/signatrue_of_principal_boie.png"
                            class="w-full text-xs rounded border border-slate-300 px-2.5 py-1.5 font-mono text-slate-600">
                     <div class="flex items-center gap-2">
                         <label for="principalSigFileInput" class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs px-3 py-1.5 rounded border border-slate-300 transition">
-                            Or Upload Custom Principal Signature
+                            Or Upload Custom Director Signature
                         </label>
                         <input type="file" id="principalSigFileInput" accept="image/*" class="hidden">
                         <button type="button" id="btnResetPrincipalSig" class="text-xs text-emerald-700 hover:underline">Reset Default</button>
@@ -796,6 +819,7 @@
                     position: "4",
                     attPresent: "",
                     attTotal: "",
+                    photoDataUrl: "",
                     marks: {
                         "bengali": { hyW: 73, hyO: 9, anW: 67, anO: 10 },
                         "arabic": { hyW: 27, hyO: 5, anW: 32, anO: 5 },
@@ -1038,6 +1062,14 @@
                 document.getElementById("inpPosition").value = current.position || "";
                 document.getElementById("inpAttPresent").value = current.attPresent || "";
                 document.getElementById("inpAttTotal").value = current.attTotal || "";
+                const thumbBox = document.getElementById("studentPhotoThumbBox");
+                if (thumbBox) {
+                    if (current.photoDataUrl) {
+                        thumbBox.innerHTML = `<img src="${current.photoDataUrl}" alt="Student" class="w-full h-full object-cover">`;
+                    } else {
+                        thumbBox.textContent = "No Photo";
+                    }
+                }
             }
 
             document.getElementById("previewStudentBadge").textContent =
@@ -1215,11 +1247,14 @@
                                 </div>
                             </div>
 
-                            <!-- Right Logo -->
-                            <img src="${escapeHtml(state.logoUrl)}"
-                                 onerror="this.onerror=null;this.src=window.FALLBACK_LOGO_URI;"
-                                 alt="Board Logo Right"
-                                 class="w-[72px] h-[72px] rounded-full object-contain shrink-0 mt-1 shadow-sm bg-white/70 p-0.5">
+                            <!-- Right Side: Student Photo (Single Student Entry) or Blank (Bulk Upload / No Photo) -->
+                            ${student.photoDataUrl ? `
+                            <div class="w-[72px] h-[86px] shrink-0 mt-1 rounded border-2 border-[#1b5e20] bg-white p-0.5 shadow-sm overflow-hidden flex items-center justify-center">
+                                <img src="${student.photoDataUrl}" alt="Student Photo" class="w-full h-full object-cover">
+                            </div>
+                            ` : `
+                            <div class="w-[72px] h-[72px] shrink-0 mt-1"></div>
+                            `}
                         </div>
 
                         <!-- Student & Institution Details -->
@@ -1343,12 +1378,11 @@
                         </div>
                         ` : ""}
 
-                        <!-- Principal Signature Block -->
+                        <!-- Director Signature Block -->
                         <div class="text-center pb-0.5">
                             ${principalSigHtml}
-                            <div class="text-[11px] font-bold italic text-[#b71c1c] leading-tight">Signature of principal</div>
-                            <div class="text-[10px] font-bold text-[#b71c1c] leading-tight">ALL India Sunnat- Al-Jamayat</div>
-                            <div class="text-[10px] font-bold text-[#b71c1c] leading-tight">Board Of Islamic Education</div>
+                            <div class="text-[11.5px] font-bold italic text-[#b71c1c] leading-tight">Signature of Director</div>
+                            <div class="text-[10.5px] font-bold text-[#b71c1c] leading-tight">Board Of Islamic Education</div>
                         </div>
 
                         <!-- Superintendent Signature Block -->
@@ -1380,9 +1414,13 @@
                                 <p class="text-[11.5px] text-slate-700 m-0 font-semibold">${escapeHtml(state.headOffice)}</p>
                                 <p class="text-[11.5px] text-slate-700 m-0"><strong>${escapeHtml(state.regOffice)}</strong></p>
                             </div>
-                            <img src="${escapeHtml(state.logoUrl)}"
-                                 onerror="this.onerror=null;this.src=window.FALLBACK_LOGO_URI;"
-                                 alt="Logo" class="w-16 h-16 rounded-full object-contain">
+                            ${student.photoDataUrl ? `
+                            <div class="w-16 h-20 border border-[#1b5e20] bg-white p-0.5 overflow-hidden shrink-0">
+                                <img src="${student.photoDataUrl}" alt="Student Photo" class="w-full h-full object-cover">
+                            </div>
+                            ` : `
+                            <div class="w-16 h-16 shrink-0"></div>
+                            `}
                         </div>
 
                         <div class="grid grid-cols-2 gap-1.5 text-[13px] mb-3">
@@ -1454,13 +1492,15 @@
                             </div>
                             <div class="w-48">
                                 ${principalSigHtml}
-                                <div class="border-t border-slate-800 pt-1 font-bold">Principal / Headmaster</div>
+                                <div class="border-t border-slate-800 pt-1 font-bold">
+                                    Signature of Director<br>
+                                    <small class="text-[10px] font-normal">Board Of Islamic Education</small>
+                                </div>
                             </div>
                             <div class="w-52">
                                 ${superSigHtml}
                                 <div class="border-t border-slate-800 pt-1 font-bold">
-                                    President / Superintendent<br>
-                                    <small class="text-[10px] font-normal">Board of Islamic Education</small>
+                                    Signature Of Superintendent
                                 </div>
                             </div>
                         </div>
@@ -1835,6 +1875,7 @@
                     position: colPos !== -1 ? String(row[colPos] || "").trim() : "",
                     attPresent: colAttP !== -1 ? String(row[colAttP] || "").trim() : "",
                     attTotal: colAttT !== -1 ? String(row[colAttT] || "").trim() : "",
+                    photoDataUrl: "",
                     marks: {}
                 };
 
@@ -2219,6 +2260,32 @@
             bindStudentField("inpPosition", "position");
             bindStudentField("inpAttPresent", "attPresent");
             bindStudentField("inpAttTotal", "attTotal");
+
+            // Single Student Photo Upload & Clear
+            document.getElementById("studentPhotoInput").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                processSignatureImageFile(file, false, (dataUrl) => {
+                    const cur = state.students[state.currentStudentIndex];
+                    if (cur) {
+                        cur.photoDataUrl = dataUrl;
+                        renderStudentSelectorAndMetadata();
+                        renderMarksheets();
+                        showToast("Student photo uploaded to the top-right of the marksheet!");
+                    }
+                });
+                e.target.value = "";
+            });
+
+            document.getElementById("btnRemoveStudentPhoto").addEventListener("click", () => {
+                const cur = state.students[state.currentStudentIndex];
+                if (cur) {
+                    cur.photoDataUrl = "";
+                    renderStudentSelectorAndMetadata();
+                    renderMarksheets();
+                    showToast("Student photo cleared (right side is now blank).", "info");
+                }
+            });
 
             // Superintendent Signature Upload
             document.getElementById("superintendentSigInput").addEventListener("change", (e) => {
