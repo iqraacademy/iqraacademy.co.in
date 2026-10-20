@@ -1,1 +1,2395 @@
-COMMING SOON............
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board of Islamic Education — Automated Marksheet & Excel Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=EB+Garamond:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Inter:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- SheetJS for Dynamic Excel (.xlsx) Download & Upload -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- html2pdf.js (includes html2canvas + jsPDF) for Direct PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --proforma-cream: #fdfbe4;
+            --proforma-navy: #0a2540;
+            --proforma-maroon: #6a103b;
+            --proforma-green: #2e7d32;
+            --proforma-red: #b71c1c;
+            --classic-green: #1b5e20;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Serif Bengali', sans-serif;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Marksheet A4 Page Container */
+        .marksheet-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .marksheet-page {
+            width: 210mm;
+            min-height: 297mm;
+            max-width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* Theme 1: Official Proforma Style */
+        .theme-proforma {
+            background-color: #fcf9d8;
+            padding: 4mm 13mm 10mm 13mm;
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+            border: 14px solid transparent;
+            font-family: 'EB Garamond', 'Times New Roman', 'Noto Serif Bengali', serif;
+            /* Rich ornamental green guilloche-inspired multi-layer border */
+            background-image:
+                linear-gradient(#fcf9d8, #fcf9d8),
+                repeating-linear-gradient(45deg, #2e6b22 0, #2e6b22 4px, #85bb65 4px, #85bb65 8px, #1b4d14 8px, #1b4d14 12px);
+            background-origin: padding-box, border-box;
+            background-clip: padding-box, border-box;
+        }
+
+        .theme-proforma::before {
+            content: "";
+            position: absolute;
+            inset: 3px;
+            border: 2.5px solid #8d2323;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .theme-proforma::after {
+            content: "";
+            position: absolute;
+            inset: 7px;
+            border: 1px dashed #2e7d32;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Theme 2: Classic Green Border Style */
+        .theme-classic {
+            background-color: #ffffff;
+            padding: 4mm 14mm 12mm 14mm;
+            border: 10px double #1b5e20;
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15);
+            font-family: 'Times New Roman', 'Noto Serif Bengali', serif;
+        }
+
+        /* Proforma Table Styling */
+        .ms-table {
+            width: 100%;
+            border-collapse: collapse;
+            position: relative;
+            z-index: 5;
+        }
+
+        .theme-proforma .ms-table th {
+            background-color: #0b2240;
+            color: #ffffff;
+            border: 1px solid #4a7c59;
+            padding: 4px 5px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.03em;
+            text-align: center;
+        }
+
+        .theme-proforma .ms-table td {
+            border: 1px solid #689f38;
+            padding: 3.5px 6px;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 11.5px;
+            color: #0d1b2a;
+            background-color: rgba(255, 255, 255, 0.32);
+        }
+
+        .theme-proforma .ms-table tr.category-row td {
+            background-color: rgba(200, 230, 201, 0.65);
+            color: #1b5e20;
+            text-align: left;
+            padding-left: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+        }
+
+        .theme-proforma .ms-table tr.total-row td {
+            background-color: rgba(255, 255, 255, 0.85);
+            font-weight: 800;
+            font-size: 12.5px;
+            color: #0b2240;
+            border-top: 1.5px solid #2e7d32;
+            border-bottom: 1.5px solid #2e7d32;
+        }
+
+        /* Classic Table Styling */
+        .theme-classic .ms-table th {
+            background-color: #e8f5e9;
+            color: #1b5e20;
+            border: 1px solid #333;
+            padding: 5px;
+            font-weight: 700;
+            font-size: 11.5px;
+            text-align: center;
+        }
+
+        .theme-classic .ms-table td {
+            border: 1px solid #444;
+            padding: 4px 6px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #111;
+        }
+
+        .theme-classic .ms-table tr.category-row td {
+            background-color: #f1f8e9;
+            color: #2e7d32;
+            text-align: left;
+            padding-left: 10px;
+            font-weight: 700;
+        }
+
+        .theme-classic .ms-table tr.total-row td {
+            background-color: #eeeeee;
+            font-weight: 800;
+            font-size: 12.5px;
+        }
+
+        /* Watermark Center Logo */
+        .ms-watermark {
+            position: absolute;
+            top: 52%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 320px;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 1;
+            object-fit: contain;
+        }
+
+        /* Responsive scaling for narrow screens */
+        @media screen and (max-width: 900px) {
+            .marksheet-scale-box {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 12px;
+            }
+        }
+
+        /* Print Media Styles */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            body {
+                background: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only-container {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .marksheet-page {
+                width: 210mm !important;
+                height: 297mm !important;
+                min-height: 297mm !important;
+                max-height: 297mm !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                page-break-after: always;
+                break-after: page;
+            }
+            .marksheet-page:last-child {
+                page-break-after: auto;
+                break-after: auto;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Top Application Bar (Hidden on Print) -->
+    <header class="no-print bg-emerald-950 text-white border-b border-emerald-800 sticky top-0 z-40 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <img id="navLogoPreview" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792332179/boie_final_logo.png"
+                     onerror="this.onerror=null;this.src=window.FALLBACK_LOGO_URI;"
+                     alt="Board Logo" class="w-11 h-11 object-contain drop-shadow">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span style="font-family:'Times New Roman', serif;" class="text-xs font-bold uppercase tracking-wider text-amber-300">All India Sunnat-Al-Jamayat</span>
+                        <span class="text-[11px] bg-emerald-800 text-emerald-100 px-2 py-0.5 rounded-full font-medium">Estd-2007</span>
+                    </div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight text-white">Board of Islamic Education (BOIE)</h1>
+                </div>
+            </div>
+
+            <!-- Workflow Quick Actions -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" id="btnDownloadBatchExcel" class="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"/></svg>
+                    <span>1. Download Demo Excel (<span id="badgeSubjCount">3</span> Subj)</span>
+                </button>
+
+                <label for="excelUploadInput" class="cursor-pointer inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <span>2. Upload Filled Excel</span>
+                </label>
+                <input type="file" id="excelUploadInput" accept=".xlsx,.xls,.csv" class="hidden">
+
+                <button type="button" id="btnExportPdf" class="inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>3. Download PDF</span>
+                </button>
+
+                <button type="button" id="btnPrintMarksheet" class="inline-flex items-center gap-1.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <span>Print (A4)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace (Hidden on Print) -->
+    <main class="no-print flex-1 max-w-7xl w-full mx-auto px-4 py-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Left Control Panel (5 Columns on Desktop) -->
+        <section class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- Quick Madrasah Selector Bar -->
+            <div class="bg-emerald-900/95 text-white px-4 py-3 border-b border-emerald-800 space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <label for="quickMadrasahSelect" class="text-[11px] font-bold uppercase tracking-wider text-amber-300">
+                        Select Name of The Madrasah (মাদ্রাসা নির্বাচন করুন)
+                    </label>
+                    <span class="text-[10px] bg-emerald-800 text-emerald-100 px-2 py-0.5 rounded">37 Affiliated Madrasahs</span>
+                </div>
+                <select id="quickMadrasahSelect" class="w-full text-xs font-bold text-slate-900 bg-white rounded-lg border border-emerald-600 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400 shadow-sm">
+                    <!-- Populated dynamically with all 37 Madrasahs -->
+                </select>
+            </div>
+
+            <!-- Control Tabs -->
+            <div class="grid grid-cols-4 border-b border-slate-200 bg-slate-50 text-xs font-semibold">
+                <button type="button" data-tab="tab-subjects" class="ctrl-tab py-3 px-2 text-center border-b-2 border-emerald-700 text-emerald-800 bg-white">
+                    1. Subjects (<span id="tabSubjCount">3</span>)
+                </button>
+                <button type="button" data-tab="tab-excel" class="ctrl-tab py-3 px-2 text-center border-b-2 border-transparent text-slate-600 hover:text-slate-900">
+                    2. Excel &amp; Marks
+                </button>
+                <button type="button" data-tab="tab-signatures" class="ctrl-tab py-3 px-2 text-center border-b-2 border-transparent text-slate-600 hover:text-slate-900">
+                    3. Signatures
+                </button>
+                <button type="button" data-tab="tab-institution" class="ctrl-tab py-3 px-2 text-center border-b-2 border-transparent text-slate-600 hover:text-slate-900">
+                    4. Madrasah
+                </button>
+            </div>
+
+            <!-- TAB 1: SUBJECT CONFIGURATION -->
+            <div id="tab-subjects" class="tab-panel p-4 space-y-4">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-900">
+                    <p class="font-semibold mb-1">Dynamic Subject Configuration (প্রাতিষ্ঠানিক বিষয় নির্বাচন)</p>
+                    <p class="text-emerald-800 leading-relaxed">
+                        Default subjects are <strong>Bengali, Arabic, and English</strong>. You can customize Full/Pass marks, remove, or add subjects (e.g., 7, 16, or 22). The <strong>Demo Excel Sheet</strong> updates automatically!
+                    </p>
+                </div>
+
+                <!-- Preset Subject Buttons -->
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-xs font-semibold text-slate-500 mr-1">Presets:</span>
+                    <button type="button" id="btnPresetDefault3" class="text-xs bg-slate-100 hover:bg-emerald-100 text-slate-700 hover:text-emerald-900 font-medium px-2.5 py-1.5 rounded border border-slate-300 transition">
+                        Default (3: Bengali, Arabic, English)
+                    </button>
+                    <button type="button" id="btnPresetProforma16" class="text-xs bg-slate-100 hover:bg-emerald-100 text-slate-700 hover:text-emerald-900 font-medium px-2.5 py-1.5 rounded border border-slate-300 transition">
+                        Proforma Image (16 Subjects)
+                    </button>
+                    <button type="button" id="btnPresetAll22" class="text-xs bg-slate-100 hover:bg-emerald-100 text-slate-700 hover:text-emerald-900 font-medium px-2.5 py-1.5 rounded border border-slate-300 transition">
+                        Full Board Syllabus (22 Subjects)
+                    </button>
+                </div>
+
+                <!-- Add Subject from Board Catalog or Custom -->
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2.5">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Add Subject from Board Catalog</label>
+                    <div class="flex gap-2">
+                        <select id="catalogSubjectSelect" class="flex-1 text-xs rounded-lg border border-slate-300 px-2.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                            <!-- Populated by JS -->
+                        </select>
+                        <button type="button" id="btnAddCatalogSubject" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-3 py-2 rounded-lg shrink-0 transition">
+                            + Add Selected
+                        </button>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Or Add Custom Subject</label>
+                        <div class="grid grid-cols-12 gap-1.5 items-center">
+                            <input type="text" id="customSubjName" placeholder="Subject Name (e.g. Computer)" class="col-span-5 text-xs rounded border border-slate-300 px-2 py-1.5">
+                            <select id="customSubjCat" class="col-span-3 text-xs rounded border border-slate-300 px-1.5 py-1.5 bg-white">
+                                <option value="I. LANGUAGES & LITERATURE">I. Languages</option>
+                                <option value="II. ISLAMIC & ARABIC STUDIES">II. Islamic</option>
+                                <option value="III. GENERAL SUBJECTS & HUMANITIES">III. General</option>
+                                <option value="IV. SCIENCE SUBJECTS">IV. Science</option>
+                                <option value="V. CO-CURRICULAR & PHYSICAL EDUCATION">V. Co-Curricular</option>
+                            </select>
+                            <input type="number" id="customSubjFull" value="50" min="10" max="200" title="Full Marks" placeholder="FM" class="col-span-2 text-xs rounded border border-slate-300 px-1.5 py-1.5 text-center">
+                            <input type="number" id="customSubjPass" value="15" min="1" max="100" title="Pass Marks" placeholder="PM" class="col-span-1 text-xs rounded border border-slate-300 px-1 py-1.5 text-center">
+                            <button type="button" id="btnAddCustomSubject" title="Add Custom Subject" class="col-span-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-1.5 rounded transition">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Subjects List (Editable & Removable) -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Active Subjects (<span id="activeSubjCounter">3</span>) — Total Full Marks: <span id="activeTotalFullMarks" class="text-emerald-700">300</span></span>
+                        <label class="inline-flex items-center gap-1.5 text-xs text-slate-600 cursor-pointer">
+                            <input type="checkbox" id="chkShowCategoryHeaders" class="rounded text-emerald-700 focus:ring-emerald-600">
+                            <span>Show Category Headers</span>
+                        </label>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-lg overflow-hidden max-h-80 overflow-y-auto">
+                        <table class="w-full text-xs">
+                            <thead class="bg-slate-100 text-slate-700 border-b border-slate-200 sticky top-0">
+                                <tr>
+                                    <th class="py-2 px-2 text-left w-8">#</th>
+                                    <th class="py-2 px-2 text-left">Subject Name (Editable)</th>
+                                    <th class="py-2 px-1.5 text-center w-16">Full</th>
+                                    <th class="py-2 px-1.5 text-center w-16">Pass</th>
+                                    <th class="py-2 px-2 text-right w-20">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activeSubjectsTbody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Step 1 -> Step 2 CTA -->
+                <div class="pt-2 flex items-center justify-between gap-2 border-t border-slate-200">
+                    <button type="button" id="btnDownloadDemoFromTab1" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs py-2.5 px-3 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"/></svg>
+                        <span>Download Demo Excel for These <span id="btnSubjCountLabel">3</span> Subjects</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 2: EXCEL DEMO DOWNLOAD, UPLOAD & MANUAL MARKS ENTRY -->
+            <div id="tab-excel" class="tab-panel hidden p-4 space-y-4">
+                <!-- Excel Workflow Box -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 space-y-3">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-amber-900">Step A: Download Dynamic Demo Excel Format</h3>
+                            <p class="text-xs text-amber-800 mt-0.5">
+                                Automatically structured for your <strong><span id="excelTabSubjCount">3</span> active subjects</strong> (Half-Yearly Written &amp; Oral + Annual Written &amp; Oral).
+                            </p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button type="button" id="btnDownloadSingleVerticalExcel" class="bg-white hover:bg-amber-100 text-amber-950 border border-amber-300 font-semibold text-xs py-2 px-3 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <span>Single-Student Excel (.xlsx)</span>
+                        </button>
+                        <button type="button" id="btnDownloadClassBatchExcel" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs py-2 px-3 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            <span>Multi-Student Batch (.xlsx)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Filled Excel Box -->
+                <div class="bg-emerald-50 border-2 border-dashed border-emerald-400 rounded-xl p-4 text-center space-y-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950">Step B: Upload Filled Excel (.xlsx / .csv)</h3>
+                    <p class="text-xs text-emerald-800">Upload completed sheet — supports both Single-Student Vertical and Multi-Student Batch format.</p>
+                    <div class="pt-1">
+                        <label for="excelUploadInputPanel" class="cursor-pointer inline-flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-xs px-4 py-2.5 rounded-lg shadow transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span>Choose Excel / CSV File to Generate Marksheet</span>
+                        </label>
+                        <input type="file" id="excelUploadInputPanel" accept=".xlsx,.xls,.csv" class="hidden">
+                    </div>
+                    <p id="uploadStatusText" class="text-[11px] font-medium text-emerald-700"></p>
+                </div>
+
+                <!-- Student Selector & Live Manual Editor -->
+                <div class="border border-slate-200 rounded-xl p-3.5 space-y-3 bg-white">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500">Active Student Record (<span id="studentTotalCount">1</span>)</label>
+                            <select id="studentSelectDropdown" class="mt-1 text-xs font-semibold rounded-lg border border-slate-300 px-2.5 py-1.5 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" id="btnAddNewStudent" class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-semibold px-2.5 py-1.5 rounded-lg transition">+ New Student</button>
+                            <button type="button" id="btnLoadSampleData" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg transition">Fill Sample Marks</button>
+                            <button type="button" id="btnClearCurrentMarks" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium px-2 py-1.5 rounded-lg transition">Clear Blank</button>
+                        </div>
+                    </div>
+
+                    <!-- Student Metadata Inputs -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                        <div class="col-span-2 sm:col-span-2">
+                            <label class="block text-[11px] font-semibold text-slate-600">Name of Student</label>
+                            <input type="text" id="inpStudentName" placeholder="e.g. FATEMA KHATUN" class="w-full mt-0.5 rounded border border-slate-300 px-2 py-1.5 font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600">Roll No</label>
+                            <input type="text" id="inpRollNo" placeholder="e.g. 04" class="w-full mt-0.5 rounded border border-slate-300 px-2 py-1.5">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600">Class</label>
+                            <input type="text" id="inpClass" placeholder="e.g. VI" class="w-full mt-0.5 rounded border border-slate-300 px-2 py-1.5">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600">Section</label>
+                            <input type="text" id="inpSection" placeholder="e.g. A" class="w-full mt-0.5 rounded border border-slate-300 px-2 py-1.5">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600">Academic Session</label>
+                            <input type="text" id="inpSession" value="2025–2026" class="w-full mt-0.5 rounded border border-slate-300 px-2 py-1.5">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600">Position in Class</label>
+                            <input type="text" id="inpPosition" placeholder="Auto / 4" class="w-full mt-0.5 rounded border border-slate-300 px-2 py-1.5">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600">Attendance (Present)</label>
+                            <input type="text" id="inpAttPresent" placeholder="e.g. 210" class="w-full mt-0.5 rounded border border-slate-300 px-2 py-1.5">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600">Total Working Days</label>
+                            <input type="text" id="inpAttTotal" placeholder="e.g. 240" class="w-full mt-0.5 rounded border border-slate-300 px-2 py-1.5">
+                        </div>
+                    </div>
+
+                    <!-- Single Student Photo Upload Option -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <div id="studentPhotoThumbBox" class="w-12 h-16 rounded border border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400 text-center leading-tight">
+                                No Photo
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-slate-800">Student Photo (Single Student Entry)</div>
+                                <p class="text-[11px] text-slate-500 leading-snug">
+                                    Displays on the <strong>right side</strong> of the marksheet header. Slightly lowered &amp; enlarged in standard passport proportion. Remains blank on Bulk Upload.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label for="studentPhotoInput" class="cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-xs px-3 py-1.5 rounded-lg shadow-sm transition inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                <span>Upload Photo</span>
+                            </label>
+                            <input type="file" id="studentPhotoInput" accept="image/*" class="hidden">
+                            <button type="button" id="btnRemoveStudentPhoto" class="text-xs text-rose-600 hover:underline font-medium">Clear</button>
+                        </div>
+                    </div>
+
+                    <!-- Live Subject Marks Entry Table -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[11px] font-bold uppercase text-slate-600">Subject Marks Entry (Half-Yearly &amp; Annual)</span>
+                            <span class="text-[11px] text-slate-500">Auto-computes Total &amp; Avg</span>
+                        </div>
+                        <div class="border border-slate-200 rounded-lg overflow-hidden max-h-64 overflow-y-auto">
+                            <table class="w-full text-xs">
+                                <thead class="bg-slate-100 text-slate-700 sticky top-0 border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-1.5 px-2 text-left">Subject</th>
+                                        <th class="py-1.5 px-1 text-center w-12" title="Half-Yearly Written">HY W</th>
+                                        <th class="py-1.5 px-1 text-center w-12" title="Half-Yearly Oral">HY O</th>
+                                        <th class="py-1.5 px-1 text-center w-12" title="Annual Written">AN W</th>
+                                        <th class="py-1.5 px-1 text-center w-12" title="Annual Oral">AN O</th>
+                                        <th class="py-1.5 px-1.5 text-center w-12 bg-slate-200/70">Tot</th>
+                                        <th class="py-1.5 px-1.5 text-center w-12 bg-emerald-100/70">Avg</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="liveMarksEntryTbody" class="divide-y divide-slate-100">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: SIGNATURES & LOGO UPLOAD -->
+            <div id="tab-signatures" class="tab-panel hidden p-4 space-y-4">
+                <!-- Superintendent Signature Upload -->
+                <div class="bg-emerald-50 border-2 border-emerald-500 rounded-xl p-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-950">Signature of the Superintendent (Upload Option)</span>
+                        <span class="text-[11px] bg-emerald-200 text-emerald-900 font-semibold px-2 py-0.5 rounded">Required Feature</span>
+                    </div>
+                    <p class="text-xs text-emerald-800">Upload the Superintendent's signature image (PNG/JPG). Enable auto-clean background to make paper transparent automatically.</p>
+
+                    <div class="flex flex-wrap items-center gap-3 pt-1">
+                        <label for="superintendentSigInput" class="cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-xs px-3.5 py-2 rounded-lg shadow-sm transition inline-flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span>Upload Superintendent Signature</span>
+                        </label>
+                        <input type="file" id="superintendentSigInput" accept="image/*" class="hidden">
+                        <button type="button" id="btnClearSuperSig" class="text-xs text-rose-700 hover:underline font-medium">Remove</button>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="inline-flex items-center gap-1.5 text-xs text-emerald-900 cursor-pointer">
+                            <input type="checkbox" id="chkAutoTransparentSuperSig" checked class="rounded text-emerald-700">
+                            <span>Auto-remove white paper background on upload</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Director Signature Configuration -->
+                <div class="border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Signature of Director — Board Of Islamic Education (Pre-linked)</label>
+                    <input type="url" id="inpPrincipalSigUrl" value="https://res.cloudinary.com/u0z4riei/image/upload/v1792327065/signatrue_of_principal_boie.png"
+                           class="w-full text-xs rounded border border-slate-300 px-2.5 py-1.5 font-mono text-slate-600">
+                    <div class="flex items-center gap-2">
+                        <label for="principalSigFileInput" class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs px-3 py-1.5 rounded border border-slate-300 transition">
+                            Or Upload Custom Director Signature
+                        </label>
+                        <input type="file" id="principalSigFileInput" accept="image/*" class="hidden">
+                        <button type="button" id="btnResetPrincipalSig" class="text-xs text-emerald-700 hover:underline">Reset Default</button>
+                    </div>
+                </div>
+
+                <!-- Marksheet Top Header Banner Image Configuration -->
+                <div class="border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Marksheet Top Header Image (Transparent Banner)</label>
+                    <input type="url" id="inpHeaderBannerUrl" value="https://res.cloudinary.com/ewu5hckc/image/upload/v1792477981/head.png"
+                           class="w-full text-xs rounded border border-slate-300 px-2.5 py-1.5 font-mono text-slate-600">
+                    <div class="flex items-center gap-2">
+                        <label for="headerBannerFileInput" class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs px-3 py-1.5 rounded border border-slate-300 transition">
+                            Or Upload Custom Header Image
+                        </label>
+                        <input type="file" id="headerBannerFileInput" accept="image/*" class="hidden">
+                        <button type="button" id="btnResetHeaderBanner" class="text-xs text-emerald-700 hover:underline">Reset Default</button>
+                    </div>
+                </div>
+
+                <!-- Board of Islamic Education Watermark Logo Configuration -->
+                <div class="border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Board of Islamic Education Watermark Logo</label>
+                    <input type="url" id="inpBoardLogoUrl" value="https://res.cloudinary.com/u0z4riei/image/upload/v1792332179/boie_final_logo.png"
+                           class="w-full text-xs rounded border border-slate-300 px-2.5 py-1.5 font-mono text-slate-600">
+                    <div class="flex items-center gap-2">
+                        <label for="boardLogoFileInput" class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs px-3 py-1.5 rounded border border-slate-300 transition">
+                            Or Upload Custom Watermark Logo
+                        </label>
+                        <input type="file" id="boardLogoFileInput" accept="image/*" class="hidden">
+                        <button type="button" id="btnResetBoardLogo" class="text-xs text-emerald-700 hover:underline">Reset Default</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: INSTITUTION & VISUAL STYLE SETTINGS -->
+            <div id="tab-institution" class="tab-panel hidden p-4 space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Marksheet Visual Theme</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" id="btnThemeProforma" class="text-xs font-semibold py-2 px-3 rounded-lg border-2 border-emerald-700 bg-emerald-50 text-emerald-950 text-left">
+                            Official Proforma (Cream &amp; Ornate Border)
+                        </button>
+                        <button type="button" id="btnThemeClassic" class="text-xs font-semibold py-2 px-3 rounded-lg border border-slate-300 bg-white text-slate-700 text-left">
+                            Classic Green Border (White Paper)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-2.5 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-600">Organization Top Banner</label>
+                        <input type="text" id="inpOrgTop" value="ALL INDIA SUNNAT-AL-JAMAYAT" class="w-full mt-0.5 rounded border border-slate-300 px-2.5 py-1.5">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600">Board Name</label>
+                        <input type="text" id="inpBoardName" value="BOARD OF ISLAMIC EDUCATION" class="w-full mt-0.5 rounded border border-slate-300 px-2.5 py-1.5">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600">Registered Office (Single Line)</label>
+                        <input type="text" id="inpRegOffice" value="Reg. Office : Jamia Nagar, Belerdhanyakuria, Matia, North 24 Parganas, 743293, W.B." class="w-full mt-0.5 rounded border border-slate-300 px-2.5 py-1.5">
+                    </div>
+                    <div>
+                        <label for="tab4MadrasahSelect" class="block font-semibold text-slate-600">Select Madrasah (Dropdown List)</label>
+                        <select id="tab4MadrasahSelect" class="w-full mt-0.5 rounded border border-slate-300 px-2.5 py-1.5 font-semibold bg-white text-slate-900">
+                            <!-- Populated dynamically with all 37 Madrasahs -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600">Name of The Madrasah (Custom / Editable Display Name)</label>
+                        <input type="text" id="inpMadrasahName" value="CHISTIA MADRASATUL BANAT" class="w-full mt-0.5 rounded border border-slate-300 px-2.5 py-1.5 font-bold">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600">Madrasah Address</label>
+                        <input type="text" id="inpMadrasahAddress" value="Vill- Barogobra, P.O.- Eojnagar, P.S.- Matia, Dist.- North 24 Parganas, Pin- 743293 (W.B.)" class="w-full mt-0.5 rounded border border-slate-300 px-2.5 py-1.5">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Live Marksheet Preview Area (7 Columns on Desktop) -->
+        <section class="lg:col-span-7 space-y-3">
+            <!-- Preview Toolbar -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Live A4 Marksheet Preview</span>
+                    <span id="previewStudentBadge" class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium">Student 1 of 1</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btnPrevStudent" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded transition disabled:opacity-40">&larr; Prev</button>
+                    <button type="button" id="btnNextStudent" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded transition disabled:opacity-40">Next &rarr;</button>
+                    <label class="inline-flex items-center gap-1.5 text-xs text-slate-700 font-medium ml-2 cursor-pointer">
+                        <input type="checkbox" id="chkRenderAllStudents" class="rounded text-emerald-700">
+                        <span>Show All Uploaded Students for Batch Print/PDF</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Marksheet Render Canvas -->
+            <div class="marksheet-scale-box">
+                <div id="marksheetRenderContainer" class="marksheet-wrapper">
+                    <!-- Rendered dynamically by JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Print-Only Container -->
+    <div id="printOnlyContainer" class="print-only-container hidden"></div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="no-print fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm"></div>
+
+    <script>
+        // Embedded Base64 Fallbacks so images never break offline or under CORS
+        window.FALLBACK_LOGO_URI = "data:image/png;base64,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";
+        window.FALLBACK_PRINCIPAL_SIG_URI = "data:image/png;base64,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";
+
+        // Transparent SVG Fallback for Header Image (head.png) if offline/CORS blocked
+        window.FALLBACK_HEADER_URI = "data:image/svg+xml;utf8," + encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="800" height="120" viewBox="0 0 800 120">
+                <g font-family="Times New Roman, serif" text-anchor="middle">
+                    <text x="430" y="26" fill="#b71c1c" font-size="20" font-weight="bold" letter-spacing="1">ALL INDIA SUNNAT-AL-JAMAYAT</text>
+                    <text x="430" y="60" fill="#0a2540" font-family="Cinzel, Times New Roman, serif" font-size="31" font-weight="900" letter-spacing="1.2">BOARD OF ISLAMIC EDUCATION</text>
+                    <text x="430" y="84" fill="#1b5e20" font-size="18" font-weight="bold">Estd-2007</text>
+                    <text x="430" y="108" fill="#b71c1c" font-size="15" font-weight="bold">Reg. Office : Jamia Nagar, Belerdhanyakuria, Matia, North 24 Parganas, 743293, W.B.</text>
+                </g>
+            </svg>
+        `);
+
+        // Official Cloudinary URLs
+        const DEFAULT_HEADER_IMG_URL = "https://res.cloudinary.com/ewu5hckc/image/upload/v1792477981/head.png";
+        const DEFAULT_LOGO_URL = "https://res.cloudinary.com/u0z4riei/image/upload/v1792332179/boie_final_logo.png";
+        const DEFAULT_PRINCIPAL_SIG_URL = "https://res.cloudinary.com/u0z4riei/image/upload/v1792327065/signatrue_of_principal_boie.png";
+
+        // Complete 22-Subject Board Catalog
+        const BOARD_SUBJECT_CATALOG = [
+            // I. Languages & Literature
+            { id: "bengali", name: "Bengali", category: "I. LANGUAGES & LITERATURE", fullMarks: 100, passMarks: 30, sample: { hyW: 73, hyO: 9, anW: 67, anO: 10 } },
+            { id: "english", name: "English", category: "I. LANGUAGES & LITERATURE", fullMarks: 100, passMarks: 30, sample: { hyW: 71, hyO: 9, anW: 68, anO: 8 } },
+            { id: "arabic", name: "Arabic", category: "I. LANGUAGES & LITERATURE", fullMarks: 100, passMarks: 30, sample: { hyW: 27, hyO: 5, anW: 32, anO: 5 } },
+            { id: "urdu", name: "Urdu", category: "I. LANGUAGES & LITERATURE", fullMarks: 50, passMarks: 15, sample: { hyW: 20, hyO: 5, anW: 36, anO: 5 } },
+            { id: "word_book", name: "Word Book", category: "I. LANGUAGES & LITERATURE", fullMarks: 50, passMarks: 15, sample: { hyW: 31, hyO: 5, anW: 39, anO: 5 } },
+
+            // II. Islamic & Arabic Studies
+            { id: "quran", name: "Quran", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 50, passMarks: 15, sample: { hyW: "", hyO: 46, anW: "", anO: 45 } },
+            { id: "tajbid", name: "Tajbid", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 50, passMarks: 15, sample: { hyW: 16, hyO: 4, anW: 20, anO: 4 } },
+            { id: "fiquha", name: "Fiquha", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 50, passMarks: 15, sample: { hyW: 13, hyO: 3, anW: 26, anO: 5 } },
+            { id: "nahu", name: "Nahu", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 50, passMarks: 15, sample: { hyW: 18, hyO: 4, anW: 21, anO: 4 } },
+            { id: "sarf", name: "Sarf", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 50, passMarks: 15, sample: { hyW: 22, hyO: 4, anW: 33, anO: 5 } },
+            { id: "doua", name: "Doua", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 50, passMarks: 15, sample: { hyW: "", hyO: 48, anW: "", anO: 42 } },
+            { id: "tarikh", name: "Tarikh", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 50, passMarks: 15, sample: { hyW: 29, hyO: 4, anW: 42, anO: 5 } },
+            { id: "islam_parichay", name: "Islam Parichay / History of Islam", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 50, passMarks: 15, sample: { hyW: 34, hyO: 5, anW: 38, anO: 5 } },
+
+            // III. General Subjects & Humanities
+            { id: "mathematics", name: "Mathematics", category: "III. GENERAL SUBJECTS & HUMANITIES", fullMarks: 50, passMarks: 15, sample: { hyW: 36, hyO: 10, anW: 58, anO: 10 } },
+            { id: "history", name: "History", category: "III. GENERAL SUBJECTS & HUMANITIES", fullMarks: 50, passMarks: 15, sample: { hyW: 22, hyO: 4, anW: 29, anO: 5 } },
+            { id: "geography", name: "Geography", category: "III. GENERAL SUBJECTS & HUMANITIES", fullMarks: 50, passMarks: 15, sample: { hyW: 23, hyO: 4, anW: 18, anO: 5 } },
+            { id: "evs", name: "EVS (Environmental Studies)", category: "III. GENERAL SUBJECTS & HUMANITIES", fullMarks: 50, passMarks: 15, sample: { hyW: 24, hyO: 5, anW: 32, anO: 5 } },
+
+            // IV. Science Subjects
+            { id: "physical_science", name: "Physical Science", category: "IV. SCIENCE SUBJECTS", fullMarks: 50, passMarks: 15, sample: { hyW: 30, hyO: 5, anW: 35, anO: 5 } },
+            { id: "life_science", name: "Life Science", category: "IV. SCIENCE SUBJECTS", fullMarks: 50, passMarks: 15, sample: { hyW: 32, hyO: 5, anW: 36, anO: 5 } },
+            { id: "phys_life_science", name: "Physical & Life Science", category: "IV. SCIENCE SUBJECTS", fullMarks: 100, passMarks: 30, sample: { hyW: 64, hyO: 10, anW: 70, anO: 10 } },
+
+            // V. Co-Curricular & Physical Education
+            { id: "health_pe", name: "Health & Physical Education", category: "V. CO-CURRICULAR & PHYSICAL EDUCATION", fullMarks: 50, passMarks: 15, sample: { hyW: 35, hyO: 10, anW: 38, anO: 10 } },
+            { id: "work_ed", name: "Work Education", category: "V. CO-CURRICULAR & PHYSICAL EDUCATION", fullMarks: 50, passMarks: 15, sample: { hyW: 36, hyO: 10, anW: 40, anO: 10 } }
+        ];
+
+        // 37 Affiliated Madrasahs
+        const MADRASAH_LIST = [
+            "Aminia Madrasatul Banat",
+            "Ammajan Ayesha Siddika (Rd.) Balika Yeatimkhana & Madrasah",
+            "Baikara Adarsha Hifjul Quran Madrasah",
+            "Balti Siddiquia Aminia Madrasah & Yeatimkhana",
+            "Bansjhari Jamia Islamia And Yeatim Khana",
+            "Bansjhari Mallickpur Aminia Hifzul Quran Madrasah",
+            "Bhojpara Siddiquia Quraniya Madrasah & Yatimkhana",
+            "Bokchara Majerpara Allamin Siddiqia Amineya Madrasah",
+            "Boldepota Aminia Hafiji And Khariji Madrasah",
+            "Chistia Madrasatul Banat",
+            "Dakshin Baruni Siddiquia Aminia Balika Madrasah",
+            "Danshpara Siddiquia Hanafia Madrasah",
+            "Darus Sunnah Madrasah Aminia",
+            "Fatimatuj Jahara (Rd) Madrasatul Banat",
+            "Fulbari Aminia Hafiji Kharaji & Model Madrasah",
+            "Halimatus Sadiya Girls Institute",
+            "Jamia Rahmania",
+            "Jebunnesha Madrashatul Banat",
+            "Julfiquaria Siddiquia Khareji Madrasah",
+            "Katjala Chhelegoalia Siddiquia Aminia Kharejia Madrasah",
+            "Khadijatul Kubra Balika Yeatimkhana & Madrasah",
+            "Labanga S K Hanafia Madrasah & Atim Khana",
+            "Ma Amina Madrasatul Banat",
+            "Madarsa Rahmania Darul Aitam",
+            "Madrasah Hanafia Jampur",
+            "Naynan Siddiquia Aminia Madrasah",
+            "Neruli Modern Islami Madrasah",
+            "Nurpur-Champali Islamia Darulhuda Madrasah",
+            "Patilachandra Hanafia Hifjul Qurania Madrasah & Yatimkhana",
+            "Poltarati Saolatun Nesha Balika Madrasah",
+            "Rabeya Basari Madrasatul Banat",
+            "Radhanagar Aminia Khareji Madrasah",
+            "Santoshpur Hanafia Madrasah",
+            "Sayyidatun Nisa (R.D.) Girl's Eatim Khana & Madrasah",
+            "Siddiquia Khariji Madrasah",
+            "Sunne Siddiquia Hifjul Qurania Eetim Khana Madrasah",
+            "Talpukur Aminia Madrasah And Yatimkhana"
+        ];
+
+        const PROFORMA_16_IDS = [
+            "quran", "tajbid", "arabic", "bengali", "english", "mathematics",
+            "fiquha", "nahu", "sarf", "urdu", "word_book", "tarikh",
+            "history", "doua", "evs", "geography"
+        ];
+
+        // Application State
+        const state = {
+            theme: "proforma",
+            showCategoryHeaders: false,
+            orgTop: "ALL INDIA SUNNAT-AL-JAMAYAT",
+            boardName: "BOARD OF ISLAMIC EDUCATION",
+            regOffice: "Reg. Office : Jamia Nagar, Belerdhanyakuria, Matia, North 24 Parganas, 743293, W.B.",
+            madrasahName: "CHISTIA MADRASATUL BANAT",
+            madrasahAddress: "Vill- Barogobra, P.O.- Eojnagar, P.S.- Matia, Dist.- North 24 Parganas, Pin- 743293 (W.B.)",
+            headerBannerUrl: DEFAULT_HEADER_IMG_URL,
+            logoUrl: DEFAULT_LOGO_URL,
+            principalSigUrl: DEFAULT_PRINCIPAL_SIG_URL,
+            superintendentSigDataUrl: "",
+            subjects: [
+                { id: "bengali", name: "BENGALI", category: "I. LANGUAGES & LITERATURE", fullMarks: 100, passMarks: 30 },
+                { id: "arabic", name: "ARABIC", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 100, passMarks: 30 },
+                { id: "english", name: "ENGLISH", category: "I. LANGUAGES & LITERATURE", fullMarks: 100, passMarks: 30 }
+            ],
+            students: [
+                {
+                    name: "",
+                    className: "VI",
+                    section: "A",
+                    rollNo: "01",
+                    session: "2025–2026",
+                    position: "4",
+                    attPresent: "",
+                    attTotal: "",
+                    photoDataUrl: "",
+                    marks: {
+                        "bengali": { hyW: 73, hyO: 9, anW: 67, anO: 10 },
+                        "arabic": { hyW: 27, hyO: 5, anW: 32, anO: 5 },
+                        "english": { hyW: 71, hyO: 9, anW: 68, anO: 8 }
+                    }
+                }
+            ],
+            currentStudentIndex: 0,
+            renderAllStudents: false
+        };
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toastContainer");
+            if (!container) return;
+            const toast = document.createElement("div");
+            const bgClass = type === "error" ? "bg-rose-700 text-white" : (type === "info" ? "bg-slate-800 text-white" : "bg-emerald-800 text-white");
+            toast.className = `${bgClass} px-4 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center justify-between gap-3 transition-all duration-300`;
+            toast.innerHTML = `<span>${escapeHtml(message)}</span><button type="button" class="opacity-80 hover:opacity-100 font-bold">&times;</button>`;
+            toast.querySelector("button").addEventListener("click", () => toast.remove());
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) toast.remove();
+            }, 4500);
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function normalizeSubjKey(name) {
+            return String(name || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || ("subj_" + Date.now());
+        }
+
+        function evaluateStudent(student, subjects) {
+            let grandFullMarks = 0;
+            let grandPassMarks = 0;
+            let grandCombinedTotal = 0;
+            let grandAveTotal = 0;
+            let hasAnyMarks = false;
+
+            const subjectRows = subjects.map((subj, idx) => {
+                const full = Number(subj.fullMarks) || 0;
+                const pass = Number(subj.passMarks) || 0;
+                grandFullMarks += full;
+                grandPassMarks += pass;
+
+                const m = (student.marks && (student.marks[subj.id] || student.marks[subj.name])) || { hyW: "", hyO: "", anW: "", anO: "" };
+                const hyW = m.hyW !== "" && m.hyW !== null && m.hyW !== undefined ? Number(m.hyW) : null;
+                const hyO = m.hyO !== "" && m.hyO !== null && m.hyO !== undefined ? Number(m.hyO) : null;
+                const anW = m.anW !== "" && m.anW !== null && m.anW !== undefined ? Number(m.anW) : null;
+                const anO = m.anO !== "" && m.anO !== null && m.anO !== undefined ? Number(m.anO) : null;
+
+                const rowHasMark = (hyW !== null || hyO !== null || anW !== null || anO !== null);
+                if (rowHasMark) hasAnyMarks = true;
+
+                const total = rowHasMark ? ((hyW || 0) + (hyO || 0) + (anW || 0) + (anO || 0)) : null;
+                const avg = total !== null ? Math.round(total / 2) : null;
+
+                if (total !== null) grandCombinedTotal += total;
+                if (avg !== null) grandAveTotal += avg;
+
+                return {
+                    index: idx + 1,
+                    id: subj.id,
+                    name: subj.name,
+                    category: subj.category || "I. LANGUAGES & LITERATURE",
+                    fullMarks: full,
+                    passMarks: pass,
+                    hyW: hyW !== null ? hyW : "",
+                    hyO: hyO !== null ? hyO : "",
+                    anW: anW !== null ? anW : "",
+                    anO: anO !== null ? anO : "",
+                    total: total !== null ? total : "",
+                    avg: avg !== null ? avg : ""
+                };
+            });
+
+            const percentage = (hasAnyMarks && grandFullMarks > 0)
+                ? ((grandAveTotal / grandFullMarks) * 100).toFixed(2)
+                : "";
+
+            let division = "";
+            if (percentage !== "") {
+                const p = parseFloat(percentage);
+                if (p >= 60) division = "1st Division";
+                else if (p >= 45) division = "2nd Division";
+                else if (p >= 30) division = "3rd Division";
+                else division = "Failed";
+            }
+
+            return {
+                subjectRows,
+                grandFullMarks,
+                grandPassMarks,
+                grandCombinedTotal: hasAnyMarks ? grandCombinedTotal : "",
+                grandAveTotal: hasAnyMarks ? grandAveTotal : "",
+                percentage,
+                division,
+                hasAnyMarks
+            };
+        }
+
+        function renderCatalogDropdown() {
+            const select = document.getElementById("catalogSubjectSelect");
+            if (!select) return;
+            const grouped = {};
+            BOARD_SUBJECT_CATALOG.forEach(item => {
+                if (!grouped[item.category]) grouped[item.category] = [];
+                grouped[item.category].push(item);
+            });
+
+            select.innerHTML = Object.keys(grouped).map(cat => {
+                const opts = grouped[cat].map(s => {
+                    const alreadyAdded = state.subjects.some(active => active.id === s.id || active.name.toLowerCase() === s.name.toLowerCase());
+                    return `<option value="${s.id}">${escapeHtml(s.name)} (FM: ${s.fullMarks}, PM: ${s.passMarks})${alreadyAdded ? " ✓ Added" : ""}</option>`;
+                }).join("");
+                return `<optgroup label="${escapeHtml(cat)}">${opts}</optgroup>`;
+            }).join("");
+        }
+
+        function renderActiveSubjectsList() {
+            const tbody = document.getElementById("activeSubjectsTbody");
+            const count = state.subjects.length;
+            const totalFM = state.subjects.reduce((acc, s) => acc + (Number(s.fullMarks) || 0), 0);
+
+            document.getElementById("badgeSubjCount").textContent = count;
+            document.getElementById("tabSubjCount").textContent = count;
+            document.getElementById("activeSubjCounter").textContent = count;
+            document.getElementById("btnSubjCountLabel").textContent = count;
+            document.getElementById("excelTabSubjCount").textContent = count;
+            document.getElementById("activeTotalFullMarks").textContent = totalFM;
+
+            tbody.innerHTML = state.subjects.map((subj, idx) => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-1.5 px-2 font-semibold text-slate-500">${idx + 1}</td>
+                    <td class="py-1.5 px-2">
+                        <input type="text" data-subj-idx="${idx}" data-field="name" value="${escapeHtml(subj.name)}"
+                               class="subj-edit-input w-full rounded border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-800">
+                    </td>
+                    <td class="py-1.5 px-1.5 text-center">
+                        <input type="number" data-subj-idx="${idx}" data-field="fullMarks" value="${subj.fullMarks}" min="10" max="500"
+                               class="subj-edit-input w-14 rounded border border-slate-300 px-1 py-1 text-xs text-center font-medium">
+                    </td>
+                    <td class="py-1.5 px-1.5 text-center">
+                        <input type="number" data-subj-idx="${idx}" data-field="passMarks" value="${subj.passMarks}" min="1" max="500"
+                               class="subj-edit-input w-14 rounded border border-slate-300 px-1 py-1 text-xs text-center font-medium">
+                    </td>
+                    <td class="py-1.5 px-2 text-right whitespace-nowrap">
+                        <button type="button" data-move-up="${idx}" title="Move Up" class="text-slate-400 hover:text-slate-700 px-1 font-bold" ${idx === 0 ? "disabled" : ""}>&uarr;</button>
+                        <button type="button" data-move-down="${idx}" title="Move Down" class="text-slate-400 hover:text-slate-700 px-1 font-bold" ${idx === count - 1 ? "disabled" : ""}>&darr;</button>
+                        <button type="button" data-remove-subj="${idx}" title="Remove Subject" class="text-rose-500 hover:text-rose-700 px-1 font-bold">&times;</button>
+                    </td>
+                </tr>
+            `).join("");
+
+            tbody.querySelectorAll(".subj-edit-input").forEach(inp => {
+                inp.addEventListener("input", (e) => {
+                    const idx = Number(e.target.dataset.subjIdx);
+                    const field = e.target.dataset.field;
+                    if (!state.subjects[idx]) return;
+                    if (field === "name") {
+                        state.subjects[idx].name = e.target.value;
+                    } else {
+                        state.subjects[idx][field] = Number(e.target.value) || 0;
+                    }
+                    document.getElementById("activeTotalFullMarks").textContent = state.subjects.reduce((acc, s) => acc + (Number(s.fullMarks) || 0), 0);
+                    renderLiveMarksEditor();
+                    renderMarksheets();
+                });
+            });
+
+            tbody.querySelectorAll("[data-move-up]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const idx = Number(btn.dataset.moveUp);
+                    if (idx > 0) {
+                        const tmp = state.subjects[idx - 1];
+                        state.subjects[idx - 1] = state.subjects[idx];
+                        state.subjects[idx] = tmp;
+                        refreshAllUI();
+                    }
+                });
+            });
+
+            tbody.querySelectorAll("[data-move-down]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const idx = Number(btn.dataset.moveDown);
+                    if (idx < state.subjects.length - 1) {
+                        const tmp = state.subjects[idx + 1];
+                        state.subjects[idx + 1] = state.subjects[idx];
+                        state.subjects[idx] = tmp;
+                        refreshAllUI();
+                    }
+                });
+            });
+
+            tbody.querySelectorAll("[data-remove-subj]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    if (state.subjects.length <= 1) {
+                        showToast("At least 1 subject must remain in the marksheet.", "error");
+                        return;
+                    }
+                    const idx = Number(btn.dataset.removeSubj);
+                    const removed = state.subjects.splice(idx, 1)[0];
+                    showToast(`Removed subject: ${removed.name}`, "info");
+                    refreshAllUI();
+                });
+            });
+        }
+
+        function renderStudentSelectorAndMetadata() {
+            const select = document.getElementById("studentSelectDropdown");
+            document.getElementById("studentTotalCount").textContent = state.students.length;
+            if (state.currentStudentIndex >= state.students.length) {
+                state.currentStudentIndex = Math.max(0, state.students.length - 1);
+            }
+
+            select.innerHTML = state.students.map((st, idx) => {
+                const label = st.name ? `${idx + 1}. ${st.name} (Roll: ${st.rollNo || "-"})` : `${idx + 1}. [Blank / Proforma Student] (Roll: ${st.rollNo || "-"})`;
+                return `<option value="${idx}" ${idx === state.currentStudentIndex ? "selected" : ""}>${escapeHtml(label)}</option>`;
+            }).join("");
+
+            const current = state.students[state.currentStudentIndex];
+            if (current) {
+                document.getElementById("inpStudentName").value = current.name || "";
+                document.getElementById("inpRollNo").value = current.rollNo || "";
+                document.getElementById("inpClass").value = current.className || "";
+                document.getElementById("inpSection").value = current.section || "";
+                document.getElementById("inpSession").value = current.session || "2025–2026";
+                document.getElementById("inpPosition").value = current.position || "";
+                document.getElementById("inpAttPresent").value = current.attPresent || "";
+                document.getElementById("inpAttTotal").value = current.attTotal || "";
+                const thumbBox = document.getElementById("studentPhotoThumbBox");
+                if (thumbBox) {
+                    if (current.photoDataUrl) {
+                        thumbBox.innerHTML = `<img src="${current.photoDataUrl}" alt="Student" class="w-full h-full object-cover">`;
+                    } else {
+                        thumbBox.textContent = "No Photo";
+                    }
+                }
+            }
+
+            document.getElementById("previewStudentBadge").textContent =
+                `Student ${state.currentStudentIndex + 1} of ${state.students.length}`;
+            document.getElementById("btnPrevStudent").disabled = state.currentStudentIndex <= 0;
+            document.getElementById("btnNextStudent").disabled = state.currentStudentIndex >= state.students.length - 1;
+        }
+
+        function renderLiveMarksEditor() {
+            const tbody = document.getElementById("liveMarksEntryTbody");
+            const current = state.students[state.currentStudentIndex];
+            if (!tbody || !current) return;
+
+            const evalResult = evaluateStudent(current, state.subjects);
+
+            tbody.innerHTML = evalResult.subjectRows.map(row => `
+                <tr>
+                    <td class="py-1 px-2 font-semibold text-slate-800 truncate max-w-[120px]" title="${escapeHtml(row.name)}">
+                        ${escapeHtml(row.name)} <span class="text-[10px] text-slate-400">(${row.fullMarks})</span>
+                    </td>
+                    <td class="p-1">
+                        <input type="number" data-subj-id="${escapeHtml(row.id)}" data-part="hyW" value="${row.hyW}"
+                               class="mark-cell-input w-12 text-center rounded border border-slate-300 py-0.5 text-xs">
+                    </td>
+                    <td class="p-1">
+                        <input type="number" data-subj-id="${escapeHtml(row.id)}" data-part="hyO" value="${row.hyO}"
+                               class="mark-cell-input w-12 text-center rounded border border-slate-300 py-0.5 text-xs">
+                    </td>
+                    <td class="p-1">
+                        <input type="number" data-subj-id="${escapeHtml(row.id)}" data-part="anW" value="${row.anW}"
+                               class="mark-cell-input w-12 text-center rounded border border-slate-300 py-0.5 text-xs">
+                    </td>
+                    <td class="p-1">
+                        <input type="number" data-subj-id="${escapeHtml(row.id)}" data-part="anO" value="${row.anO}"
+                               class="mark-cell-input w-12 text-center rounded border border-slate-300 py-0.5 text-xs">
+                    </td>
+                    <td class="py-1 px-1.5 text-center font-bold text-slate-700 bg-slate-50" data-tot-cell="${escapeHtml(row.id)}">${row.total}</td>
+                    <td class="py-1 px-1.5 text-center font-bold text-emerald-800 bg-emerald-50/60" data-avg-cell="${escapeHtml(row.id)}">${row.avg}</td>
+                </tr>
+            `).join("");
+
+            tbody.querySelectorAll(".mark-cell-input").forEach(inp => {
+                inp.addEventListener("input", (e) => {
+                    const subjId = e.target.dataset.subjId;
+                    const part = e.target.dataset.part;
+                    const val = e.target.value.trim();
+                    if (!current.marks) current.marks = {};
+                    if (!current.marks[subjId]) current.marks[subjId] = { hyW: "", hyO: "", anW: "", anO: "" };
+                    current.marks[subjId][part] = val === "" ? "" : Number(val);
+
+                    const updatedEval = evaluateStudent(current, state.subjects);
+                    const updatedRow = updatedEval.subjectRows.find(r => r.id === subjId);
+                    if (updatedRow) {
+                        const totCell = tbody.querySelector(`[data-tot-cell="${subjId}"]`);
+                        const avgCell = tbody.querySelector(`[data-avg-cell="${subjId}"]`);
+                        if (totCell) totCell.textContent = updatedRow.total;
+                        if (avgCell) avgCell.textContent = updatedRow.avg;
+                    }
+                    renderMarksheets();
+                });
+            });
+        }
+
+        // Build Single Marksheet HTML Card
+        function buildSingleMarksheetHTML(student) {
+            const evalData = evaluateStudent(student, state.subjects);
+            const isProforma = state.theme === "proforma";
+
+            let rowsHtml = "";
+            let lastCategory = null;
+
+            evalData.subjectRows.forEach((row, idx) => {
+                if (state.showCategoryHeaders && row.category !== lastCategory) {
+                    lastCategory = row.category;
+                    rowsHtml += `
+                        <tr class="category-row">
+                            <td colspan="${isProforma ? 9 : 10}">${escapeHtml(row.category)}</td>
+                        </tr>
+                    `;
+                }
+
+                if (isProforma) {
+                    rowsHtml += `
+                        <tr>
+                            <td style="text-align:center; font-weight:800; padding-left:6px; padding-right:6px;">${escapeHtml(row.name.toUpperCase())}</td>
+                            <td>${row.fullMarks}</td>
+                            <td>${row.passMarks}</td>
+                            <td>${row.hyW !== "" ? row.hyW : ""}</td>
+                            <td>${row.hyO !== "" ? row.hyO : ""}</td>
+                            <td>${row.anW !== "" ? row.anW : ""}</td>
+                            <td>${row.anO !== "" ? row.anO : ""}</td>
+                            <td>${row.total !== "" ? row.total : ""}</td>
+                            <td>${row.avg !== "" ? row.avg : ""}</td>
+                        </tr>
+                    `;
+                } else {
+                    rowsHtml += `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td style="text-align:left; padding-left:10px; font-weight:700;">${escapeHtml(row.name)}</td>
+                            <td>${row.fullMarks}</td>
+                            <td>${row.passMarks}</td>
+                            <td>${row.hyW !== "" ? row.hyW : ""}</td>
+                            <td>${row.hyO !== "" ? row.hyO : ""}</td>
+                            <td>${row.anW !== "" ? row.anW : ""}</td>
+                            <td>${row.anO !== "" ? row.anO : ""}</td>
+                            <td>${row.total !== "" ? row.total : ""}</td>
+                            <td>${row.avg !== "" ? row.avg : ""}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            // Superintendent Signature HTML
+            const superSigHtml = state.superintendentSigDataUrl
+                ? `<img src="${state.superintendentSigDataUrl}" alt="Superintendent Signature" style="height:42px; max-width:160px; object-fit:contain; margin:0 auto 2px auto; display:block;">`
+                : `<div style="height:42px;"></div>`;
+
+            // Principal Signature HTML
+            const principalSigHtml = `
+                <img src="${escapeHtml(state.principalSigUrl)}"
+                     onerror="this.onerror=null;this.src=window.FALLBACK_PRINCIPAL_SIG_URI;"
+                     alt="Principal Signature"
+                     style="height:42px; max-width:160px; object-fit:contain; margin:0 auto 2px auto; display:block;">
+            `;
+
+            if (isProforma) {
+                // OFFICIAL PROFORMA LAYOUT
+                return `
+                <div class="marksheet-page theme-proforma flex flex-col justify-between">
+                    <!-- Center Watermark Logo (Pure Logo, No Circle) -->
+                    <img src="${escapeHtml(state.logoUrl)}"
+                         onerror="this.onerror=null;this.src=window.FALLBACK_LOGO_URI;"
+                         alt="Watermark" class="ms-watermark">
+
+                    <div class="relative z-10">
+                        <!-- Full-Width Big Header Image (head.png) -->
+                        <div class="w-full -mt-2 pb-0.5">
+                            <img src="${escapeHtml(state.headerBannerUrl)}"
+                                 onerror="this.onerror=null;this.src=window.FALLBACK_HEADER_URI;"
+                                 alt="Board Header Banner"
+                                 class="w-full h-auto object-contain block mx-auto">
+                        </div>
+
+                        <!-- Student & Institution Details + Optional Student Photo Just Below on Right Side of Heading -->
+                        <div class="mt-1 flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0 space-y-1 text-[14.5px] leading-snug text-[#0a2540]" style="font-family:'EB Garamond', 'Times New Roman', serif;">
+                                <div class="flex flex-wrap items-baseline gap-1.5">
+                                    <span style="font-family:'Inter', sans-serif; font-weight:600; font-size:13.5px; color:#0f172a;">Name of The Madrasah :-</span>
+                                    <span style="font-weight:800; font-size:16.5px; color:#0b2240; letter-spacing:0.02em;">${escapeHtml(state.madrasahName)}</span>
+                                </div>
+                                <div class="flex flex-wrap items-baseline gap-1.5">
+                                    <span style="font-family:'Inter', sans-serif; font-weight:600; font-size:13.5px; color:#0f172a;">Address :-</span>
+                                    <span style="font-style:italic; font-weight:600; font-size:13.5px; color:#0b2240;">${escapeHtml(state.madrasahAddress)}</span>
+                                </div>
+                                <div class="flex items-baseline gap-2 pt-0.5">
+                                    <span style="font-family:'Inter', sans-serif; font-weight:600; font-size:13.5px; color:#0f172a;">Name Of Student :-</span>
+                                    <span class="flex-1 border-b border-dotted border-slate-500 font-bold text-[15px] px-2 text-[#0b2240] min-h-[20px]">${escapeHtml(student.name || "")}</span>
+                                </div>
+                                <div class="flex items-baseline justify-between gap-2 pt-0.5 whitespace-nowrap" style="font-family:'Inter', sans-serif; font-size:13px; font-weight:600;">
+                                    <div class="flex items-baseline gap-1">
+                                        <span>Class:-</span>
+                                        <span class="inline-block min-w-[38px] px-1.5 border-b border-dotted border-slate-500 text-center font-bold text-[#0b2240]">${escapeHtml(student.className || "")}</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span>Section:-</span>
+                                        <span class="inline-block min-w-[34px] px-1.5 border-b border-dotted border-slate-500 text-center font-bold text-[#0b2240]">${escapeHtml(student.section || "")}</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span>Roll No:-</span>
+                                        <span class="inline-block min-w-[34px] px-1.5 border-b border-dotted border-slate-500 text-center font-bold text-[#0b2240]">${escapeHtml(student.rollNo || "")}</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span>Academic Session:</span>
+                                        <span class="inline-block min-w-[82px] px-1.5 border-b border-dotted border-slate-500 text-center font-bold text-[#0b2240] whitespace-nowrap">${escapeHtml(student.session || "2025–2026")}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            ${student.photoDataUrl ? `
+                            <div class="w-[88px] h-[108px] shrink-0 rounded border-2 border-[#1b5e20] bg-white p-0.5 shadow-sm overflow-hidden flex items-center justify-center">
+                                <img src="${student.photoDataUrl}" alt="Student Photo" class="w-full h-full object-cover">
+                            </div>
+                            ` : ``}
+                        </div>
+
+                        <!-- Maroon Oval Pill Banner: MARKSHEET -->
+                        <div class="my-2.5 flex justify-center">
+                            <div style="background-color:#681038; color:#ffffff; padding:5px 38px; border-radius:9999px; font-family:'Cinzel', 'Times New Roman', serif; font-weight:800; font-size:20px; letter-spacing:0.06em; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+                                MARKSHEET
+                            </div>
+                        </div>
+
+                        <!-- Marks Table -->
+                        <table class="ms-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="width:24%; font-size:13px;">SUBJECT</th>
+                                    <th rowspan="2" style="width:9%;">FULL<br>MARK</th>
+                                    <th rowspan="2" style="width:9%;">PASS<br>MARK</th>
+                                    <th colspan="2" style="width:20%; font-size:12px;">HALF- YEARLY</th>
+                                    <th colspan="2" style="width:20%; font-size:12px;">ANNUAL</th>
+                                    <th rowspan="2" style="width:9%; font-size:12px;">TOTAL</th>
+                                    <th rowspan="2" style="width:9%; font-size:11px;">AVE G<br>TOTAL</th>
+                                </tr>
+                                <tr>
+                                    <th style="background-color:#f8fafc; color:#0b2240; font-size:11px;">Written</th>
+                                    <th style="background-color:#f8fafc; color:#0b2240; font-size:11px;">Oral</th>
+                                    <th style="background-color:#f8fafc; color:#0b2240; font-size:11px;">Written</th>
+                                    <th style="background-color:#f8fafc; color:#0b2240; font-size:11px;">Oral</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHtml}
+                                <tr class="total-row">
+                                    <td style="font-size:13.5px; font-weight:900;">TOTAL</td>
+                                    <td>${evalData.grandFullMarks}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>${evalData.grandCombinedTotal}</td>
+                                    <td>${evalData.grandAveTotal}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer Summary & Signatures -->
+                    <div class="relative z-10 mt-3 pt-1 flex items-end justify-between gap-4" style="font-family:'Inter', sans-serif;">
+                        <!-- Left Summary Evaluation Box -->
+                        <div class="space-y-1.5 text-[11.5px] font-semibold text-slate-900">
+                            <div class="flex items-center gap-2">
+                                <span>Percentage of Marks</span>
+                                <span class="inline-flex items-center justify-center border border-[#2c5282] bg-white/80 px-3 py-0.5 min-w-[64px] min-h-[24px] font-bold text-[13px] text-[#1a365d]">
+                                    ${evalData.percentage !== "" ? evalData.percentage : ""}
+                                </span>
+                            </div>
+                            <div class="flex flex-wrap items-baseline gap-3 pt-0.5">
+                                <div>
+                                    <span>Division</span>
+                                    <span class="inline-block border-b border-dotted border-slate-700 min-w-[75px] px-1 font-bold text-[#1b5e20]">
+                                        ${escapeHtml(evalData.division)}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span>Position:</span>
+                                    <span class="inline-block min-w-[28px] px-1 font-extrabold text-[13px] text-[#c53030]">
+                                        ${escapeHtml(student.position || "")}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-baseline gap-1.5">
+                                <span>Attendance:</span>
+                                <span class="font-bold text-slate-800">
+                                    ${student.attPresent || "___"} Days / ${student.attTotal || "___"} Days
+                                </span>
+                            </div>
+                            <div class="text-[10.5px] font-bold text-slate-900 pt-0.5">
+                                1<sup>st</sup> Division 60% &nbsp; 2<sup>nd</sup> Division 45% &nbsp; 3<sup>rd</sup> Division 30%
+                            </div>
+                        </div>
+
+                        <!-- Director Signature Block -->
+                        <div class="text-center pb-0.5">
+                            ${principalSigHtml}
+                            <div class="text-[11.5px] font-bold italic text-[#b71c1c] leading-tight">Signature of Director</div>
+                            <div class="text-[10.5px] font-bold text-[#b71c1c] leading-tight">Board Of Islamic Education</div>
+                        </div>
+
+                        <!-- Superintendent Signature Block -->
+                        <div class="text-center pb-1">
+                            ${superSigHtml}
+                            <div class="text-[12.5px] font-extrabold text-[#0b2240] pt-0.5">
+                                Signature Of Superintendent
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            } else {
+                // CLASSIC GREEN BORDER HTML TEMPLATE LAYOUT
+                return `
+                <div class="marksheet-page theme-classic flex flex-col justify-between">
+                    <img src="${escapeHtml(state.logoUrl)}"
+                         onerror="this.onerror=null;this.src=window.FALLBACK_LOGO_URI;"
+                         alt="Watermark" class="ms-watermark">
+
+                    <div class="relative z-10">
+                        <!-- Full-Width Big Header Image (head.png) -->
+                        <div class="w-full -mt-2 border-b-2 border-[#1b5e20] pb-1.5 mb-2">
+                            <img src="${escapeHtml(state.headerBannerUrl)}"
+                                 onerror="this.onerror=null;this.src=window.FALLBACK_HEADER_URI;"
+                                 alt="Board Header Banner"
+                                 class="w-full h-auto object-contain block mx-auto">
+                        </div>
+
+                        <!-- Student & Institution Details + Optional Student Photo Just Below on Right Side of Heading -->
+                        <div class="mt-1 flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0 space-y-1 text-[14.5px] leading-snug text-[#0a2540]" style="font-family:'EB Garamond', 'Times New Roman', serif;">
+                                <div class="flex flex-wrap items-baseline gap-1.5">
+                                    <span style="font-family:'Inter', sans-serif; font-weight:600; font-size:13.5px; color:#0f172a;">Name of The Madrasah :-</span>
+                                    <span style="font-weight:800; font-size:16.5px; color:#1b5e20; letter-spacing:0.02em;">${escapeHtml(state.madrasahName)}</span>
+                                </div>
+                                <div class="flex flex-wrap items-baseline gap-1.5">
+                                    <span style="font-family:'Inter', sans-serif; font-weight:600; font-size:13.5px; color:#0f172a;">Address :-</span>
+                                    <span style="font-style:italic; font-weight:600; font-size:13.5px; color:#0b2240;">${escapeHtml(state.madrasahAddress)}</span>
+                                </div>
+                                <div class="flex items-baseline gap-2 pt-0.5">
+                                    <span style="font-family:'Inter', sans-serif; font-weight:600; font-size:13.5px; color:#0f172a;">Name Of Student :-</span>
+                                    <span class="flex-1 border-b border-dotted border-slate-500 font-bold text-[15px] px-2 text-[#0b2240] min-h-[20px]">${escapeHtml(student.name || "")}</span>
+                                </div>
+                                <div class="flex items-baseline justify-between gap-2 pt-0.5 whitespace-nowrap" style="font-family:'Inter', sans-serif; font-size:13px; font-weight:600;">
+                                    <div class="flex items-baseline gap-1">
+                                        <span>Class:-</span>
+                                        <span class="inline-block min-w-[38px] px-1.5 border-b border-dotted border-slate-500 text-center font-bold text-[#0b2240]">${escapeHtml(student.className || "")}</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span>Section:-</span>
+                                        <span class="inline-block min-w-[34px] px-1.5 border-b border-dotted border-slate-500 text-center font-bold text-[#0b2240]">${escapeHtml(student.section || "")}</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span>Roll No:-</span>
+                                        <span class="inline-block min-w-[34px] px-1.5 border-b border-dotted border-slate-500 text-center font-bold text-[#0b2240]">${escapeHtml(student.rollNo || "")}</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1">
+                                        <span>Academic Session:</span>
+                                        <span class="inline-block min-w-[82px] px-1.5 border-b border-dotted border-slate-500 text-center font-bold text-[#0b2240] whitespace-nowrap">${escapeHtml(student.session || "2025–2026")}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            ${student.photoDataUrl ? `
+                            <div class="w-[86px] h-[106px] border-2 border-[#1b5e20] bg-white p-0.5 overflow-hidden shrink-0 flex items-center justify-center">
+                                <img src="${student.photoDataUrl}" alt="Student Photo" class="w-full h-full object-cover">
+                            </div>
+                            ` : ``}
+                        </div>
+
+                        <!-- Maroon Oval Pill Banner: MARKSHEET -->
+                        <div class="my-2.5 flex justify-center">
+                            <div style="background-color:#681038; color:#ffffff; padding:5px 38px; border-radius:9999px; font-family:'Cinzel', 'Times New Roman', serif; font-weight:800; font-size:20px; letter-spacing:0.06em; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+                                MARKSHEET
+                            </div>
+                        </div>
+
+                        <table class="ms-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">S.L</th>
+                                    <th rowspan="2">SUBJECTS</th>
+                                    <th rowspan="2">FULL MARKS</th>
+                                    <th rowspan="2">PASS MARKS</th>
+                                    <th colspan="2">HALF-YEARLY</th>
+                                    <th colspan="2">ANNUAL</th>
+                                    <th rowspan="2">TOTAL</th>
+                                    <th rowspan="2">AVG / GRADE</th>
+                                </tr>
+                                <tr>
+                                    <th>Written</th>
+                                    <th>Oral</th>
+                                    <th>Written</th>
+                                    <th>Oral</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHtml}
+                                <tr class="total-row">
+                                    <td colspan="2">GRAND TOTAL</td>
+                                    <td>${evalData.grandFullMarks}</td>
+                                    <td>-</td>
+                                    <td></td><td></td><td></td><td></td>
+                                    <td>${evalData.grandCombinedTotal}</td>
+                                    <td>${evalData.grandAveTotal}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="relative z-10 mt-3">
+                        <div class="flex justify-between text-[12.5px] border border-slate-300 p-2.5 bg-slate-50 mb-6">
+                            <div class="w-3/5 space-y-1">
+                                <p class="m-0"><strong>Total Marks Obtained:</strong> ${evalData.grandAveTotal !== "" ? `${evalData.grandAveTotal} / ${evalData.grandFullMarks}` : `_____ / ${evalData.grandFullMarks}`}</p>
+                                <p class="m-0"><strong>Percentage of Marks:</strong> ${evalData.percentage !== "" ? `${evalData.percentage}%` : "_____ %"}</p>
+                                <p class="m-0"><strong>Division:</strong> ${escapeHtml(evalData.division || "_____")} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Position:</strong> ${escapeHtml(student.position || "_____")}</p>
+                                <p class="m-0"><strong>Attendance:</strong> ${escapeHtml(student.attPresent || "___")} Days / ${escapeHtml(student.attTotal || "___")} Days</p>
+                            </div>
+                            <div class="w-2/5 border-l border-slate-300 pl-3 text-[11px] leading-relaxed">
+                                <strong>Division Criteria (বিভাগ নিয়মাবলী):</strong><br>
+                                • 1st Division: 60% &amp; Above (৬০% বা তার বেশি)<br>
+                                • 2nd Division: 45% to 59% (৪৫% থেকে ৫৯%)<br>
+                                • 3rd Division: 30% to 44% (৩০% থেকে ৪৪%)
+                            </div>
+                        </div>
+
+                        <!-- Classic Signatures: Class Teacher Signature removed as requested! -->
+                        <div class="flex justify-around items-end text-center text-[12px] px-8">
+                            <div class="w-56">
+                                ${principalSigHtml}
+                                <div class="border-t border-slate-800 pt-1 font-bold">
+                                    Signature of Director<br>
+                                    <small class="text-[10px] font-normal">Board Of Islamic Education</small>
+                                </div>
+                            </div>
+                            <div class="w-56">
+                                ${superSigHtml}
+                                <div class="border-t border-slate-800 pt-1 font-bold">
+                                    Signature Of Superintendent
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+        }
+
+        function renderMarksheets() {
+            const container = document.getElementById("marksheetRenderContainer");
+            if (!container) return;
+
+            const listToRender = state.renderAllStudents
+                ? state.students
+                : [state.students[state.currentStudentIndex] || state.students[0]];
+
+            container.innerHTML = listToRender.map(st => buildSingleMarksheetHTML(st)).join("");
+        }
+
+        function renderMadrasahDropdowns() {
+            const quickSel = document.getElementById("quickMadrasahSelect");
+            const tab4Sel = document.getElementById("tab4MadrasahSelect");
+            const currentUpper = (state.madrasahName || "").trim().toUpperCase();
+
+            const optionsHtml = MADRASAH_LIST.map((mName, idx) => {
+                const isSelected = mName.toUpperCase() === currentUpper;
+                return `<option value="${escapeHtml(mName.toUpperCase())}" ${isSelected ? "selected" : ""}>${idx + 1}. ${escapeHtml(mName)}</option>`;
+            }).join("") + (MADRASAH_LIST.some(m => m.toUpperCase() === currentUpper) ? "" : `<option value="${escapeHtml(state.madrasahName)}" selected>Custom: ${escapeHtml(state.madrasahName)}</option>`);
+
+            if (quickSel) quickSel.innerHTML = optionsHtml;
+            if (tab4Sel) tab4Sel.innerHTML = optionsHtml;
+            const inp = document.getElementById("inpMadrasahName");
+            if (inp && document.activeElement !== inp) {
+                inp.value = state.madrasahName;
+            }
+        }
+
+        function refreshAllUI() {
+            renderMadrasahDropdowns();
+            renderCatalogDropdown();
+            renderActiveSubjectsList();
+            renderStudentSelectorAndMetadata();
+            renderLiveMarksEditor();
+            renderMarksheets();
+        }
+
+        // DYNAMIC DEMO EXCEL (.XLSX) GENERATOR
+        function downloadDynamicDemoExcel(mode = "batch") {
+            const subjCount = state.subjects.length;
+            if (typeof XLSX === "undefined") {
+                downloadDynamicCsvFallback();
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+
+            const curStudent = state.students[state.currentStudentIndex] || state.students[0];
+            const verticalRows = [
+                ["BOARD OF ISLAMIC EDUCATION — ACADEMIC MARKSHEET TEMPLATE"],
+                ["Name of The Madrasah", state.madrasahName, "", "Academic Session", curStudent.session || "2025-2026"],
+                ["Name of Student", curStudent.name || "SAMPLE STUDENT NAME", "", "Class", curStudent.className || "VI"],
+                ["Section", curStudent.section || "A", "", "Roll No", curStudent.rollNo || "01"],
+                ["Position", curStudent.position || "1", "", "Attendance (Present / Total)", `${curStudent.attPresent || 210} / ${curStudent.attTotal || 240}`],
+                [],
+                ["SL", "SUBJECT", "CATEGORY", "FULL_MARKS", "PASS_MARKS", "HY_Written", "HY_Oral", "Annual_Written", "Annual_Oral"]
+            ];
+
+            state.subjects.forEach((subj, i) => {
+                const catEntry = BOARD_SUBJECT_CATALOG.find(c => c.id === subj.id || c.name.toLowerCase() === subj.name.toLowerCase());
+                const existingMark = (curStudent.marks && curStudent.marks[subj.id]) || (catEntry && catEntry.sample) || { hyW: 35, hyO: 8, anW: 38, anO: 9 };
+                verticalRows.push([
+                    i + 1,
+                    subj.name,
+                    subj.category || "I. LANGUAGES & LITERATURE",
+                    subj.fullMarks,
+                    subj.passMarks,
+                    existingMark.hyW !== undefined ? existingMark.hyW : "",
+                    existingMark.hyO !== undefined ? existingMark.hyO : "",
+                    existingMark.anW !== undefined ? existingMark.anW : "",
+                    existingMark.anO !== undefined ? existingMark.anO : ""
+                ]);
+            });
+
+            const wsVertical = XLSX.utils.aoa_to_sheet(verticalRows);
+            wsVertical["!cols"] = [
+                { wch: 6 }, { wch: 28 }, { wch: 32 }, { wch: 12 }, { wch: 12 },
+                { wch: 14 }, { wch: 12 }, { wch: 16 }, { wch: 12 }
+            ];
+
+            const batchHeader = [
+                "Roll_No", "Student_Name", "Class", "Section", "Academic_Session",
+                "Position", "Attendance_Present", "Attendance_Total"
+            ];
+            state.subjects.forEach(subj => {
+                const cleanName = subj.name.trim();
+                batchHeader.push(`${cleanName} [HY_Written]`);
+                batchHeader.push(`${cleanName} [HY_Oral]`);
+                batchHeader.push(`${cleanName} [AN_Written]`);
+                batchHeader.push(`${cleanName} [AN_Oral]`);
+            });
+
+            const demoRow1 = [
+                curStudent.rollNo || "01",
+                curStudent.name || "MST. FATEMA KHATUN",
+                curStudent.className || "VI",
+                curStudent.section || "A",
+                curStudent.session || "2025-2026",
+                curStudent.position || "1",
+                curStudent.attPresent || "215",
+                curStudent.attTotal || "240"
+            ];
+            const demoRow2 = [
+                "02",
+                "MST. AYESHA SIDDIQUA",
+                curStudent.className || "VI",
+                curStudent.section || "A",
+                curStudent.session || "2025-2026",
+                "2",
+                "208",
+                "240"
+            ];
+
+            state.subjects.forEach(subj => {
+                const catEntry = BOARD_SUBJECT_CATALOG.find(c => c.id === subj.id || c.name.toLowerCase() === subj.name.toLowerCase());
+                const m1 = (curStudent.marks && curStudent.marks[subj.id]) || (catEntry && catEntry.sample) || { hyW: 32, hyO: 8, anW: 36, anO: 8 };
+                demoRow1.push(m1.hyW ?? "", m1.hyO ?? "", m1.anW ?? "", m1.anO ?? "");
+                demoRow2.push(
+                    m1.hyW !== "" ? Math.max(10, Number(m1.hyW) - 3) : "",
+                    m1.hyO !== "" ? Number(m1.hyO) : "",
+                    m1.anW !== "" ? Math.max(10, Number(m1.anW) - 2) : "",
+                    m1.anO !== "" ? Number(m1.anO) : ""
+                );
+            });
+
+            const wsBatch = XLSX.utils.aoa_to_sheet([batchHeader, demoRow1, demoRow2]);
+            wsBatch["!cols"] = batchHeader.map((h, i) => ({ wch: i === 1 ? 24 : 18 }));
+
+            if (mode === "single") {
+                XLSX.utils.book_append_sheet(wb, wsVertical, "Single_Student_Marksheet");
+                XLSX.utils.book_append_sheet(wb, wsBatch, "Batch_Class_Marksheet");
+            } else {
+                XLSX.utils.book_append_sheet(wb, wsBatch, "Batch_Class_Marksheet");
+                XLSX.utils.book_append_sheet(wb, wsVertical, "Single_Student_Marksheet");
+            }
+
+            const filename = `BOIE_Demo_Marksheet_${subjCount}_Subjects.xlsx`;
+            XLSX.writeFile(wb, filename);
+            showToast(`Downloaded ${filename} configured for your ${subjCount} selected subjects!`);
+        }
+
+        function downloadDynamicCsvFallback() {
+            const subjCount = state.subjects.length;
+            const headers = [
+                "Roll_No", "Student_Name", "Class", "Section", "Academic_Session",
+                "Position", "Attendance_Present", "Attendance_Total"
+            ];
+            state.subjects.forEach(subj => {
+                headers.push(`${subj.name} [HY_Written]`, `${subj.name} [HY_Oral]`, `${subj.name} [AN_Written]`, `${subj.name} [AN_Oral]`);
+            });
+            const row1 = ["01", "MST. FATEMA KHATUN", "VI", "A", "2025-2026", "1", "215", "240"];
+            state.subjects.forEach(subj => {
+                const m = state.students[0]?.marks?.[subj.id] || { hyW: 65, hyO: 8, anW: 70, anO: 9 };
+                row1.push(m.hyW ?? "", m.hyO ?? "", m.anW ?? "", m.anO ?? "");
+            });
+            const csvContent = [headers, row1].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `BOIE_Demo_Marksheet_${subjCount}_Subjects.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showToast(`Downloaded CSV template for ${subjCount} subjects!`);
+        }
+
+        // SMART EXCEL UPLOAD PARSER
+        function handleExcelFileUpload(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, { type: "array" });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[firstSheetName];
+                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+
+                    if (!rows || rows.length === 0) {
+                        showToast("The uploaded Excel sheet is empty.", "error");
+                        return;
+                    }
+
+                    const headerRowIdx = rows.findIndex(r =>
+                        r.some(cell => String(cell).trim().toUpperCase() === "SUBJECT" || String(cell).trim().toUpperCase() === "SUBJECTS") &&
+                        r.some(cell => String(cell).toUpperCase().includes("WRITTEN") || String(cell).toUpperCase().includes("FULL"))
+                    );
+
+                    if (headerRowIdx !== -1) {
+                        parseVerticalSingleStudentSheet(rows, headerRowIdx, file.name);
+                    } else {
+                        parseHorizontalBatchSheet(rows, file.name);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast("Could not parse the uploaded file. Please ensure it is a valid Excel (.xlsx) or CSV file.", "error");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function parseVerticalSingleStudentSheet(rows, headerRowIdx, filename) {
+            const student = {
+                name: "",
+                className: "VI",
+                section: "A",
+                rollNo: "01",
+                session: "2025–2026",
+                position: "",
+                attPresent: "",
+                attTotal: "",
+                marks: {}
+            };
+
+            for (let r = 0; r < headerRowIdx; r++) {
+                const row = rows[r];
+                for (let c = 0; c < row.length - 1; c++) {
+                    const key = String(row[c] || "").toLowerCase();
+                    const val = String(row[c + 1] || "").trim();
+                    if (!val) continue;
+                    if (key.includes("madrasah")) state.madrasahName = val;
+                    else if (key.includes("student")) student.name = val;
+                    else if (key.includes("session")) student.session = val;
+                    else if (key === "class" || key.includes("class:")) student.className = val;
+                    else if (key.includes("section")) student.section = val;
+                    else if (key.includes("roll")) student.rollNo = val;
+                    else if (key.includes("position")) student.position = val;
+                    else if (key.includes("attendance")) {
+                        const parts = val.split("/");
+                        student.attPresent = (parts[0] || "").trim();
+                        student.attTotal = (parts[1] || "").trim();
+                    }
+                }
+            }
+
+            const hdr = rows[headerRowIdx].map(h => String(h || "").trim().toUpperCase());
+            const colSubj = hdr.findIndex(h => h === "SUBJECT" || h === "SUBJECTS");
+            const colCat = hdr.findIndex(h => h.includes("CATEGORY"));
+            const colFM = hdr.findIndex(h => h.includes("FULL"));
+            const colPM = hdr.findIndex(h => h.includes("PASS"));
+            const colHyW = hdr.findIndex(h => h.includes("HY") && h.includes("WRITTEN"));
+            const colHyO = hdr.findIndex(h => h.includes("HY") && h.includes("ORAL"));
+            const colAnW = hdr.findIndex(h => (h.includes("AN") || h.includes("ANNUAL")) && h.includes("WRITTEN"));
+            const colAnO = hdr.findIndex(h => (h.includes("AN") || h.includes("ANNUAL")) && h.includes("ORAL"));
+
+            const newSubjects = [];
+            for (let r = headerRowIdx + 1; r < rows.length; r++) {
+                const row = rows[r];
+                const sName = String(row[colSubj] || "").trim();
+                if (!sName || sName.toUpperCase().includes("TOTAL")) continue;
+
+                const sId = normalizeSubjKey(sName);
+                const fm = colFM !== -1 && row[colFM] !== "" ? Number(row[colFM]) : 50;
+                const pm = colPM !== -1 && row[colPM] !== "" ? Number(row[colPM]) : (fm === 100 ? 30 : 15);
+                const cat = colCat !== -1 && row[colCat] ? String(row[colCat]).trim() : "I. LANGUAGES & LITERATURE";
+
+                newSubjects.push({ id: sId, name: sName, category: cat, fullMarks: fm, passMarks: pm });
+                student.marks[sId] = {
+                    hyW: colHyW !== -1 && row[colHyW] !== "" ? Number(row[colHyW]) : "",
+                    hyO: colHyO !== -1 && row[colHyO] !== "" ? Number(row[colHyO]) : "",
+                    anW: colAnW !== -1 && row[colAnW] !== "" ? Number(row[colAnW]) : "",
+                    anO: colAnO !== -1 && row[colAnO] !== "" ? Number(row[colAnO]) : ""
+                };
+            }
+
+            if (newSubjects.length > 0) {
+                state.subjects = newSubjects;
+                state.students = [student];
+                state.currentStudentIndex = 0;
+                document.getElementById("inpMadrasahName").value = state.madrasahName;
+                document.getElementById("uploadStatusText").textContent =
+                    `Loaded "${filename}" (${newSubjects.length} subjects for ${student.name || "Student"}).`;
+                refreshAllUI();
+                showToast(`Marksheet generated from "${filename}" (${newSubjects.length} subjects)!`);
+            } else {
+                showToast("No valid subject rows found in the uploaded sheet.", "error");
+            }
+        }
+
+        function parseHorizontalBatchSheet(rows, filename) {
+            let hdrIdx = rows.findIndex(r =>
+                r.some(c => {
+                    const s = String(c).toLowerCase();
+                    return s.includes("student_name") || s.includes("name of student") || s.includes("roll_no");
+                })
+            );
+            if (hdrIdx === -1) hdrIdx = 0;
+
+            const headers = rows[hdrIdx].map(h => String(h || "").trim());
+            const subjectColMap = {};
+            const discoveredSubjectNames = [];
+
+            headers.forEach((h, cIdx) => {
+                const match = h.match(/^(.+?)\s*\[(HY_Written|HY_Oral|AN_Written|AN_Oral)\]$/i) ||
+                              h.match(/^(.+?)_(HY_Written|HY_Oral|AN_Written|AN_Oral)$/i);
+                if (match) {
+                    const rawSubjName = match[1].trim();
+                    const partKey = match[2].toUpperCase();
+                    if (!subjectColMap[rawSubjName]) {
+                        subjectColMap[rawSubjName] = {};
+                        discoveredSubjectNames.push(rawSubjName);
+                    }
+                    if (partKey === "HY_WRITTEN") subjectColMap[rawSubjName].hyW = cIdx;
+                    if (partKey === "HY_ORAL") subjectColMap[rawSubjName].hyO = cIdx;
+                    if (partKey === "AN_WRITTEN") subjectColMap[rawSubjName].anW = cIdx;
+                    if (partKey === "AN_ORAL") subjectColMap[rawSubjName].anO = cIdx;
+                }
+            });
+
+            if (discoveredSubjectNames.length > 0) {
+                state.subjects = discoveredSubjectNames.map(sName => {
+                    const existing = state.subjects.find(s => s.name.toLowerCase() === sName.toLowerCase());
+                    const catalogMatch = BOARD_SUBJECT_CATALOG.find(c => c.name.toLowerCase() === sName.toLowerCase());
+                    return {
+                        id: existing?.id || catalogMatch?.id || normalizeSubjKey(sName),
+                        name: sName.toUpperCase(),
+                        category: existing?.category || catalogMatch?.category || "I. LANGUAGES & LITERATURE",
+                        fullMarks: existing?.fullMarks || catalogMatch?.fullMarks || 50,
+                        passMarks: existing?.passMarks || catalogMatch?.passMarks || 15
+                    };
+                });
+            }
+
+            const findMetaCol = (keywords) => headers.findIndex(h => keywords.some(k => h.toLowerCase().includes(k)));
+            const colRoll = findMetaCol(["roll_no", "roll no", "roll"]);
+            const colName = findMetaCol(["student_name", "name of student", "student name", "name"]);
+            const colClass = findMetaCol(["class"]);
+            const colSec = findMetaCol(["section", "sec"]);
+            const colSess = findMetaCol(["session"]);
+            const colPos = findMetaCol(["position", "rank"]);
+            const colAttP = findMetaCol(["attendance_present", "present"]);
+            const colAttT = findMetaCol(["attendance_total", "total_days", "working_days"]);
+
+            const parsedStudents = [];
+            for (let r = hdrIdx + 1; r < rows.length; r++) {
+                const row = rows[r];
+                const isRowEmpty = row.every(c => String(c || "").trim() === "");
+                if (isRowEmpty) continue;
+
+                const st = {
+                    name: colName !== -1 ? String(row[colName] || "").trim() : "",
+                    rollNo: colRoll !== -1 ? String(row[colRoll] || "").trim() : String(parsedStudents.length + 1),
+                    className: colClass !== -1 ? String(row[colClass] || "").trim() : "VI",
+                    section: colSec !== -1 ? String(row[colSec] || "").trim() : "A",
+                    session: colSess !== -1 ? String(row[colSess] || "").trim() : "2025–2026",
+                    position: colPos !== -1 ? String(row[colPos] || "").trim() : "",
+                    attPresent: colAttP !== -1 ? String(row[colAttP] || "").trim() : "",
+                    attTotal: colAttT !== -1 ? String(row[colAttT] || "").trim() : "",
+                    photoDataUrl: "",
+                    marks: {}
+                };
+
+                state.subjects.forEach(subj => {
+                    const mapKey = Object.keys(subjectColMap).find(k => k.toLowerCase() === subj.name.toLowerCase());
+                    const cols = mapKey ? subjectColMap[mapKey] : null;
+                    if (cols) {
+                        st.marks[subj.id] = {
+                            hyW: cols.hyW !== undefined && row[cols.hyW] !== "" ? Number(row[cols.hyW]) : "",
+                            hyO: cols.hyO !== undefined && row[cols.hyO] !== "" ? Number(row[cols.hyO]) : "",
+                            anW: cols.anW !== undefined && row[cols.anW] !== "" ? Number(row[cols.anW]) : "",
+                            anO: cols.anO !== undefined && row[cols.anO] !== "" ? Number(row[cols.anO]) : ""
+                        };
+                    }
+                });
+
+                parsedStudents.push(st);
+            }
+
+            if (parsedStudents.length > 0) {
+                state.students = parsedStudents;
+                state.currentStudentIndex = 0;
+                document.getElementById("uploadStatusText").textContent =
+                    `Loaded ${parsedStudents.length} student record(s) with ${state.subjects.length} subjects from "${filename}".`;
+                refreshAllUI();
+                showToast(`Generated ${parsedStudents.length} marksheet(s) with ${state.subjects.length} subjects!`);
+            } else {
+                showToast("No student rows found in the uploaded sheet.", "error");
+            }
+        }
+
+        // IMAGE UPLOAD & TRANSPARENCY HELPER
+        function processSignatureImageFile(file, makeTransparent, callback) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const rawDataUrl = e.target.result;
+                if (!makeTransparent) {
+                    callback(rawDataUrl);
+                    return;
+                }
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    const maxW = 400;
+                    const scale = img.width > maxW ? maxW / img.width : 1;
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const d = imgData.data;
+                    for (let i = 0; i < d.length; i += 4) {
+                        const r = d[i], g = d[i + 1], b = d[i + 2];
+                        if (r > 215 && g > 210 && b > 190) {
+                            d[i + 3] = 0;
+                        }
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                    callback(canvas.toDataURL("image/png"));
+                };
+                img.src = rawDataUrl;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // PDF EXPORT & PRINT
+        async function exportMarksheetToPdf() {
+            const container = document.getElementById("marksheetRenderContainer");
+            if (!container) return;
+
+            if (typeof html2pdf === "undefined") {
+                showToast("PDF library not loaded; opening browser Print-to-PDF dialog instead.", "info");
+                triggerPrintMarksheet();
+                return;
+            }
+
+            showToast("Preparing high-resolution A4 Marksheet PDF...", "info");
+
+            const imgs = container.querySelectorAll("img");
+            imgs.forEach(img => {
+                if (img.naturalWidth === 0) {
+                    const altText = (img.alt || "").toLowerCase();
+                    if (altText.includes("principal")) {
+                        img.src = window.FALLBACK_PRINCIPAL_SIG_URI;
+                    } else if (altText.includes("header")) {
+                        img.src = window.FALLBACK_HEADER_URI;
+                    } else {
+                        img.src = window.FALLBACK_LOGO_URI;
+                    }
+                }
+            });
+
+            const curStudent = state.students[state.currentStudentIndex] || state.students[0];
+            const cleanStudentName = (curStudent.name || `Roll_${curStudent.rollNo || "01"}`).replace(/[^a-zA-Z0-9_-]+/g, "_");
+            const pdfFilename = state.renderAllStudents
+                ? `BOIE_Marksheets_Batch_${state.students.length}_Students.pdf`
+                : `BOIE_Marksheet_${cleanStudentName}.pdf`;
+
+            const opt = {
+                margin: 0,
+                filename: pdfFilename,
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: false,
+                    backgroundColor: state.theme === "proforma" ? "#fcf9d8" : "#ffffff"
+                },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                pagebreak: { mode: ["css", "legacy"] }
+            };
+
+            try {
+                await html2pdf().set(opt).from(container).save();
+                showToast(`Downloaded PDF: ${pdfFilename}`);
+            } catch (err) {
+                console.warn("CORS fallback triggered for PDF generation:", err);
+                imgs.forEach(img => {
+                    if (img.src.startsWith("http")) {
+                        const altText = (img.alt || "").toLowerCase();
+                        if (altText.includes("principal")) {
+                            img.src = window.FALLBACK_PRINCIPAL_SIG_URI;
+                        } else if (altText.includes("header")) {
+                            img.src = window.FALLBACK_HEADER_URI;
+                        } else {
+                            img.src = window.FALLBACK_LOGO_URI;
+                        }
+                    }
+                });
+                try {
+                    await html2pdf().set(opt).from(container).save();
+                    showToast(`Downloaded PDF: ${pdfFilename}`);
+                } catch (e2) {
+                    triggerPrintMarksheet();
+                }
+            }
+        }
+
+        function triggerPrintMarksheet() {
+            const printContainer = document.getElementById("printOnlyContainer");
+            const previewContainer = document.getElementById("marksheetRenderContainer");
+            if (printContainer && previewContainer) {
+                printContainer.innerHTML = previewContainer.innerHTML;
+            }
+            window.print();
+        }
+
+        function initApp() {
+            // Tab switching
+            document.querySelectorAll(".ctrl-tab").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const targetId = btn.dataset.tab;
+                    document.querySelectorAll(".ctrl-tab").forEach(b => {
+                        b.classList.remove("border-emerald-700", "text-emerald-800", "bg-white");
+                        b.classList.add("border-transparent", "text-slate-600");
+                    });
+                    btn.classList.add("border-emerald-700", "text-emerald-800", "bg-white");
+                    btn.classList.remove("border-transparent", "text-slate-600");
+
+                    document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+                    const panel = document.getElementById(targetId);
+                    if (panel) panel.classList.remove("hidden");
+                });
+            });
+
+            // Subject Presets
+            document.getElementById("btnPresetDefault3").addEventListener("click", () => {
+                state.subjects = [
+                    { id: "bengali", name: "BENGALI", category: "I. LANGUAGES & LITERATURE", fullMarks: 100, passMarks: 30 },
+                    { id: "arabic", name: "ARABIC", category: "II. ISLAMIC & ARABIC STUDIES", fullMarks: 100, passMarks: 30 },
+                    { id: "english", name: "ENGLISH", category: "I. LANGUAGES & LITERATURE", fullMarks: 100, passMarks: 30 }
+                ];
+                refreshAllUI();
+                showToast("Reset to default 3 subjects: Bengali, Arabic, English.");
+            });
+
+            document.getElementById("btnPresetProforma16").addEventListener("click", () => {
+                state.subjects = PROFORMA_16_IDS.map(id => {
+                    const c = BOARD_SUBJECT_CATALOG.find(item => item.id === id);
+                    return {
+                        id: c.id,
+                        name: c.name.toUpperCase(),
+                        category: c.category,
+                        fullMarks: c.fullMarks,
+                        passMarks: c.passMarks
+                    };
+                });
+                const cur = state.students[state.currentStudentIndex];
+                if (cur) {
+                    PROFORMA_16_IDS.forEach(id => {
+                        const c = BOARD_SUBJECT_CATALOG.find(item => item.id === id);
+                        if (c && c.sample) {
+                            cur.marks[id] = { ...c.sample };
+                        }
+                    });
+                }
+                refreshAllUI();
+                showToast("Loaded all 16 Proforma subjects & sample marks (Total FM: 950, Obtained: 644, 67.79%)!");
+            });
+
+            document.getElementById("btnPresetAll22").addEventListener("click", () => {
+                state.subjects = BOARD_SUBJECT_CATALOG.map(c => ({
+                    id: c.id,
+                    name: c.name,
+                    category: c.category,
+                    fullMarks: c.fullMarks,
+                    passMarks: c.passMarks
+                }));
+                const cur = state.students[state.currentStudentIndex];
+                if (cur) {
+                    BOARD_SUBJECT_CATALOG.forEach(c => {
+                        if (c.sample && !cur.marks[c.id]) {
+                            cur.marks[c.id] = { ...c.sample };
+                        }
+                    });
+                }
+                refreshAllUI();
+                showToast("Loaded all 22 Board subjects (Grand Total Full Marks: 1300)!");
+            });
+
+            // Add Subject from Catalog
+            document.getElementById("btnAddCatalogSubject").addEventListener("click", () => {
+                const selId = document.getElementById("catalogSubjectSelect").value;
+                const catItem = BOARD_SUBJECT_CATALOG.find(c => c.id === selId);
+                if (!catItem) return;
+                if (state.subjects.some(s => s.id === catItem.id)) {
+                    showToast(`${catItem.name} is already in your active subject list.`, "info");
+                    return;
+                }
+                state.subjects.push({
+                    id: catItem.id,
+                    name: catItem.name.toUpperCase(),
+                    category: catItem.category,
+                    fullMarks: catItem.fullMarks,
+                    passMarks: catItem.passMarks
+                });
+                const cur = state.students[state.currentStudentIndex];
+                if (cur && catItem.sample) {
+                    cur.marks[catItem.id] = { ...catItem.sample };
+                }
+                refreshAllUI();
+                showToast(`Added subject: ${catItem.name} (Total Subjects: ${state.subjects.length})`);
+            });
+
+            // Add Custom Subject
+            document.getElementById("btnAddCustomSubject").addEventListener("click", () => {
+                const nameInp = document.getElementById("customSubjName");
+                const name = nameInp.value.trim();
+                if (!name) {
+                    showToast("Please enter a custom subject name first.", "error");
+                    return;
+                }
+                const cat = document.getElementById("customSubjCat").value;
+                const full = Number(document.getElementById("customSubjFull").value) || 50;
+                const pass = Number(document.getElementById("customSubjPass").value) || 15;
+                const id = normalizeSubjKey(name) + "_" + Date.now().toString().slice(-3);
+
+                state.subjects.push({ id, name: name.toUpperCase(), category: cat, fullMarks: full, passMarks: pass });
+                nameInp.value = "";
+                refreshAllUI();
+                showToast(`Added custom subject: ${name} (Total Subjects: ${state.subjects.length})`);
+            });
+
+            // Category Headers Toggle
+            document.getElementById("chkShowCategoryHeaders").addEventListener("change", (e) => {
+                state.showCategoryHeaders = e.target.checked;
+                renderMarksheets();
+            });
+
+            // Download Demo Excel Buttons
+            document.getElementById("btnDownloadBatchExcel").addEventListener("click", () => downloadDynamicDemoExcel("batch"));
+            document.getElementById("btnDownloadDemoFromTab1").addEventListener("click", () => downloadDynamicDemoExcel("batch"));
+            document.getElementById("btnDownloadSingleVerticalExcel").addEventListener("click", () => downloadDynamicDemoExcel("single"));
+            document.getElementById("btnDownloadClassBatchExcel").addEventListener("click", () => downloadDynamicDemoExcel("batch"));
+
+            // Upload Excel Inputs
+            document.getElementById("excelUploadInput").addEventListener("change", (e) => {
+                if (e.target.files[0]) handleExcelFileUpload(e.target.files[0]);
+                e.target.value = "";
+            });
+            document.getElementById("excelUploadInputPanel").addEventListener("change", (e) => {
+                if (e.target.files[0]) handleExcelFileUpload(e.target.files[0]);
+                e.target.value = "";
+            });
+
+            // Student Navigation & Management
+            document.getElementById("studentSelectDropdown").addEventListener("change", (e) => {
+                state.currentStudentIndex = Number(e.target.value) || 0;
+                renderStudentSelectorAndMetadata();
+                renderLiveMarksEditor();
+                renderMarksheets();
+            });
+
+            document.getElementById("btnPrevStudent").addEventListener("click", () => {
+                if (state.currentStudentIndex > 0) {
+                    state.currentStudentIndex--;
+                    renderStudentSelectorAndMetadata();
+                    renderLiveMarksEditor();
+                    renderMarksheets();
+                }
+            });
+
+            document.getElementById("btnNextStudent").addEventListener("click", () => {
+                if (state.currentStudentIndex < state.students.length - 1) {
+                    state.currentStudentIndex++;
+                    renderStudentSelectorAndMetadata();
+                    renderLiveMarksEditor();
+                    renderMarksheets();
+                }
+            });
+
+            document.getElementById("chkRenderAllStudents").addEventListener("change", (e) => {
+                state.renderAllStudents = e.target.checked;
+                renderMarksheets();
+            });
+
+            document.getElementById("btnAddNewStudent").addEventListener("click", () => {
+                const newRoll = String(state.students.length + 1).padStart(2, "0");
+                state.students.push({
+                    name: "",
+                    className: "VI",
+                    section: "A",
+                    rollNo: newRoll,
+                    session: "2025–2026",
+                    position: "",
+                    attPresent: "",
+                    attTotal: "",
+                    marks: {}
+                });
+                state.currentStudentIndex = state.students.length - 1;
+                refreshAllUI();
+                showToast(`Added Student #${state.students.length}`);
+            });
+
+            document.getElementById("btnLoadSampleData").addEventListener("click", () => {
+                const cur = state.students[state.currentStudentIndex];
+                if (!cur) return;
+                if (!cur.name) cur.name = "MST. FATEMA KHATUN";
+                cur.className = cur.className || "VI";
+                cur.section = cur.section || "A";
+                cur.rollNo = cur.rollNo || "01";
+                cur.position = cur.position || "4";
+                cur.attPresent = cur.attPresent || "216";
+                cur.attTotal = cur.attTotal || "240";
+                state.subjects.forEach(subj => {
+                    const cat = BOARD_SUBJECT_CATALOG.find(c => c.id === subj.id || c.name.toLowerCase() === subj.name.toLowerCase());
+                    cur.marks[subj.id] = cat && cat.sample ? { ...cat.sample } : { hyW: 34, hyO: 8, anW: 38, anO: 8 };
+                });
+                refreshAllUI();
+                showToast("Populated sample marks for current student.");
+            });
+
+            document.getElementById("btnClearCurrentMarks").addEventListener("click", () => {
+                const cur = state.students[state.currentStudentIndex];
+                if (!cur) return;
+                cur.name = "";
+                cur.marks = {};
+                refreshAllUI();
+                showToast("Cleared marks to show blank printable proforma.");
+            });
+
+            // Student Metadata Live Binding
+            const bindStudentField = (inputId, prop) => {
+                document.getElementById(inputId).addEventListener("input", (e) => {
+                    const cur = state.students[state.currentStudentIndex];
+                    if (!cur) return;
+                    cur[prop] = e.target.value;
+                    renderMarksheets();
+                });
+            };
+            bindStudentField("inpStudentName", "name");
+            bindStudentField("inpRollNo", "rollNo");
+            bindStudentField("inpClass", "className");
+            bindStudentField("inpSection", "section");
+            bindStudentField("inpSession", "session");
+            bindStudentField("inpPosition", "position");
+            bindStudentField("inpAttPresent", "attPresent");
+            bindStudentField("inpAttTotal", "attTotal");
+
+            // Single Student Photo Upload & Clear
+            document.getElementById("studentPhotoInput").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                processSignatureImageFile(file, false, (dataUrl) => {
+                    const cur = state.students[state.currentStudentIndex];
+                    if (cur) {
+                        cur.photoDataUrl = dataUrl;
+                        renderStudentSelectorAndMetadata();
+                        renderMarksheets();
+                        showToast("Student photo uploaded to the top-right of the marksheet!");
+                    }
+                });
+                e.target.value = "";
+            });
+
+            document.getElementById("btnRemoveStudentPhoto").addEventListener("click", () => {
+                const cur = state.students[state.currentStudentIndex];
+                if (cur) {
+                    cur.photoDataUrl = "";
+                    renderStudentSelectorAndMetadata();
+                    renderMarksheets();
+                    showToast("Student photo cleared (right side is now blank).", "info");
+                }
+            });
+
+            // Superintendent Signature Upload
+            document.getElementById("superintendentSigInput").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const autoClean = document.getElementById("chkAutoTransparentSuperSig").checked;
+                processSignatureImageFile(file, autoClean, (dataUrl) => {
+                    state.superintendentSigDataUrl = dataUrl;
+                    renderMarksheets();
+                    showToast("Superintendent signature uploaded and applied to marksheet!");
+                });
+                e.target.value = "";
+            });
+
+            document.getElementById("btnClearSuperSig").addEventListener("click", () => {
+                state.superintendentSigDataUrl = "";
+                renderMarksheets();
+                showToast("Removed Superintendent signature.", "info");
+            });
+
+            // Principal Signature URL & File Override
+            document.getElementById("inpPrincipalSigUrl").addEventListener("input", (e) => {
+                state.principalSigUrl = e.target.value.trim() || DEFAULT_PRINCIPAL_SIG_URL;
+                renderMarksheets();
+            });
+            document.getElementById("principalSigFileInput").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                processSignatureImageFile(file, true, (dataUrl) => {
+                    state.principalSigUrl = dataUrl;
+                    document.getElementById("inpPrincipalSigUrl").value = "(Custom Uploaded Signature)";
+                    renderMarksheets();
+                    showToast("Custom Principal signature uploaded!");
+                });
+                e.target.value = "";
+            });
+            document.getElementById("btnResetPrincipalSig").addEventListener("click", () => {
+                state.principalSigUrl = DEFAULT_PRINCIPAL_SIG_URL;
+                document.getElementById("inpPrincipalSigUrl").value = DEFAULT_PRINCIPAL_SIG_URL;
+                renderMarksheets();
+                showToast("Reset Principal signature to official Board link.");
+            });
+
+            // Top Header Banner Image URL & File Override
+            document.getElementById("inpHeaderBannerUrl").addEventListener("input", (e) => {
+                state.headerBannerUrl = e.target.value.trim() || DEFAULT_HEADER_IMG_URL;
+                renderMarksheets();
+            });
+            document.getElementById("headerBannerFileInput").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                processSignatureImageFile(file, false, (dataUrl) => {
+                    state.headerBannerUrl = dataUrl;
+                    document.getElementById("inpHeaderBannerUrl").value = "(Custom Uploaded Header Image)";
+                    renderMarksheets();
+                    showToast("Custom Marksheet Header Image uploaded!");
+                });
+                e.target.value = "";
+            });
+            document.getElementById("btnResetHeaderBanner").addEventListener("click", () => {
+                state.headerBannerUrl = DEFAULT_HEADER_IMG_URL;
+                document.getElementById("inpHeaderBannerUrl").value = DEFAULT_HEADER_IMG_URL;
+                renderMarksheets();
+                showToast("Reset Marksheet Header Image to official link.");
+            });
+
+            // Board Logo URL & File Override
+            document.getElementById("inpBoardLogoUrl").addEventListener("input", (e) => {
+                state.logoUrl = e.target.value.trim() || DEFAULT_LOGO_URL;
+                document.getElementById("navLogoPreview").src = state.logoUrl;
+                renderMarksheets();
+            });
+            document.getElementById("boardLogoFileInput").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                processSignatureImageFile(file, false, (dataUrl) => {
+                    state.logoUrl = dataUrl;
+                    document.getElementById("navLogoPreview").src = dataUrl;
+                    document.getElementById("inpBoardLogoUrl").value = "(Custom Uploaded Logo)";
+                    renderMarksheets();
+                    showToast("Custom Board logo uploaded!");
+                });
+                e.target.value = "";
+            });
+            document.getElementById("btnResetBoardLogo").addEventListener("click", () => {
+                state.logoUrl = DEFAULT_LOGO_URL;
+                document.getElementById("navLogoPreview").src = DEFAULT_LOGO_URL;
+                document.getElementById("inpBoardLogoUrl").value = DEFAULT_LOGO_URL;
+                renderMarksheets();
+                showToast("Reset Board logo to official link.");
+            });
+
+            // Theme Switching
+            document.getElementById("btnThemeProforma").addEventListener("click", () => {
+                state.theme = "proforma";
+                document.getElementById("btnThemeProforma").className = "text-xs font-semibold py-2 px-3 rounded-lg border-2 border-emerald-700 bg-emerald-50 text-emerald-950 text-left";
+                document.getElementById("btnThemeClassic").className = "text-xs font-semibold py-2 px-3 rounded-lg border border-slate-300 bg-white text-slate-700 text-left";
+                renderMarksheets();
+            });
+            document.getElementById("btnThemeClassic").addEventListener("click", () => {
+                state.theme = "classic";
+                document.getElementById("btnThemeClassic").className = "text-xs font-semibold py-2 px-3 rounded-lg border-2 border-emerald-700 bg-emerald-50 text-emerald-950 text-left";
+                document.getElementById("btnThemeProforma").className = "text-xs font-semibold py-2 px-3 rounded-lg border border-slate-300 bg-white text-slate-700 text-left";
+                renderMarksheets();
+            });
+
+            // Institution Text Overrides
+            const bindInstField = (id, prop) => {
+                document.getElementById(id).addEventListener("input", (e) => {
+                    state[prop] = e.target.value;
+                    renderMarksheets();
+                });
+            };
+            bindInstField("inpOrgTop", "orgTop");
+            bindInstField("inpBoardName", "boardName");
+            bindInstField("inpRegOffice", "regOffice");
+            bindInstField("inpMadrasahName", "madrasahName");
+            document.getElementById("inpMadrasahName").addEventListener("input", () => {
+                renderMadrasahDropdowns();
+            });
+            const handleMadrasahDropdownChange = (e) => {
+                state.madrasahName = e.target.value;
+                const inp = document.getElementById("inpMadrasahName");
+                if (inp) inp.value = state.madrasahName;
+                renderMadrasahDropdowns();
+                renderMarksheets();
+                showToast(`Selected Madrasah: ${state.madrasahName}`);
+            };
+            document.getElementById("quickMadrasahSelect").addEventListener("change", handleMadrasahDropdownChange);
+            document.getElementById("tab4MadrasahSelect").addEventListener("change", handleMadrasahDropdownChange);
+            bindInstField("inpMadrasahAddress", "madrasahAddress");
+
+            // PDF & Print Buttons
+            document.getElementById("btnExportPdf").addEventListener("click", exportMarksheetToPdf);
+            document.getElementById("btnPrintMarksheet").addEventListener("click", triggerPrintMarksheet);
+
+            // Initial UI Render
+            refreshAllUI();
+        }
+
+        window.addEventListener("DOMContentLoaded", initApp);
+    </script>
+</body>
+</html>
