@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+  <style>
     body { font-family: 'Hind Siliguri', 'Inter', sans-serif; }
 
     @media print {
@@ -48,9 +48,78 @@
   <!-- Printable A4 Admission Slip Container -->
   <div id="print-container" class="hidden"></div>
 
-
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Custom Confirm Modal (Sandbox & Browser Safe) -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center gap-3 text-amber-400">
+        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+        <h3 class="text-base font-bold text-white" id="confirm-modal-title">নিশ্চিতকরণ</h3>
+      </div>
+      <p id="confirm-modal-message" class="text-xs text-slate-300 leading-relaxed"></p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" id="btn-confirm-cancel" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold cursor-pointer">বাতিল করুন</button>
+        <button type="button" id="btn-confirm-ok" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold cursor-pointer">হ্যাঁ, মুছে ফেলুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firestore Rules Helper Modal -->
+  <div id="rules-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-emerald-700/60 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2 text-emerald-400">
+          <i class="fa-solid fa-shield-virus text-xl"></i>
+          <h3 class="text-base font-bold text-white">স্প্যাম বট অ্যাটাক বন্ধ করার স্থায়ী সমাধান (Firestore Rules)</h3>
+        </div>
+        <button type="button" id="btn-close-rules" class="text-slate-400 hover:text-white text-xl w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">&times;</button>
+      </div>
+      <div class="text-xs text-slate-300 space-y-2 leading-relaxed">
+        <p class="text-amber-300 font-semibold">কেন অটোমেটিক হাজার হাজার মেসেজ আসছে?</p>
+        <p>হ্যাকার বা অটোমেটেড স্প্যাম বট (Faker.js / Lorem Ipsum স্ক্রিপ্ট) আপনার ওয়েবসাইটের ফর্ম ব্যবহার না করেই সরাসরি আপনার <b>Firebase Project ID (iqra-academy-portal)</b>-এ প্রতি সেকেন্ডে অটোমেটিক রিকোয়েস্ট পাঠাচ্ছে, কারণ আপনার Firebase Firestore Rules-এ বর্তমানে যে কেউ ডেটা রাইট করার অনুমতি (`allow write: if true`) দেওয়া আছে।</p>
+        <p class="text-emerald-300 font-semibold pt-1">স্থায়ীভাবে বন্ধ করতে Firebase Console &rarr; Firestore Database &rarr; Rules ট্যাবে গিয়ে নিচের কোডটি পেস্ট করে Publish করুন:</p>
+      </div>
+      <pre id="firestore-rules-code" class="bg-slate-950 border border-slate-800 rounded-2xl p-3 text-[11px] font-mono text-emerald-300 overflow-x-auto leading-relaxed">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /school_data/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    match /admissions/{docId} {
+      allow read, delete: if true;
+      allow create: if request.resource.data.keys().hasAll(['name', 'phone'])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() >= 2
+                    && request.resource.data.name.size() <= 80
+                    && request.resource.data.phone is string
+                    && request.resource.data.phone.matches('^[6-9][0-9]{9}$');
+    }
+    match /contact_messages/{docId} {
+      allow read, delete: if true;
+      allow create: if request.resource.data.keys().hasAll(['name', 'phone', 'message'])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() >= 2
+                    && request.resource.data.name.size() <= 60
+                    && request.resource.data.phone is string
+                    && request.resource.data.phone.matches('^[6-9][0-9]{9}$')
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() >= 3
+                    && request.resource.data.message.size() <= 400
+                    && !request.resource.data.message.matches('(?i).*(dolorem|voluptas|accusamus|repellendus|voluptatibus|consequatur|temporibus|necessitatibus|quibusdam|laudantium).*');
+    }
+  }
+}</pre>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" id="btn-copy-rules" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-copy"></i> Rules কপি করুন
+        </button>
+        <button type="button" id="btn-close-rules-bottom" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold cursor-pointer">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
 
   <!-- লেয়ার ১ ও ২ দ্বি-স্তরীয় সিকিউরিটি গেট -->
   <div id="security-screen" class="min-h-screen flex items-center justify-center p-4">
@@ -66,7 +135,7 @@
         <p class="text-xs text-slate-400 mt-1">ইকরা অ্যাকাডেমির ক্লাউড কন্ট্রোল প্যানেলে প্রবেশের পাসকোড দিন</p>
       </div>
 
-      <form id="admin-login-form" class="space-y-4" onsubmit="return false;">
+      <form id="admin-login-form" class="space-y-4">
         <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
           <label class="block text-xs font-semibold text-amber-400 mb-1">
             <span class="inline-block w-4 h-4 rounded-full bg-amber-500 text-slate-950 text-center leading-4 text-[10px] mr-1 font-bold">১</span>
@@ -74,7 +143,7 @@
           </label>
           <div class="relative">
             <input type="password" id="input-layer1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors" placeholder="পাসওয়ার্ড লিখুন...">
-            <button type="button" onclick="togglePass('input-layer1', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer">
+            <button type="button" id="btn-toggle-p1" class="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer">
               <i class="fa-solid fa-eye"></i>
             </button>
           </div>
@@ -87,7 +156,7 @@
           </label>
           <div class="relative">
             <input type="password" id="input-layer2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors" placeholder="মাস্টার সিকিউরিটি পিন লিখুন...">
-            <button type="button" onclick="togglePass('input-layer2', this)" class="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer">
+            <button type="button" id="btn-toggle-p2" class="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer">
               <i class="fa-solid fa-eye"></i>
             </button>
           </div>
@@ -104,7 +173,7 @@
       </form>
 
       <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
-        <a href="../index.html" class="hover:text-emerald-400 transition-colors flex items-center">
+        <a href="https://iqraacademy.co.in/" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-400 transition-colors flex items-center">
           <i class="fa-solid fa-arrow-left mr-1"></i> মূল ওয়েবসাইটে যান
         </a>
         <span>UDISE: 19111008505</span>
@@ -123,15 +192,18 @@
           <div>
             <h2 class="text-base font-bold text-white leading-tight">ইকরা অ্যাকাডেমি — ক্লাউড কন্ট্রোল ড্যাশবোর্ড</h2>
             <p class="text-[11px] text-emerald-400 flex items-center">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span> Real-time Live (Edited By- Sahirul Islam)
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span> Real-time Live + Anti-Spam Shield (Edited By- Sahirul Islam)
             </p>
           </div>
         </div>
-        <div class="flex items-center space-x-3">
-          <a href="../index.html" target="_blank" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-xl border border-slate-700 flex items-center transition">
+        <div class="flex items-center flex-wrap gap-2">
+          <button type="button" id="btn-open-rules" class="px-3 py-1.5 bg-amber-950/80 hover:bg-amber-900 text-amber-300 text-xs rounded-xl border border-amber-700/80 flex items-center transition cursor-pointer">
+            <i class="fa-solid fa-shield-halved mr-1.5"></i> স্প্যাম রোধের গাইড
+          </button>
+          <a href="https://iqraacademy.co.in/" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-xl border border-slate-700 flex items-center transition">
             <i class="fa-solid fa-globe mr-1.5 text-amber-400"></i> পাবলিক সাইট দেখুন
           </a>
-          <button onclick="logoutAdmin()" class="px-3.5 py-1.5 bg-red-950/80 hover:bg-red-900 text-red-200 text-xs rounded-xl border border-red-800 flex items-center transition cursor-pointer">
+          <button type="button" id="btn-logout" class="px-3.5 py-1.5 bg-red-950/80 hover:bg-red-900 text-red-200 text-xs rounded-xl border border-red-800 flex items-center transition cursor-pointer">
             <i class="fa-solid fa-power-off mr-1.5"></i> লগআউট
           </button>
         </div>
@@ -143,7 +215,7 @@
       <div class="mb-6 p-4 rounded-2xl bg-emerald-950/40 border border-emerald-800/60 flex flex-col md:flex-row justify-between items-center gap-3">
         <div class="text-xs text-slate-300 flex items-center gap-2">
           <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
-          <span>এখানে যেকোনো তথ্য সেভ বা ডিলিট করার সাথে সাথেই মূল ওয়েবসাইটে (<b>index.html</b>) রিয়েলটাইমে পরিবর্তন ঘটে যাবে। কোনো পেজ রিফ্রেশ করার প্রয়োজন নেই।</span>
+          <span>এখানে যেকোনো তথ্য সেভ বা ডিলিট করার সাথে সাথেই মূল ওয়েবসাইটে (<b>index.html</b>) রিয়েলটাইমে পরিবর্তন ঘটে যাবে। অটোমেটিক স্প্যাম মেসেজগুলো নিচে এক ক্লিকেই মুছে ফেলতে পারবেন।</span>
         </div>
         <div class="text-[11px] font-mono text-slate-400 shrink-0">
           Firebase Path: <span class="text-amber-300">school_data/main_config</span>
@@ -152,7 +224,6 @@
 
       <!-- 3 Primary Control Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        
         <!-- ১. চলমান ঘোষণা (Marquee) আপডেট -->
         <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
           <div>
@@ -165,7 +236,7 @@
             <p class="text-xs text-slate-400 mb-3">ওয়েবসাইটের শীর্ষের লাল ঘোষণা টিকারে যে লেখাটি স্ক্রোল করে যাবে:</p>
             <textarea id="admin-marquee-text" rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-amber-500 leading-relaxed" placeholder="এখানে ঘোষণা লিখুন..."></textarea>
           </div>
-          <button id="btn-save-marquee" onclick="saveMarqueeToCloud()" class="mt-4 w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition shadow flex items-center justify-center cursor-pointer">
+          <button type="button" id="btn-save-marquee" class="mt-4 w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition shadow flex items-center justify-center cursor-pointer">
             <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> ঘোষণা সেভ করুন
           </button>
         </div>
@@ -190,7 +261,7 @@
               </div>
             </div>
           </div>
-          <button id="btn-save-contact" onclick="saveContactToCloud()" class="mt-4 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center cursor-pointer">
+          <button type="button" id="btn-save-contact" class="mt-4 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center cursor-pointer">
             <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> নম্বর আপডেট করুন
           </button>
         </div>
@@ -223,16 +294,14 @@
               </div>
             </div>
           </div>
-          <button id="btn-save-stats" onclick="saveStatsToCloud()" class="mt-4 w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center cursor-pointer">
+          <button type="button" id="btn-save-stats" class="mt-4 w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center cursor-pointer">
             <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> পরিসংখ্যান আপডেট করুন
           </button>
         </div>
-
       </div>
 
       <!-- নোটিশ ম্যানেজমেন্ট সেকশন -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-        
         <!-- নতুন নোটিশ পোস্ট ফরম -->
         <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
           <h3 class="text-base font-bold text-cyan-400 mb-2 flex items-center">
@@ -273,7 +342,7 @@
               <input type="text" id="new-notice-date" placeholder="১৭ অক্টোবর, ২০২৬" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
             </div>
 
-            <button id="btn-add-notice" onclick="addNoticeToCloud()" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center cursor-pointer">
+            <button type="button" id="btn-add-notice" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center cursor-pointer">
               <i class="fa-solid fa-plus mr-1.5"></i> নোটিশ বোর্ডে যোগ করুন
             </button>
           </div>
@@ -293,12 +362,10 @@
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- অনলাইন ভর্তি আবেদন ও অনুসন্ধান মেসেজ সেকশন -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
         <!-- অনলাইনে জমা পড়া ভর্তি আবেদনসমূহ -->
         <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
           <div class="flex justify-between items-center mb-4">
@@ -323,36 +390,82 @@
               </thead>
               <tbody id="admission-table-body" class="divide-y divide-slate-800">
                 <tr>
-                  <td colspan="7" class="p-4 text-center text-slate-500">এখনও কোনো অনলাইন আবেদন জমা পড়েনি।</td>
+                  <td colspan="8" class="p-4 text-center text-slate-500">এখনও কোনো অনলাইন আবেদন জমা পড়েনি।</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- ওয়েবসাইট থেকে পাঠানো বার্তা ও অনুসন্ধান (Contact Inquiries) -->
-        <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-base font-bold text-white flex items-center">
-              <i class="fa-solid fa-envelope-open-text text-amber-400 mr-2"></i> যোগাযোগ অনুসন্ধান বার্তা
-            </h3>
-            <span id="contact-counter" class="text-xs bg-amber-950 text-amber-300 border border-amber-800 px-2.5 py-0.5 rounded-full font-bold">০টি</span>
-          </div>
-          <p class="text-xs text-slate-400 mb-3">পাবলিক ওয়েবসাইটের যোগাযোগ ফরম থেকে আসা বার্তাসমূহ:</p>
-          <div id="contact-messages-list" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
-            <div class="text-center py-6 text-slate-500 text-xs">কোনো বার্তা আসেনি।</div>
+        <!-- ওয়েবসাইট থেকে পাঠানো বার্তা ও অনুসন্ধান (Contact Inquiries + Bulk Spam Cleaner) -->
+        <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+              <h3 class="text-base font-bold text-white flex items-center">
+                <i class="fa-solid fa-envelope-open-text text-amber-400 mr-2"></i> যোগাযোগ অনুসন্ধান বার্তা
+              </h3>
+              <div class="flex items-center gap-1.5">
+                <span id="spam-counter" class="hidden text-[11px] bg-red-950 text-red-300 border border-red-800 px-2 py-0.5 rounded-full font-bold">স্প্যাম: ০টি</span>
+                <span id="contact-counter" class="text-xs bg-amber-950 text-amber-300 border border-amber-800 px-2.5 py-0.5 rounded-full font-bold">০টি</span>
+              </div>
+            </div>
+
+            <!-- Bulk Delete & Spam Filter Toolbar -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 mb-3 space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+                  <input type="checkbox" id="toggle-hide-spam" checked class="accent-emerald-500 rounded cursor-pointer">
+                  <span>অটো স্প্যাম ফিল্টার (Lorem Ipsum বট লুকান)</span>
+                </label>
+                <span id="visible-msg-note" class="text-[10px] text-slate-500 font-mono"></span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" id="btn-delete-spam" class="py-2 px-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl text-[11px] transition flex items-center justify-center gap-1.5 cursor-pointer">
+                  <i class="fa-solid fa-broom"></i> সব স্প্যাম মুছুন
+                </button>
+                <button type="button" id="btn-delete-all-messages" class="py-2 px-3 bg-red-700 hover:bg-red-600 text-white font-bold rounded-xl text-[11px] transition flex items-center justify-center gap-1.5 cursor-pointer">
+                  <i class="fa-solid fa-trash-can"></i> সব বার্তা মুছুন
+                </button>
+              </div>
+
+              <!-- Progress Bar for Bulk Delete -->
+              <div id="bulk-delete-progress-wrap" class="hidden space-y-1 pt-1">
+                <div class="flex justify-between text-[10px] text-amber-300 font-mono">
+                  <span id="bulk-delete-status">মুছে ফেলা হচ্ছে...</span>
+                  <span id="bulk-delete-percent">0%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div id="bulk-delete-bar" class="h-full bg-gradient-to-r from-amber-500 to-red-500 transition-all duration-200" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="contact-messages-list" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+              <div class="text-center py-6 text-slate-500 text-xs">কোনো বার্তা আসেনি।</div>
+            </div>
           </div>
         </div>
-
       </div>
-
     </main>
   </div>
 
-  <!-- Firebase v10 SDK & Instant Bulletproof Auth -->
+  <!-- Admission Details Modal -->
+  <div id="adm-detail-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 text-slate-100 rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl relative border border-slate-700 max-h-[90vh] overflow-y-auto">
+      <button type="button" id="btn-close-adm-modal" class="absolute top-5 right-5 text-slate-400 hover:text-white text-2xl w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">
+        &times;
+      </button>
+      <div id="adm-modal-body" class="space-y-4">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase v10 SDK & Instant Bulletproof Auth + Bulk Spam Cleaner -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, onSnapshot, collection, query, orderBy, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, onSnapshot, collection, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC_aNVt4kIackC9_QUnSf0dzf4PE-6PdRs",
@@ -366,6 +479,16 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    function safeSessionGet(key) {
+      try { return sessionStorage.getItem(key); } catch (e) { return null; }
+    }
+    function safeSessionSet(key, val) {
+      try { sessionStorage.setItem(key, val); } catch (e) {}
+    }
+    function safeSessionRemove(key) {
+      try { sessionStorage.removeItem(key); } catch (e) {}
+    }
 
     // Toast Function
     function showToast(msg, type = 'success') {
@@ -387,8 +510,47 @@
       }, 4000);
     }
 
+    // Custom In-Page Confirm Modal
+    let confirmCallback = null;
+    function askConfirm(message, onConfirm) {
+      const modal = document.getElementById('confirm-modal');
+      const msgEl = document.getElementById('confirm-modal-message');
+      if (!modal || !msgEl) return;
+      msgEl.textContent = message;
+      confirmCallback = onConfirm;
+      modal.classList.remove('hidden');
+    }
+
+    document.getElementById('btn-confirm-cancel')?.addEventListener('click', () => {
+      document.getElementById('confirm-modal')?.classList.add('hidden');
+      confirmCallback = null;
+    });
+    document.getElementById('btn-confirm-ok')?.addEventListener('click', async () => {
+      document.getElementById('confirm-modal')?.classList.add('hidden');
+      if (typeof confirmCallback === 'function') {
+        const cb = confirmCallback;
+        confirmCallback = null;
+        await cb();
+      }
+    });
+
+    // Rules Modal
+    const rulesModal = document.getElementById('rules-modal');
+    document.getElementById('btn-open-rules')?.addEventListener('click', () => rulesModal?.classList.remove('hidden'));
+    document.getElementById('btn-close-rules')?.addEventListener('click', () => rulesModal?.classList.add('hidden'));
+    document.getElementById('btn-close-rules-bottom')?.addEventListener('click', () => rulesModal?.classList.add('hidden'));
+    document.getElementById('btn-copy-rules')?.addEventListener('click', () => {
+      const text = document.getElementById('firestore-rules-code')?.innerText || '';
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      ta.remove();
+      showToast("Firestore Security Rules কপি করা হয়েছে!");
+    });
+
     // একমুখী ক্রিপ্টোগ্রাফিক হ্যাশ (One-Way Salted SHA-256 Hash)
-    // কোডে পাসওয়ার্ড বা পিন নেই; কোনো হ্যাকার ভিউ-সোর্স বা ইন্সপেক্ট করে এটি উদ্ধার করতে পারবে না!
     const HASH_L1 = "7b1aeba297cd6e57702a10228ff71d5750ced7b9031937bb0bb079ebb0996158";
     const HASH_L2 = "2bd38959784905298b3b7fd0e1f61177f33e922eaa510c7f2acea2e06ddc1a65";
 
@@ -409,7 +571,6 @@
         return;
       }
 
-      // ব্রাউজারের ক্রিপ্টো ইঞ্জিনে ইনপুট হ্যাশ করা হচ্ছে
       const inputHash1 = await computeSecureHash(p1);
       const inputHash2 = await computeSecureHash(p2);
 
@@ -418,7 +579,7 @@
         document.getElementById('security-screen').style.display = 'none';
         document.getElementById('admin-dashboard-screen').classList.remove('hidden');
         document.getElementById('admin-dashboard-screen').style.display = 'block';
-        sessionStorage.setItem('iqra_admin_auth', 'true');
+        safeSessionSet('iqra_admin_auth', 'true');
         listenToCloudData();
         listenToContactMessages();
         listenToAdmissions();
@@ -429,37 +590,17 @@
       }
     }
 
-    const btnLogin = document.getElementById('btn-login-submit');
-    if (btnLogin) btnLogin.addEventListener('click', unlockAdminPortal);
-    document.getElementById('input-layer1').addEventListener('keypress', (e) => { if (e.key === 'Enter') unlockAdminPortal(); });
-    document.getElementById('input-layer2').addEventListener('keypress', (e) => { if (e.key === 'Enter') unlockAdminPortal(); });
+    document.getElementById('admin-login-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      unlockAdminPortal();
+    });
+    document.getElementById('btn-login-submit')?.addEventListener('click', unlockAdminPortal);
+    document.getElementById('input-layer1')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') unlockAdminPortal(); });
+    document.getElementById('input-layer2')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') unlockAdminPortal(); });
 
-    // Set today's date in Bengali as default notice date
-    function getBengaliTodayDate() {
-      const months = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
-      const d = new Date();
-      const toBnDigits = (n) => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
-      return `${toBnDigits(d.getDate())} ${months[d.getMonth()]}, ${toBnDigits(d.getFullYear())}`;
-    }
-    const noticeDateInput = document.getElementById('new-notice-date');
-    if (noticeDateInput) noticeDateInput.value = getBengaliTodayDate();
-
-    if (sessionStorage.getItem('iqra_admin_auth') === 'true') {
-      document.getElementById('security-screen').style.display = 'none';
-      document.getElementById('admin-dashboard-screen').classList.remove('hidden');
-      document.getElementById('admin-dashboard-screen').style.display = 'block';
-      listenToCloudData();
-      listenToContactMessages();
-        listenToAdmissions();
-    }
-
-    window.logoutAdmin = function() {
-      sessionStorage.removeItem('iqra_admin_auth');
-      window.location.reload();
-    };
-
-    window.togglePass = function(id, btn) {
+    function togglePassField(id, btn) {
       const input = document.getElementById(id);
+      if (!input) return;
       if (input.type === 'password') {
         input.type = 'text';
         btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
@@ -467,7 +608,33 @@
         input.type = 'password';
         btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
       }
-    };
+    }
+    document.getElementById('btn-toggle-p1')?.addEventListener('click', function() { togglePassField('input-layer1', this); });
+    document.getElementById('btn-toggle-p2')?.addEventListener('click', function() { togglePassField('input-layer2', this); });
+
+    // Set today's date in Bengali as default notice date
+    function getBengaliTodayDate() {
+      const months = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+      const d = new Date();
+      const toBnDigits = (n) => String(n).replace(/\d/g, digit => "০১২৩৪৫৬৭৮৯"[digit]);
+      return `${toBnDigits(d.getDate())} ${months[d.getMonth()]}, ${toBnDigits(d.getFullYear())}`;
+    }
+    const noticeDateInput = document.getElementById('new-notice-date');
+    if (noticeDateInput) noticeDateInput.value = getBengaliTodayDate();
+
+    if (safeSessionGet('iqra_admin_auth') === 'true') {
+      document.getElementById('security-screen').style.display = 'none';
+      document.getElementById('admin-dashboard-screen').classList.remove('hidden');
+      document.getElementById('admin-dashboard-screen').style.display = 'block';
+      listenToCloudData();
+      listenToContactMessages();
+      listenToAdmissions();
+    }
+
+    document.getElementById('btn-logout')?.addEventListener('click', () => {
+      safeSessionRemove('iqra_admin_auth');
+      window.location.reload();
+    });
 
     // Global Cloud Data Object
     let globalSchoolData = {
@@ -505,21 +672,16 @@
     }
 
     function renderDashboardData() {
-      // 1. Marquee
       document.getElementById('admin-marquee-text').value = globalSchoolData.marquee || '';
-      
-      // 2. Phones
       document.getElementById('admin-phone-1').value = globalSchoolData.phone1 || '';
       document.getElementById('admin-phone-2').value = globalSchoolData.phone2 || '';
 
-      // 3. Stats
       const st = globalSchoolData.stats || {};
       document.getElementById('admin-stat-students').value = st.students || '৫০০+';
       document.getElementById('admin-stat-teachers').value = st.teachers || '২৫+';
       document.getElementById('admin-stat-pass').value = st.passRate || '১০০%';
       document.getElementById('admin-stat-estd').value = st.estd || '২০১৫';
 
-      // 4. Notices List
       const noticeList = document.getElementById('admin-notice-list');
       const counterBadge = document.getElementById('notice-counter-badge');
       const notices = Array.isArray(globalSchoolData.notices) ? globalSchoolData.notices : [];
@@ -533,8 +695,8 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="text-[10px] font-bold px-2 py-0.5 rounded ${
-                  n.priority === 'জরুরি' ? 'bg-red-950 text-red-400 border border-red-800' : 
-                  n.priority === 'উচ্চ' ? 'bg-amber-950 text-amber-300 border border-amber-800' : 
+                  n.priority === 'জরুরি' ? 'bg-red-950 text-red-400 border border-red-800' :
+                  n.priority === 'উচ্চ' ? 'bg-amber-950 text-amber-300 border border-amber-800' :
                   'bg-emerald-950 text-emerald-400 border border-emerald-800'
                 }">${n.priority || 'সাধারণ'}</span>
                 <span class="text-[11px] font-semibold text-cyan-400">${n.category || 'সাধারণ'}</span>
@@ -542,79 +704,177 @@
               </div>
               <h4 class="text-xs font-semibold text-slate-200 leading-snug">${n.title}</h4>
             </div>
-            <button onclick="deleteNoticeFromCloud(${n.id})" class="text-red-400 hover:text-red-300 text-xs p-2 rounded-lg hover:bg-red-950/60 transition cursor-pointer" title="মুছে ফেলুন">
+            <button type="button" data-delete-notice="${n.id}" class="text-red-400 hover:text-red-300 text-xs p-2 rounded-lg hover:bg-red-950/60 transition cursor-pointer" title="মুছে ফেলুন">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
         `).join('');
       }
+    }
 
-      // 5. Admissions Table
-      const admBody = document.getElementById('admission-table-body');
-      const admCounter = document.getElementById('admission-counter');
-      const adms = globalSchoolData.admissions || [];
-      admCounter.innerText = `মোট: ${adms.length} জন`;
+    // Spam detector for Faker.js / Lorem Ipsum bot messages
+    const LOREM_REGEX = /\b(dolorem|voluptas|accusamus|repellendus|voluptatibus|consequatur|temporibus|necessitatibus|quibusdam|laudantium|aspernatur|accusantium|exercitationem|corrupti|officiis|praesentium|cupiditate|distinctio|molestiae|reprehenderit|architecto|itaque|earum|soluta|fugit)\b/i;
 
-      if (adms.length === 0) {
-        admBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">এখনও কোনো অনলাইন আবেদন জমা পড়েনি।</td></tr>`;
+    function isSpamMessage(m) {
+      const txt = `${m.message || ''} ${m.name || ''} ${m.subject || ''}`;
+      return LOREM_REGEX.test(txt);
+    }
+
+    let allContactMessages = [];
+
+    function renderContactMessages() {
+      const container = document.getElementById('contact-messages-list');
+      const counter = document.getElementById('contact-counter');
+      const spamBadge = document.getElementById('spam-counter');
+      const visibleNote = document.getElementById('visible-msg-note');
+      const hideSpam = document.getElementById('toggle-hide-spam')?.checked;
+
+      if (!container) return;
+
+      const spamList = allContactMessages.filter(isSpamMessage);
+      if (counter) counter.innerText = `মোট: ${allContactMessages.length}টি`;
+      if (spamBadge) {
+        if (spamList.length > 0) {
+          spamBadge.classList.remove('hidden');
+          spamBadge.innerText = `বট স্প্যাম: ${spamList.length}টি`;
+        } else {
+          spamBadge.classList.add('hidden');
+        }
+      }
+
+      const filtered = hideSpam ? allContactMessages.filter(m => !isSpamMessage(m)) : allContactMessages;
+      const displayDocs = filtered.slice(0, 100); // Render max 100 DOM nodes for instant responsiveness
+
+      if (visibleNote) {
+        visibleNote.innerText = filtered.length > 100
+          ? `প্রথম ১০০টি দেখানো হচ্ছে (মোট ${filtered.length}টি)`
+          : `দেখানো হচ্ছে: ${filtered.length}টি`;
+      }
+
+      if (displayDocs.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs bg-slate-950 rounded-2xl border border-slate-800 p-4">
+          ${allContactMessages.length > 0 && hideSpam
+            ? `<i class="fa-solid fa-shield-cat text-emerald-400 text-lg mb-1 block"></i>সবগুলো (${spamList.length}টি) অটোমেটেড স্প্যাম বট মেসেজ লুকানো হয়েছে। উপরের <b>"সব স্প্যাম মুছুন"</b> বাটনে ক্লিক করে ডাটাবেস পরিষ্কার করুন।`
+            : 'কোনো বার্তা আসেনি।'}
+        </div>`;
       } else {
-        admBody.innerHTML = adms.map(a => `
-          <tr class="hover:bg-slate-800/50">
-            <td class="p-3 text-amber-400 font-mono font-bold">${a.id}</td>
-            <td class="p-3 text-white font-semibold">${a.name}</td>
-            <td class="p-3 text-slate-300">${a.guardian || '-'}</td>
-            <td class="p-3">${a.className || '-'}</td>
-            <td class="p-3 text-emerald-400">${a.stream || '-'}</td>
-            <td class="p-3 font-mono">${a.phone || '-'}</td>
-            <td class="p-3 text-slate-400">${a.date || '-'}</td>
-          </tr>
-        `).join('');
+        container.innerHTML = displayDocs.map(m => {
+          const spam = isSpamMessage(m);
+          return `
+            <div class="p-3 bg-slate-950 border ${spam ? 'border-red-900/70' : 'border-slate-800'} rounded-2xl space-y-1 relative group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-bold text-amber-400">${m.name || 'বেনামী'}</span>
+                  ${spam ? '<span class="text-[9px] bg-red-950 text-red-300 border border-red-800 px-1.5 py-0.2 rounded">SPAM BOT</span>' : ''}
+                </div>
+                <span class="text-[10px] text-slate-500 font-mono">${m.date || ''}</span>
+              </div>
+              <div class="flex items-center gap-3 text-[11px] text-slate-300 font-mono">
+                <a href="tel:${m.phone}" class="text-emerald-400 hover:underline"><i class="fa-solid fa-phone text-[10px] mr-1"></i>${m.phone || '-'}</a>
+                <span class="text-slate-500">•</span>
+                <span class="text-purple-300 font-sans">${m.subject || 'সাধারণ'}</span>
+              </div>
+              <p class="text-xs text-slate-300 bg-slate-900 p-2 rounded-xl mt-1 leading-relaxed border border-slate-800/80 break-words">${m.message || ''}</p>
+              <div class="pt-1 flex justify-end">
+                <button type="button" data-delete-contact="${m.id}" class="text-[10px] text-red-400 hover:text-red-300 hover:underline cursor-pointer">
+                  <i class="fa-solid fa-trash-can mr-1"></i>মুছুন
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
       }
     }
+
+    document.getElementById('toggle-hide-spam')?.addEventListener('change', renderContactMessages);
 
     // Contact messages listener
     function listenToContactMessages() {
       try {
         const q = collection(db, "contact_messages");
         onSnapshot(q, (snapshot) => {
-          const container = document.getElementById('contact-messages-list');
-          const counter = document.getElementById('contact-counter');
-          if (!container) return;
-          
           const docs = [];
           snapshot.forEach(d => docs.push({ id: d.id, ...d.data() }));
-          docs.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
-          
-          if (counter) counter.innerText = `${docs.length}টি`;
-
-          if (docs.length === 0) {
-            container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">কোনো বার্তা আসেনি।</div>`;
-          } else {
-            container.innerHTML = docs.map(m => `
-              <div class="p-3 bg-slate-950 border border-slate-800 rounded-2xl space-y-1 relative group">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold text-amber-400">${m.name || 'বেনামী'}</span>
-                  <span class="text-[10px] text-slate-500 font-mono">${m.date || ''}</span>
-                </div>
-                <div class="flex items-center gap-3 text-[11px] text-slate-300 font-mono">
-                  <a href="tel:${m.phone}" class="text-emerald-400 hover:underline"><i class="fa-solid fa-phone text-[10px] mr-1"></i>${m.phone}</a>
-                  <span class="text-slate-500">•</span>
-                  <span class="text-purple-300 font-sans">${m.subject || 'সাধারণ'}</span>
-                </div>
-                <p class="text-xs text-slate-300 bg-slate-900 p-2 rounded-xl mt-1 leading-relaxed border border-slate-800/80">${m.message || ''}</p>
-                <div class="pt-1 flex justify-end">
-                  <button onclick="deleteContactMessage('${m.id}')" class="text-[10px] text-red-400 hover:text-red-300 hover:underline cursor-pointer">
-                    <i class="fa-solid fa-trash-can mr-1"></i>মুছুন
-                  </button>
-                </div>
-              </div>
-            `).join('');
-          }
+          docs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          allContactMessages = docs;
+          renderContactMessages();
         });
       } catch (e) {
         console.warn("Contact messages sync note:", e);
       }
     }
+
+    // Batch Delete Helper (Firestore writeBatch supports up to 500 ops per batch)
+    async function bulkDeleteMessages(targetDocs, labelText) {
+      if (!targetDocs || targetDocs.length === 0) {
+        showToast("মুছে ফেলার মতো কোনো বার্তা নেই!", "error");
+        return;
+      }
+
+      const wrap = document.getElementById('bulk-delete-progress-wrap');
+      const statusEl = document.getElementById('bulk-delete-status');
+      const pctEl = document.getElementById('bulk-delete-percent');
+      const barEl = document.getElementById('bulk-delete-bar');
+      const btnSpam = document.getElementById('btn-delete-spam');
+      const btnAll = document.getElementById('btn-delete-all-messages');
+
+      if (wrap) wrap.classList.remove('hidden');
+      if (btnSpam) btnSpam.disabled = true;
+      if (btnAll) btnAll.disabled = true;
+
+      const total = targetDocs.length;
+      const chunkSize = 400;
+      let deleted = 0;
+
+      try {
+        for (let i = 0; i < total; i += chunkSize) {
+          const slice = targetDocs.slice(i, i + chunkSize);
+          const batch = writeBatch(db);
+          slice.forEach(item => {
+            batch.delete(doc(db, "contact_messages", item.id));
+          });
+          await batch.commit();
+          deleted += slice.length;
+          const pct = Math.min(100, Math.round((deleted / total) * 100));
+          if (statusEl) statusEl.innerText = `${deleted} / ${total}টি মুছে ফেলা হয়েছে...`;
+          if (pctEl) pctEl.innerText = `${pct}%`;
+          if (barEl) barEl.style.width = `${pct}%`;
+        }
+        showToast(`সফলভাবে ${total}টি ${labelText} মুছে ফেলা হয়েছে!`);
+      } catch (err) {
+        showToast("বাল্ক ডিলিট ত্রুটি: " + err.message, "error");
+      } finally {
+        setTimeout(() => {
+          if (wrap) wrap.classList.add('hidden');
+          if (barEl) barEl.style.width = '0%';
+          if (btnSpam) btnSpam.disabled = false;
+          if (btnAll) btnAll.disabled = false;
+        }, 1200);
+      }
+    }
+
+    document.getElementById('btn-delete-spam')?.addEventListener('click', () => {
+      const spamDocs = allContactMessages.filter(isSpamMessage);
+      if (spamDocs.length === 0) {
+        showToast("কোনো অটোমেটেড স্প্যাম মেসেজ পাওয়া যায়নি!");
+        return;
+      }
+      askConfirm(`আপনি কি নিশ্চিতভাবে ${spamDocs.length}টি অটোমেটেড স্প্যাম বট মেসেজ একসাথে মুছে ফেলতে চান?`, async () => {
+        await bulkDeleteMessages(spamDocs, "স্প্যাম বার্তা");
+      });
+    });
+
+    document.getElementById('btn-delete-all-messages')?.addEventListener('click', () => {
+      if (allContactMessages.length === 0) {
+        showToast("মুছে ফেলার মতো কোনো বার্তা নেই!", "error");
+        return;
+      }
+      askConfirm(`আপনি কি নিশ্চিতভাবে সম্পূর্ণ ইনবক্স (${allContactMessages.length}টি বার্তা) একসাথে মুছে ফেলতে চান?`, async () => {
+        await bulkDeleteMessages([...allContactMessages], "বার্তা");
+      });
+    });
+
+    let currentAdmissionsMap = {};
 
     // Online Admissions Collection Listener (Realtime)
     function listenToAdmissions() {
@@ -643,7 +903,6 @@
             });
           });
 
-          // Fallback if admissions were in globalSchoolData
           if (Array.isArray(globalSchoolData.admissions) && globalSchoolData.admissions.length > 0) {
             globalSchoolData.admissions.forEach(a => {
               if (!list.some(x => x.id === a.id)) list.push(a);
@@ -655,7 +914,7 @@
           if (admCounter) admCounter.innerText = "মোট: " + list.length + " জন";
 
           if (list.length === 0) {
-            admBody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">এখনও কোনো অনলাইন আবেদন জমা পড়েনি।</td></tr>';
+            admBody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-slate-500">এখনও কোনো অনলাইন আবেদন জমা পড়েনি।</td></tr>';
           } else {
             admBody.innerHTML = list.map(a => `
               <tr class="hover:bg-slate-800/50 transition">
@@ -667,13 +926,13 @@
                 <td class="p-3 font-mono"><a href="tel:${a.phone}" class="hover:underline text-cyan-300">${a.phone}</a></td>
                 <td class="p-3 text-slate-400">${a.date}</td>
                 <td class="p-3 text-right whitespace-nowrap">
-                  <button onclick="viewAdmissionDetails('${a.docId}')" class="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold mr-1 cursor-pointer transition">
+                  <button type="button" data-view-adm="${a.docId}" class="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold mr-1 cursor-pointer transition">
                     <i class="fa-solid fa-eye mr-1"></i>দেখুন
                   </button>
-                  <button onclick="printAdminAdmissionSlip('${a.docId}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg text-xs font-bold mr-1 cursor-pointer transition" title="A4 স্লিপ প্রিন্ট করুন">
+                  <button type="button" data-print-adm="${a.docId}" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg text-xs font-bold mr-1 cursor-pointer transition" title="A4 স্লিপ প্রিন্ট করুন">
                     <i class="fa-solid fa-print"></i>
                   </button>
-                  <button onclick="deleteAdmission('${a.docId}')" class="px-2 py-1 bg-red-950 hover:bg-red-900 text-red-300 rounded-lg text-xs cursor-pointer transition" title="মুছে ফেলুন">
+                  <button type="button" data-delete-adm="${a.docId}" class="px-2 py-1 bg-red-950 hover:bg-red-900 text-red-300 rounded-lg text-xs cursor-pointer transition" title="মুছে ফেলুন">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </td>
@@ -688,13 +947,13 @@
       }
     }
 
-    
-    let currentAdmissionsMap = {};
-
     // ================= DEDICATED A4 ADMISSION SLIP PRINTER =================
-    window.printAdminAdmissionSlip = function(docId) {
+    function printAdminAdmissionSlip(docId) {
       const data = currentAdmissionsMap[docId];
-      if (!data) return alert("আবেদনের তথ্য পাওয়া যায়নি!");
+      if (!data) {
+        showToast("আবেদনের তথ্য পাওয়া যায়নি!", "error");
+        return;
+      }
 
       const container = document.getElementById('print-container');
       if (!container) return;
@@ -709,7 +968,7 @@
         addr.pin ? 'পিন- ' + addr.pin : ''
       ].filter(Boolean).join(', ') : String(addr || 'ঠিকানা দেওয়া হয়নি');
 
-      const photoHtml = data.photo 
+      const photoHtml = data.photo
         ? `<img src="${data.photo}" style="width: 100%; height: 100%; object-fit: cover;">`
         : `<span style="color: #94a3b8; font-size: 9px; font-weight: bold; text-align: center; display: block; padding: 4px;">পাসপোর্ট সাইজ ছবি</span>`;
 
@@ -718,12 +977,10 @@
 
       container.innerHTML = `
         <div style="font-family: 'Hind Siliguri', 'Inter', Arial, sans-serif; max-width: 195mm; margin: 0 auto; padding: 14px; background: #ffffff; color: #111827; border: 2px solid #064e3b; border-radius: 10px; box-sizing: border-box;">
-          
-          <!-- HEADER -->
           <table style="width: 100%; border-bottom: 2px solid #064e3b; padding-bottom: 8px; margin-bottom: 8px;">
             <tr>
               <td style="width: 70px; vertical-align: middle;">
-                <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" style="width: 65px; height: 65px; border-radius: 50%; border: 2px solid #064e3b; object-fit: cover;" alt="Logo">
+                <div style="width: 65px; height: 65px; border-radius: 50%; border: 2px solid #064e3b; background: #064e3b; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">ই</div>
               </td>
               <td style="text-align: center; vertical-align: middle; padding: 0 8px;">
                 <div style="font-size: 10px; font-weight: bold; background: #064e3b; color: #ffffff; display: inline-block; padding: 2px 10px; border-radius: 12px; letter-spacing: 0.5px;">
@@ -732,7 +989,7 @@
                 <h1 style="margin: 3px 0 0 0; font-size: 21px; font-weight: 800; color: #064e3b; line-height: 1.2;">PVT. IQRA ACADEMY</h1>
                 <h2 style="margin: 2px 0 0 0; font-size: 13px; font-weight: 700; color: #1f2937;">ইকরা অ্যাকাডেমি — আবাসিক গার্লস মিশন</h2>
                 <p style="margin: 2px 0 0 0; font-size: 10px; color: #4b5563;">
-                  দক্ষিণ শিবপুর, যদুরহাটি, বাদুড়িয়া, উত্তর ২৪ পরগনা, পিন-৭৪৩২৯৩ | 📞 ৯৭৭৫১২৩০৯৬ / ৯৬৪৭১০৯৪৮১
+                  দক্ষিণ শিবপুর, যদুরহাটি, বাদুড়িয়া, উত্তর ২৪ পরগনা, পিন-৭৪৩২৯৩ | 📞 ৯৭৭৫১২৩০৯৬ / ৯৬৪৭১০৯৪৮১
                 </p>
               </td>
               <td style="width: 70px; vertical-align: middle; text-align: right;">
@@ -743,7 +1000,6 @@
             </tr>
           </table>
 
-          <!-- SLIP TITLE & SUMMARY BAR -->
           <table style="width: 100%; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; margin-bottom: 8px; font-size: 11px;">
             <tr>
               <td style="padding: 5px 8px;">
@@ -763,7 +1019,6 @@
             ভর্তি আবেদন পত্র ও প্রাপ্তিস্বীকার রসিদ (ADMISSION APPLICATION & ACKNOWLEDGEMENT SLIP)
           </div>
 
-          <!-- MAIN DATA TABLE -->
           <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 8px; border: 1px solid #cbd5e1;">
             <tbody>
               <tr style="border-bottom: 1px solid #e2e8f0;">
@@ -803,7 +1058,6 @@
             </tbody>
           </table>
 
-          <!-- INSTRUCTIONS BOX -->
           <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px; font-size: 10px; line-height: 1.4; color: #78350f;">
             <b style="color: #92400e; display: block; margin-bottom: 2px;">📌 ভর্তির সময় প্রয়োজনীয় নির্দেশাবলী:</b>
             <span>১. এই প্রিন্ট স্লিপটি ভর্তি প্রক্রিয়ার সময় বিদ্যালয় অফিসে প্রদর্শন করতে হবে।</span><br>
@@ -811,7 +1065,6 @@
             <span>৩. ৫ কপি পাসপোর্ট সাইজ রঙিন ছবি এবং পূর্ববর্তী ক্লাসের মার্কশিট/টি.সি. অফিসে জমা দিতে হবে।</span>
           </div>
 
-          <!-- SIGNATURE BOXES -->
           <table style="width: 100%; margin-top: 20px; text-align: center; font-size: 10px;">
             <tr>
               <td style="width: 33%; vertical-align: bottom;">
@@ -829,7 +1082,6 @@
             </tr>
           </table>
 
-          <!-- FOOTER -->
           <div style="margin-top: 12px; padding-top: 4px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; font-size: 8px; color: #94a3b8;">
             <span>PVT. IQRA ACADEMY · OFFICIAL ADMISSION PORTAL</span>
             <span>COMPUTER GENERATED ACKNOWLEDGEMENT SLIP</span>
@@ -838,12 +1090,14 @@
       `;
 
       window.print();
-    };
+    }
 
-
-    window.viewAdmissionDetails = function(docId) {
+    function viewAdmissionDetails(docId) {
       const data = currentAdmissionsMap[docId];
-      if (!data) return alert("আবেদনের তথ্য পাওয়া যায়নি!");
+      if (!data) {
+        showToast("আবেদনের তথ্য পাওয়া যায়নি!", "error");
+        return;
+      }
 
       const modal = document.getElementById('adm-detail-modal');
       const body = document.getElementById('adm-modal-body');
@@ -880,12 +1134,12 @@
         </div>
 
         <div class="flex justify-between items-center pt-3 border-t border-slate-800 text-xs">
-          <span class="text-slate-500">জমা দেওয়ার তারিখ: <b class="text-slate-300">${data.date || '-'}</b></span>
+          <span class="text-slate-500">জমা দেওয়ার তারিখ: <b class="text-slate-300">${data.date || '-'}</b></span>
           <div class="flex gap-2">
-            <button onclick="printAdminAdmissionSlip('${docId}')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl cursor-pointer flex items-center">
+            <button type="button" data-print-adm="${docId}" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl cursor-pointer flex items-center">
               <i class="fa-solid fa-print mr-1.5 text-amber-400"></i>প্রিন্ট স্লিপ (A4)
             </button>
-            <button onclick="closeAdmissionModal()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-xl cursor-pointer">
+            <button type="button" data-close-adm-modal="true" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-xl cursor-pointer">
               বন্ধ করুন
             </button>
           </div>
@@ -893,38 +1147,84 @@
       `;
 
       modal.classList.remove('hidden');
-    };
+    }
 
-    window.closeAdmissionModal = function() {
+    function closeAdmissionModal() {
       document.getElementById('adm-detail-modal')?.classList.add('hidden');
-    };
+    }
 
-    window.deleteAdmission = async function(docId) {
-      if (!confirm("আপনি কি নিশ্চিতভাবে এই ভর্তি আবেদনটি মুছে ফেলতে চান?")) return;
-      try {
-        await deleteDoc(doc(db, "admissions", docId));
-        showToast("ভর্তি আবেদন সফলভাবে মুছে ফেলা হয়েছে!");
-      } catch (e) {
-        alert("মুছতে সমস্যা হয়েছে: " + e.message);
-      }
-    };
+    document.getElementById('btn-close-adm-modal')?.addEventListener('click', closeAdmissionModal);
 
-    window.deleteContactMessage = async function(docId) {
-      if (!confirm("আপনি কি এই বার্তাটি মুছে ফেলতে চান?")) return;
-      try {
-        await deleteDoc(doc(db, "contact_messages", docId));
-        showToast("বার্তাটি মুছে ফেলা হয়েছে!");
-      } catch (e) {
-        alert("বার্তা মুছতে সমস্যা হয়েছে: " + e.message);
+    // Event Delegation for Dynamic Buttons
+    document.addEventListener('click', async (e) => {
+      const delNoticeBtn = e.target.closest('[data-delete-notice]');
+      if (delNoticeBtn) {
+        const id = Number(delNoticeBtn.getAttribute('data-delete-notice'));
+        askConfirm("আপনি কি নিশ্চিতভাবে এই নোটিশটি মুছে ফেলতে চান? এটি মুছে দিলে মূল ওয়েবসাইট থেকেও তাৎক্ষণিক সরে যাবে।", async () => {
+          try {
+            const existing = Array.isArray(globalSchoolData.notices) ? globalSchoolData.notices : [];
+            globalSchoolData.notices = existing.filter(n => n.id !== id);
+            await setDoc(doc(db, "school_data", "main_config"), globalSchoolData);
+            showToast("নোটিশটি সফলভাবে মুছে ফেলা হয়েছে!");
+          } catch (err) {
+            showToast("ত্রুটি: " + err.message, "error");
+          }
+        });
+        return;
       }
-    };
+
+      const delContactBtn = e.target.closest('[data-delete-contact]');
+      if (delContactBtn) {
+        const docId = delContactBtn.getAttribute('data-delete-contact');
+        askConfirm("আপনি কি এই বার্তাটি মুছে ফেলতে চান?", async () => {
+          try {
+            await deleteDoc(doc(db, "contact_messages", docId));
+            showToast("বার্তাটি মুছে ফেলা হয়েছে!");
+          } catch (err) {
+            showToast("বার্তা মুছতে সমস্যা হয়েছে: " + err.message, "error");
+          }
+        });
+        return;
+      }
+
+      const viewAdmBtn = e.target.closest('[data-view-adm]');
+      if (viewAdmBtn) {
+        viewAdmissionDetails(viewAdmBtn.getAttribute('data-view-adm'));
+        return;
+      }
+
+      const printAdmBtn = e.target.closest('[data-print-adm]');
+      if (printAdmBtn) {
+        printAdminAdmissionSlip(printAdmBtn.getAttribute('data-print-adm'));
+        return;
+      }
+
+      const delAdmBtn = e.target.closest('[data-delete-adm]');
+      if (delAdmBtn) {
+        const docId = delAdmBtn.getAttribute('data-delete-adm');
+        askConfirm("আপনি কি নিশ্চিতভাবে এই ভর্তি আবেদনটি মুছে ফেলতে চান?", async () => {
+          try {
+            await deleteDoc(doc(db, "admissions", docId));
+            showToast("ভর্তি আবেদন সফলভাবে মুছে ফেলা হয়েছে!");
+          } catch (err) {
+            showToast("মুছতে সমস্যা হয়েছে: " + err.message, "error");
+          }
+        });
+        return;
+      }
+
+      const closeAdmBtn = e.target.closest('[data-close-adm-modal]');
+      if (closeAdmBtn) {
+        closeAdmissionModal();
+      }
+    });
 
     // Save Functions
-    window.saveMarqueeToCloud = async function() {
+    document.getElementById('btn-save-marquee')?.addEventListener('click', async () => {
       const btn = document.getElementById('btn-save-marquee');
       const text = document.getElementById('admin-marquee-text').value.trim();
       if (!text) {
-        alert("ঘোষণার লেখা খালি রাখা যাবে না!");
+        showToast("ঘোষণার লেখা খালি রাখা যাবে না!", "error");
         return;
       }
       btn.disabled = true;
@@ -935,19 +1235,19 @@
         await setDoc(doc(db, "school_data", "main_config"), globalSchoolData);
         showToast("ঘোষণা সফলভাবে ক্লাউডে সেভ হয়েছে এবং পাবলিক সাইটে আপডেট হয়েছে!");
       } catch (err) {
-        alert("ত্রুটি: " + err.message);
+        showToast("ত্রুটি: " + err.message, "error");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> ঘোষণা সেভ করুন';
       }
-    };
+    });
 
-    window.saveContactToCloud = async function() {
+    document.getElementById('btn-save-contact')?.addEventListener('click', async () => {
       const btn = document.getElementById('btn-save-contact');
       const p1 = document.getElementById('admin-phone-1').value.trim();
       const p2 = document.getElementById('admin-phone-2').value.trim();
       if (!p1) {
-        alert("প্রাথমিক ফোন নম্বর লিখুন!");
+        showToast("প্রাথমিক ফোন নম্বর লিখুন!", "error");
         return;
       }
       btn.disabled = true;
@@ -959,14 +1259,14 @@
         await setDoc(doc(db, "school_data", "main_config"), globalSchoolData);
         showToast("ফোন নম্বর সফলভাবে আপডেট হয়েছে!");
       } catch (err) {
-        alert("ত্রুটি: " + err.message);
+        showToast("ত্রুটি: " + err.message, "error");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> নম্বর আপডেট করুন';
       }
-    };
+    });
 
-    window.saveStatsToCloud = async function() {
+    document.getElementById('btn-save-stats')?.addEventListener('click', async () => {
       const btn = document.getElementById('btn-save-stats');
       const students = document.getElementById('admin-stat-students').value.trim();
       const teachers = document.getElementById('admin-stat-teachers').value.trim();
@@ -986,14 +1286,14 @@
         await setDoc(doc(db, "school_data", "main_config"), globalSchoolData);
         showToast("প্রতিষ্ঠানের পরিসংখ্যান সফলভাবে আপডেট হয়েছে!");
       } catch (err) {
-        alert("ত্রুটি: " + err.message);
+        showToast("ত্রুটি: " + err.message, "error");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> পরিসংখ্যান আপডেট করুন';
       }
-    };
+    });
 
-    window.addNoticeToCloud = async function() {
+    document.getElementById('btn-add-notice')?.addEventListener('click', async () => {
       const btn = document.getElementById('btn-add-notice');
       const title = document.getElementById('new-notice-title').value.trim();
       const category = document.getElementById('new-notice-category').value;
@@ -1001,7 +1301,7 @@
       let date = document.getElementById('new-notice-date').value.trim();
 
       if (!title) {
-        alert("দয়া করে নোটিশের শিরোনাম লিখুন!");
+        showToast("দয়া করে নোটিশের শিরোনাম লিখুন!", "error");
         return;
       }
       if (!date) {
@@ -1026,37 +1326,12 @@
         document.getElementById('new-notice-title').value = '';
         showToast("নতুন নোটিশ সফলভাবে বোর্ডে যুক্ত হয়েছে!");
       } catch (err) {
-        alert("ত্রুটি: " + err.message);
+        showToast("ত্রুটি: " + err.message, "error");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-plus mr-1.5"></i> নোটিশ বোর্ডে যোগ করুন';
       }
-    };
-
-    window.deleteNoticeFromCloud = async function(id) {
-      if (!confirm("আপনি কি নিশ্চিতভাবে এই নোটিশটি মুছে ফেলতে চান? এটি মুছে দিলে মূল ওয়েবসাইট থেকেও তাৎক্ষণিক সরে যাবে।")) return;
-      try {
-        const existing = Array.isArray(globalSchoolData.notices) ? globalSchoolData.notices : [];
-        globalSchoolData.notices = existing.filter(n => n.id !== id);
-        await setDoc(doc(db, "school_data", "main_config"), globalSchoolData);
-        showToast("নোটিশটি সফলভাবে মুছে ফেলা হয়েছে!");
-      } catch (err) {
-        alert("ত্রুটি: " + err.message);
-      }
-    };
+    });
   </script>
-
-  <!-- Admission Details Modal -->
-  <div id="adm-detail-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 text-slate-100 rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl relative border border-slate-700 max-h-[90vh] overflow-y-auto">
-      <button onclick="closeAdmissionModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-2xl w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">
-        &times;
-      </button>
-      <div id="adm-modal-body" class="space-y-4">
-        <!-- Rendered dynamically -->
-      </div>
-    </div>
-  </div>
-
 </body>
 </html>
