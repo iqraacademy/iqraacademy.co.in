@@ -66,61 +66,6 @@
     </div>
   </div>
 
-  <!-- Firestore Rules Helper Modal -->
-  <div id="rules-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-emerald-700/60 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div class="flex items-center gap-2 text-emerald-400">
-          <i class="fa-solid fa-shield-virus text-xl"></i>
-          <h3 class="text-base font-bold text-white">স্প্যাম বট অ্যাটাক বন্ধ করার স্থায়ী সমাধান (Firestore Rules)</h3>
-        </div>
-        <button type="button" id="btn-close-rules" class="text-slate-400 hover:text-white text-xl w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center cursor-pointer">&times;</button>
-      </div>
-      <div class="text-xs text-slate-300 space-y-2 leading-relaxed">
-        <p class="text-amber-300 font-semibold">কেন অটোমেটিক হাজার হাজার মেসেজ আসছে?</p>
-        <p>হ্যাকার বা অটোমেটেড স্প্যাম বট (Faker.js / Lorem Ipsum স্ক্রিপ্ট) আপনার ওয়েবসাইটের ফর্ম ব্যবহার না করেই সরাসরি আপনার <b>Firebase Project ID (iqra-academy-portal)</b>-এ প্রতি সেকেন্ডে অটোমেটিক রিকোয়েস্ট পাঠাচ্ছে, কারণ আপনার Firebase Firestore Rules-এ বর্তমানে যে কেউ ডেটা রাইট করার অনুমতি (`allow write: if true`) দেওয়া আছে।</p>
-        <p class="text-emerald-300 font-semibold pt-1">স্থায়ীভাবে বন্ধ করতে Firebase Console &rarr; Firestore Database &rarr; Rules ট্যাবে গিয়ে নিচের কোডটি পেস্ট করে Publish করুন:</p>
-      </div>
-      <pre id="firestore-rules-code" class="bg-slate-950 border border-slate-800 rounded-2xl p-3 text-[11px] font-mono text-emerald-300 overflow-x-auto leading-relaxed">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /school_data/{docId} {
-      allow read: if true;
-      allow write: if true;
-    }
-    match /admissions/{docId} {
-      allow read, delete: if true;
-      allow create: if request.resource.data.keys().hasAll(['name', 'phone'])
-                    && request.resource.data.name is string
-                    && request.resource.data.name.size() >= 2
-                    && request.resource.data.name.size() <= 80
-                    && request.resource.data.phone is string
-                    && request.resource.data.phone.matches('^[6-9][0-9]{9}$');
-    }
-    match /contact_messages/{docId} {
-      allow read, delete: if true;
-      allow create: if request.resource.data.keys().hasAll(['name', 'phone', 'message'])
-                    && request.resource.data.name is string
-                    && request.resource.data.name.size() >= 2
-                    && request.resource.data.name.size() <= 60
-                    && request.resource.data.phone is string
-                    && request.resource.data.phone.matches('^[6-9][0-9]{9}$')
-                    && request.resource.data.message is string
-                    && request.resource.data.message.size() >= 3
-                    && request.resource.data.message.size() <= 400
-                    && !request.resource.data.message.matches('(?i).*(dolorem|voluptas|accusamus|repellendus|voluptatibus|consequatur|temporibus|necessitatibus|quibusdam|laudantium).*');
-    }
-  }
-}</pre>
-      <div class="flex justify-end gap-2 pt-2">
-        <button type="button" id="btn-copy-rules" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold cursor-pointer flex items-center gap-1.5">
-          <i class="fa-solid fa-copy"></i> Rules কপি করুন
-        </button>
-        <button type="button" id="btn-close-rules-bottom" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold cursor-pointer">বন্ধ করুন</button>
-      </div>
-    </div>
-  </div>
-
   <!-- লেয়ার ১ ও ২ দ্বি-স্তরীয় সিকিউরিটি গেট -->
   <div id="security-screen" class="min-h-screen flex items-center justify-center p-4">
     <div class="max-w-md w-full bg-slate-900 border border-amber-500/30 rounded-3xl p-8 shadow-2xl relative">
@@ -197,9 +142,6 @@ service cloud.firestore {
           </div>
         </div>
         <div class="flex items-center flex-wrap gap-2">
-          <button type="button" id="btn-open-rules" class="px-3 py-1.5 bg-amber-950/80 hover:bg-amber-900 text-amber-300 text-xs rounded-xl border border-amber-700/80 flex items-center transition cursor-pointer">
-            <i class="fa-solid fa-shield-halved mr-1.5"></i> স্প্যাম রোধের গাইড
-          </button>
           <a href="https://iqraacademy.co.in/" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-xl border border-slate-700 flex items-center transition">
             <i class="fa-solid fa-globe mr-1.5 text-amber-400"></i> পাবলিক সাইট দেখুন
           </a>
@@ -532,22 +474,6 @@ service cloud.firestore {
         confirmCallback = null;
         await cb();
       }
-    });
-
-    // Rules Modal
-    const rulesModal = document.getElementById('rules-modal');
-    document.getElementById('btn-open-rules')?.addEventListener('click', () => rulesModal?.classList.remove('hidden'));
-    document.getElementById('btn-close-rules')?.addEventListener('click', () => rulesModal?.classList.add('hidden'));
-    document.getElementById('btn-close-rules-bottom')?.addEventListener('click', () => rulesModal?.classList.add('hidden'));
-    document.getElementById('btn-copy-rules')?.addEventListener('click', () => {
-      const text = document.getElementById('firestore-rules-code')?.innerText || '';
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand('copy'); } catch (e) {}
-      ta.remove();
-      showToast("Firestore Security Rules কপি করা হয়েছে!");
     });
 
     // একমুখী ক্রিপ্টোগ্রাফিক হ্যাশ (One-Way Salted SHA-256 Hash)
