@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IQRA ACADEMY - Admin QR Attendance Scanner PWA</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="theme-color" content="#065f46">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <!-- html5-qrcode library for high-speed camera QR scanning -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
@@ -25,19 +29,16 @@
         .brand-row h1 { font-size: 1.25rem; font-weight: 800; color: #fff; }
         .brand-row p { font-size: 0.78rem; color: #a7f3d0; }
 
+        .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .pwa-install-btn {
-            background: #fef08a; color: #065f46; border: none; padding: 0.5rem 0.9rem;
-            border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: none;
+            background: #fef08a; color: #065f46; border: none; padding: 0.55rem 0.95rem;
+            border-radius: 8px; font-weight: 800; font-size: 0.8rem; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-
-        .api-config {
-            background: #1e293b; border: 1px solid #334155; padding: 0.7rem 1rem; border-radius: 10px;
-            margin-bottom: 1.2rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-        }
-        .api-config label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; }
-        .api-config input {
-            flex: 1; min-width: 220px; background: #0f172a; border: 1px solid #475569;
-            color: #e2e8f0; padding: 0.45rem 0.7rem; border-radius: 6px; font-size: 0.8rem;
+        .pwa-install-btn:hover { background: #fde047; }
+        .refresh-top-btn {
+            background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.52rem 0.85rem; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer;
         }
 
         .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
@@ -140,6 +141,16 @@
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left; }
         th { background: #065f46; color: #fff; padding: 9px 10px; }
         td { padding: 8px 10px; border-bottom: 1px solid #334155; color: #cbd5e1; }
+
+        /* PWA Install Helper Modal */
+        .install-modal-backdrop {
+            position: fixed; inset: 0; background: rgba(2,6,23,0.75); display: none;
+            align-items: center; justify-content: center; z-index: 9999; padding: 1rem;
+        }
+        .install-modal-box {
+            background: #1e293b; border: 1px solid #10b981; border-radius: 16px; max-width: 420px;
+            width: 100%; padding: 1.4rem; color: #f8fafc; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
@@ -149,16 +160,13 @@
                 <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="IQRA Logo">
                 <div>
                     <h1>IQRA ACADEMY - Admin Attendance Scanner</h1>
-                    <p>Folder 2: QR ইন-টাইম ও ছুটির টাইম স্ক্যানার (PWA App)</p>
+                    <p>QR ইন-টাইম ও ছুটির টাইম স্ক্যানার (PWA App)</p>
                 </div>
             </div>
-            <button id="installPwaBtn" class="pwa-install-btn" onclick="installPWA()">📲 Install Admin App</button>
-        </div>
-
-        <div class="api-config">
-            <label>🔗 Google Apps Script URL:</label>
-            <input type="text" id="gasApiUrl" value="https://script.google.com/macros/s/AKfycbyIQbQyAsyvNCIX2evPgRyjhOfcxhI7u90b3Bbhsnz3mFQxWbxe9xQX3_fwighzGinr/exec" onchange="saveApiUrl()">
-            <button class="btn btn-start" style="flex:0; padding:0.45rem 0.85rem;" onclick="fetchRecentLogs()">🔄 রিফ্রেশ লগ</button>
+            <div class="header-actions">
+                <button class="refresh-top-btn" onclick="fetchRecentLogs()">🔄 রিফ্রেশ লগ</button>
+                <button id="installPwaBtn" class="pwa-install-btn" onclick="installPWA()">📲 Install Admin App</button>
+            </div>
         </div>
 
         <div class="main-grid">
@@ -212,8 +220,8 @@
                         <div><span class="lbl">শ্রেণী ও রোল:</span> <span class="val" id="resClassRoll">---</span></div>
                         <div><span class="lbl">ভর্তির ধরন:</span> <span class="val" id="resCategory">---</span></div>
                         <div><span class="lbl">অভিভাবকের ফোন:</span> <span class="val" id="resPhone">---</span></div>
-                        <div><span class="lbl">প্রবেশ সময় (In Time):</span> <span class="val" id="resInTime" style="color:#4ade80;">---</span></div>
-                        <div><span class="lbl">ছুটির সময় (Quit Time):</span> <span class="val" id="resOutTime" style="color:#f87171;">---</span></div>
+                        <div><span class="lbl">প্রবেশ সময় (In Time):</span> <span class="val" id="resInTime" style="color:#4ade80;">---</span></div>
+                        <div><span class="lbl">ছুটির সময় (Quit Time):</span> <span class="val" id="resOutTime" style="color:#f87171;">---</span></div>
                     </div>
                 </div>
             </div>
@@ -227,7 +235,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>সময়</th>
+                        <th>সময়</th>
                         <th>আইডি</th>
                         <th>শিক্ষার্থীর নাম</th>
                         <th>ক্লাস ও রোল</th>
@@ -237,55 +245,77 @@
                     </tr>
                 </thead>
                 <tbody id="attendanceLogBody">
-                    <tr><td colspan="7" style="text-align:center; padding:16px; color:#94a3b8;">কোনো স্ক্যান লগ এখনো লোড হয়নি।</td></tr>
+                    <tr><td colspan="7" style="text-align:center; padding:16px; color:#94a3b8;">কোনো স্ক্যান লগ এখনো লোড হয়নি।</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
+    <!-- ইনস্টল গাইড মডাল (যদি ব্রাউজার সরাসরি পপআপ না দেখায়) -->
+    <div class="install-modal-backdrop" id="pwaInstallModal">
+        <div class="install-modal-box">
+            <h3 style="color:#34d399; font-size:1.05rem; margin-bottom:0.6rem;">📲 অ্যাপটি মোবাইলে ইনস্টল করার নিয়ম</h3>
+            <p style="font-size:0.84rem; color:#cbd5e1; line-height:1.55; margin-bottom:0.9rem;">
+                ১. পেজটি অবশ্যই <strong>GitHub Pages (HTTPS)</strong> লিঙ্কে ওপেন করুন (ফাইল হিসেবে ওপেন করলে ব্রাউজার ইনস্টল ব্লক করে)।<br>
+                ২. আপনার Chrome ব্রাউজারের উপরের ডানদিকের <strong>⋮ (Three Dots)</strong> মেনুতে ক্লিক করুন।<br>
+                ৩. <strong>"Install app"</strong> অথবা <strong>"Add to Home screen"</strong> অপশনে ট্যাপ করলেই অ্যাপটি ফোনে ইনস্টল হয়ে যাবে!
+            </p>
+            <button class="btn btn-start" style="width:100%;" onclick="closeInstallModal()">ঠিক আছে, বুঝতে পেরেছি</button>
+        </div>
+    </div>
+
     <script>
+        // আপনার নতুন Google Apps Script URL এখানে স্থায়ীভাবে সেট ও হাইড করা আছে
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec";
+
         let currentScanMode = "IN";
         let html5QrScanner = null;
         let isScanningLocked = false;
         let deferredPrompt = null;
 
         window.onload = function() {
-            try {
-                const saved = localStorage.getItem("IQRA_GAS_API_URL");
-                if (saved) document.getElementById("gasApiUrl").value = saved;
-            } catch (e) {}
             setInterval(() => {
                 document.getElementById("scanClock").innerText = new Date().toLocaleTimeString();
             }, 1000);
             fetchRecentLogs();
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("sw.js").catch(() => {});
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            }
+            if (window.matchMedia("(display-mode: standalone)").matches) {
+                document.getElementById("installPwaBtn").style.display = "none";
             }
         };
 
         window.addEventListener("beforeinstallprompt", e => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById("installPwaBtn").style.display = "inline-block";
+            const btn = document.getElementById("installPwaBtn");
+            btn.style.display = "inline-flex";
+            btn.innerText = "📲 Install Admin App";
+        });
+
+        window.addEventListener("appinstalled", () => {
+            deferredPrompt = null;
+            document.getElementById("installPwaBtn").style.display = "none";
         });
 
         function installPWA() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(() => {
-                deferredPrompt = null;
-                document.getElementById("installPwaBtn").style.display = "none";
-            });
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    deferredPrompt = null;
+                });
+            } else {
+                document.getElementById("pwaInstallModal").style.display = "flex";
+            }
         }
 
-        function saveApiUrl() {
-            try {
-                localStorage.setItem("IQRA_GAS_API_URL", document.getElementById("gasApiUrl").value.trim());
-            } catch (e) {}
+        function closeInstallModal() {
+            document.getElementById("pwaInstallModal").style.display = "none";
         }
 
         function getApiUrl() {
-            return document.getElementById("gasApiUrl").value.trim();
+            return GAS_API_URL;
         }
 
         function setScanMode(mode) {
@@ -326,8 +356,8 @@
                 () => {}
             ).then(() => {
                 document.getElementById("scanStateBadge").innerText = "🟢 স্ক্যানিং সক্রিয়";
-            }).catch(err => {
-                document.getElementById("scanStateBadge").innerText = "ক্যামেরা পারমিশন প্রয়োজন";
+            }).catch(() => {
+                document.getElementById("scanStateBadge").innerText = "ক্যামেরা পারমিশন প্রয়োজন";
                 html5QrScanner = null;
             });
         }
@@ -374,7 +404,7 @@
                     document.getElementById("scanStateBadge").innerText = "❌ " + (res ? res.error : "পাওয়া যায়নি");
                 }
             })
-            .catch(err => {
+            .catch(() => {
                 playBeep(false);
                 document.getElementById("scanStateBadge").innerText = "নেটওয়ার্ক এরর";
             });
