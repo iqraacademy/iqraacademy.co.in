@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IQRA ACADEMY - Guardian Live Tracking Portal (PWA)</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="theme-color" content="#065f46">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -22,12 +26,20 @@
         .app-header h1 { font-size: 1.25rem; font-weight: 800; color: #fff; }
         .app-header p { font-size: 0.8rem; color: #a7f3d0; margin-top: 2px; }
 
+        .pwa-install-btn {
+            margin-top: 0.65rem; background: #fef08a; color: #065f46; border: none;
+            padding: 0.5rem 1rem; border-radius: 99px; font-weight: 800; font-size: 0.78rem;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+        .pwa-install-btn:hover { background: #fde047; }
+
         .card {
             background: #1e293b; border: 1px solid #334155; border-radius: 18px; padding: 1.35rem;
             box-shadow: 0 12px 30px rgba(0,0,0,0.35); margin-bottom: 1.1rem;
         }
 
-        /* ওয়ান-টাইম সেটআপ / QR স্ক্যান ভিউ */
+        /* ওয়ান-টাইম সেটআপ / QR স্ক্যান ভিউ */
         #setupSection h2 { font-size: 1.05rem; color: #34d399; margin-bottom: 0.5rem; text-align: center; }
         #setupSection p { font-size: 0.82rem; color: #cbd5e1; text-align: center; margin-bottom: 1rem; line-height: 1.45; }
         #guardianQrReader { width: 100%; border-radius: 12px; overflow: hidden; background: #020617; border: 2px dashed #10b981; min-height: 230px; }
@@ -109,10 +121,14 @@
         }
         .history-item:last-child { border-bottom: none; }
 
-        .api-details-toggle { margin-top: 0.8rem; text-align: center; }
-        .api-details-toggle input {
-            width: 100%; margin-top: 6px; padding: 0.45rem; border-radius: 6px; border: 1px solid #475569;
-            background: #0f172a; color: #94a3b8; font-size: 0.75rem;
+        /* PWA Install Helper Modal */
+        .install-modal-backdrop {
+            position: fixed; inset: 0; background: rgba(2,6,23,0.75); display: none;
+            align-items: center; justify-content: center; z-index: 9999; padding: 1rem;
+        }
+        .install-modal-box {
+            background: #1e293b; border: 1px solid #10b981; border-radius: 16px; max-width: 420px;
+            width: 100%; padding: 1.4rem; color: #f8fafc; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
     </style>
 </head>
@@ -122,15 +138,16 @@
             <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="IQRA Logo">
             <h1>IQRA ACADEMY - অভিভাবক পোর্টাল</h1>
             <p>Guardian Live Tracking PWA • রিয়েল-টাইম স্কুল এন্ট্রি ও ছুটি ট্র্যাকার</p>
+            <button id="installGuardianBtn" class="pwa-install-btn" onclick="installGuardianPWA()">📲 অ্যাপটি ফোনে ইনস্টল করুন (Install App)</button>
         </div>
 
-        <!-- ১. ওয়ান-টাইম সেটআপ সেকশন (যদি কার্ড এখনো সেভ না থাকে) -->
+        <!-- ১. ওয়ান-টাইম সেটআপ সেকশন (যদি কার্ড এখনো সেভ না থাকে) -->
         <div class="card" id="setupSection">
             <h2>🔐 এককালীন আইডি কার্ড স্ক্যান ও সেভ (One-Time Setup)</h2>
             <p>আপনার সন্তানের আইডি কার্ডের QR কোডটি একবার স্ক্যান করুন। অ্যাপটি স্থায়ীভাবে কার্ডটি সেভ করে রাখবে এবং প্রতিদিন লাইভ স্ট্যাটাস দেখাবে।</p>
 
             <div id="guardianQrReader"></div>
-            <button class="btn btn-emerald" onclick="startGuardianCamera()">📷 ক্যামেরা দিয়ে QR স্ক্যান করুন</button>
+            <button class="btn btn-emerald" onclick="startGuardianCamera()">📷 ক্যামেরা দিয়ে QR স্ক্যান করুন</button>
 
             <div class="input-row">
                 <input type="text" id="guardianStudentIdInput" placeholder="অথবা আইডি লিখুন (যেমন: IQRA-12345)">
@@ -181,29 +198,39 @@
             </div>
         </div>
 
-        <!-- ৩. প্রতিদিনের যাতায়াত হিস্ট্রি -->
+        <!-- ৩. প্রতিদিনের যাতায়াত হিস্ট্রি -->
         <div class="card" id="historyCard" style="display:none;">
-            <h3 style="font-size:0.95rem; color:#34d399; margin-bottom:0.5rem;">📅 সাম্প্রতিক প্রবেশ ও ছুটির সময়সূচী</h3>
+            <h3 style="font-size:0.95rem; color:#34d399; margin-bottom:0.5rem;">📅 সাম্প্রতিক প্রবেশ ও ছুটির সময়সূচী</h3>
             <div class="history-list" id="gHistoryList">
                 <div class="history-item">লোড হচ্ছে...</div>
             </div>
         </div>
+    </div>
 
-        <div class="api-details-toggle">
-            <label style="font-size:0.72rem; color:#94a3b8;">Google Apps Script Exec URL:</label>
-            <input type="text" id="gasApiUrl" value="https://script.google.com/macros/s/AKfycbyIQbQyAsyvNCIX2evPgRyjhOfcxhI7u90b3Bbhsnz3mFQxWbxe9xQX3_fwighzGinr/exec" onchange="saveApiUrl()">
+    <!-- ইনস্টল গাইড মডাল -->
+    <div class="install-modal-backdrop" id="guardianInstallModal">
+        <div class="install-modal-box">
+            <h3 style="color:#34d399; font-size:1.05rem; margin-bottom:0.6rem;">📲 অভিভাবক অ্যাপ ইনস্টল করার নিয়ম</h3>
+            <p style="font-size:0.84rem; color:#cbd5e1; line-height:1.55; margin-bottom:0.9rem;">
+                ১. পেজটি অবশ্যই <strong>GitHub Pages (HTTPS)</strong> লিঙ্কে ওপেন করুন।<br>
+                ২. Chrome ব্রাউজারের উপরের ডানদিকের <strong>⋮ (Three Dots)</strong> মেনুতে ট্যাপ করুন।<br>
+                ৩. <strong>"Install app"</strong> বা <strong>"Add to Home screen"</strong>-এ ক্লিক করলেই অ্যাপটি আপনার ফোনের হোম স্ক্রিনে চলে আসবে!
+            </p>
+            <button class="btn btn-emerald" style="margin-top:0;" onclick="closeGuardianInstallModal()">ঠিক আছে</button>
         </div>
     </div>
 
     <script>
+        // আপনার নতুন Google Apps Script URL এখানে স্থায়ীভাবে সেট ও হাইড করা আছে
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec";
+
         let guardianQrScanner = null;
         let boundStudentId = "";
         let pollTimer = null;
+        let deferredGuardianPrompt = null;
 
         window.onload = function() {
             try {
-                const savedApi = localStorage.getItem("IQRA_GAS_API_URL");
-                if (savedApi) document.getElementById("gasApiUrl").value = savedApi;
                 boundStudentId = localStorage.getItem("IQRA_GUARDIAN_STUDENT_ID") || "";
             } catch (e) {}
 
@@ -211,18 +238,41 @@
                 showLiveDashboard(boundStudentId);
             }
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("sw.js").catch(() => {});
+                navigator.serviceWorker.register("./sw.js").catch(() => {});
+            }
+            if (window.matchMedia("(display-mode: standalone)").matches) {
+                document.getElementById("installGuardianBtn").style.display = "none";
             }
         };
 
-        function saveApiUrl() {
-            try {
-                localStorage.setItem("IQRA_GAS_API_URL", document.getElementById("gasApiUrl").value.trim());
-            } catch (e) {}
+        window.addEventListener("beforeinstallprompt", e => {
+            e.preventDefault();
+            deferredGuardianPrompt = e;
+            document.getElementById("installGuardianBtn").style.display = "inline-flex";
+        });
+
+        window.addEventListener("appinstalled", () => {
+            deferredGuardianPrompt = null;
+            document.getElementById("installGuardianBtn").style.display = "none";
+        });
+
+        function installGuardianPWA() {
+            if (deferredGuardianPrompt) {
+                deferredGuardianPrompt.prompt();
+                deferredGuardianPrompt.userChoice.then(() => {
+                    deferredGuardianPrompt = null;
+                });
+            } else {
+                document.getElementById("guardianInstallModal").style.display = "flex";
+            }
+        }
+
+        function closeGuardianInstallModal() {
+            document.getElementById("guardianInstallModal").style.display = "none";
         }
 
         function getApiUrl() {
-            return document.getElementById("gasApiUrl").value.trim();
+            return GAS_API_URL;
         }
 
         function startGuardianCamera() {
@@ -326,8 +376,8 @@
                         stage.className = "live-bulb-stage stage-out";
                         bulb.className = "giant-bulb red-blinking";
                         title.className = "bulb-status-title title-out";
-                        title.innerText = "🔴 SAFELY QUIT (নিরাপদে ছুটি হয়েছে)";
-                        sub.innerText = "লাল বাতি জ্বলছে: আপনার সন্তান স্কুল থেকে নিরাপদে ছুটি নিয়ে প্রস্থান করেছে।";
+                        title.innerText = "🔴 SAFELY QUIT (নিরাপদে ছুটি হয়েছে)";
+                        sub.innerText = "লাল বাতি জ্বলছে: আপনার সন্তান স্কুল থেকে নিরাপদে ছুটি নিয়ে প্রস্থান করেছে।";
                     }
 
                     document.getElementById("gLastIn").innerText = st.lastInTime || "-";
@@ -346,7 +396,7 @@
                             </div>`;
                         }).join("");
                     } else {
-                        historyEl.innerHTML = `<div class="history-item" style="color:#94a3b8;">এখনো কোনো স্ক্যান রেকর্ড জমা হয়নি।</div>`;
+                        historyEl.innerHTML = `<div class="history-item" style="color:#94a3b8;">এখনো কোনো স্ক্যান রেকর্ড জমা হয়নি।</div>`;
                     }
                 })
                 .catch(() => {
