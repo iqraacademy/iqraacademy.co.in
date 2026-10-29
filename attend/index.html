@@ -1,1 +1,442 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQRA ACADEMY - Admin QR Attendance Scanner PWA</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#065f46">
+    <!-- html5-qrcode library for high-speed camera QR scanning -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #0f172a; color: #f8fafc; min-height: 100vh; padding: 1rem; }
 
+        .app-shell { max-width: 960px; margin: 0 auto; }
+
+        .top-header {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            padding: 1rem 1.25rem; border-radius: 14px; display: flex; align-items: center;
+            justify-content: space-between; gap: 12px; flex-wrap: wrap; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid #10b981; margin-bottom: 1.2rem;
+        }
+        .brand-row { display: flex; align-items: center; gap: 12px; }
+        .brand-row img { width: 46px; height: 46px; border-radius: 50%; border: 2px solid #fef08a; background: #fff; object-fit: cover; }
+        .brand-row h1 { font-size: 1.25rem; font-weight: 800; color: #fff; }
+        .brand-row p { font-size: 0.78rem; color: #a7f3d0; }
+
+        .pwa-install-btn {
+            background: #fef08a; color: #065f46; border: none; padding: 0.5rem 0.9rem;
+            border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: none;
+        }
+
+        .api-config {
+            background: #1e293b; border: 1px solid #334155; padding: 0.7rem 1rem; border-radius: 10px;
+            margin-bottom: 1.2rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+        }
+        .api-config label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; }
+        .api-config input {
+            flex: 1; min-width: 220px; background: #0f172a; border: 1px solid #475569;
+            color: #e2e8f0; padding: 0.45rem 0.7rem; border-radius: 6px; font-size: 0.8rem;
+        }
+
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+        @media (max-width: 780px) { .main-grid { grid-template-columns: 1fr; } }
+
+        .card {
+            background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 1.25rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+        .card-title {
+            font-size: 1rem; font-weight: 700; color: #34d399; margin-bottom: 0.9rem;
+            padding-bottom: 0.45rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* মোড সিলেক্টর: IN vs OUT */
+        .mode-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+        .mode-btn {
+            padding: 0.7rem 0.5rem; border-radius: 10px; border: 2px solid #334155; background: #0f172a;
+            color: #cbd5e1; font-weight: 700; font-size: 0.82rem; cursor: pointer; text-align: center; transition: 0.2s;
+        }
+        .mode-btn.active-in { border-color: #22c55e; background: rgba(34,197,94,0.18); color: #4ade80; box-shadow: 0 0 15px rgba(34,197,94,0.3); }
+        .mode-btn.active-out { border-color: #ef4444; background: rgba(239,68,68,0.18); color: #f87171; box-shadow: 0 0 15px rgba(239,68,68,0.3); }
+        .mode-btn.active-auto { border-color: #38bdf8; background: rgba(56,189,248,0.18); color: #7dd3fc; }
+
+        #reader {
+            width: 100%; border-radius: 12px; overflow: hidden; background: #020617;
+            border: 2px dashed #10b981; min-height: 250px;
+        }
+
+        .scanner-controls { display: flex; gap: 8px; margin-top: 0.9rem; }
+        .btn {
+            padding: 0.65rem 1rem; border-radius: 8px; border: none; font-weight: 700;
+            font-size: 0.85rem; cursor: pointer; flex: 1; color: #fff; transition: 0.2s;
+        }
+        .btn-start { background: #10b981; }
+        .btn-start:hover { background: #059669; }
+        .btn-stop { background: #ef4444; }
+        .btn-stop:hover { background: #dc2626; }
+
+        .manual-box { display: flex; gap: 8px; margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid #334155; }
+        .manual-box input {
+            flex: 1; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid #475569;
+            background: #0f172a; color: #fff; font-size: 0.88rem; outline: none;
+        }
+
+        /* অটো-ফেচ স্টুডেন্ট রেজাল্ট কার্ড */
+        .scan-result-card {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            padding: 1.2rem; border-radius: 12px; background: #0f172a; border: 2px solid #334155;
+            min-height: 330px; justify-content: center; position: relative; transition: 0.3s;
+        }
+        .scan-result-card.state-in { border-color: #22c55e; box-shadow: 0 0 28px rgba(34,197,94,0.22); }
+        .scan-result-card.state-out { border-color: #ef4444; box-shadow: 0 0 28px rgba(239,68,68,0.22); }
+
+        .student-photo-ring {
+            width: 110px; height: 110px; border-radius: 50%; border: 3px solid #10b981;
+            overflow: hidden; margin-bottom: 0.75rem; background: #1e293b; display: flex;
+            align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+        }
+        .student-photo-ring img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ব্লিঙ্কিং লাইভ বাল্ব */
+        .bulb-banner {
+            display: inline-flex; align-items: center; gap: 10px; padding: 0.5rem 1.1rem;
+            border-radius: 999px; font-weight: 800; font-size: 0.9rem; margin: 0.5rem 0 0.85rem 0;
+        }
+        .bulb-in { background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid #22c55e; }
+        .bulb-out { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; }
+
+        .bulb-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+        .dot-green {
+            background: #22c55e;
+            box-shadow: 0 0 12px #22c55e, 0 0 24px #22c55e;
+            animation: pulseGreen 1s infinite alternate;
+        }
+        .dot-red {
+            background: #ef4444;
+            box-shadow: 0 0 12px #ef4444, 0 0 24px #ef4444;
+            animation: pulseRed 1s infinite alternate;
+        }
+        @keyframes pulseGreen {
+            0% { transform: scale(0.9); opacity: 0.65; box-shadow: 0 0 6px #22c55e; }
+            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 20px #22c55e, 0 0 35px #4ade80; }
+        }
+        @keyframes pulseRed {
+            0% { transform: scale(0.9); opacity: 0.65; box-shadow: 0 0 6px #ef4444; }
+            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 20px #ef4444, 0 0 35px #f87171; }
+        }
+
+        .info-grid {
+            width: 100%; text-align: left; background: #1e293b; padding: 0.85rem 1rem;
+            border-radius: 10px; font-size: 0.84rem; line-height: 1.65; border: 1px solid #334155;
+        }
+        .info-grid div { display: flex; justify-content: space-between; border-bottom: 1px dashed #334155; padding: 2px 0; }
+        .info-grid div:last-child { border-bottom: none; }
+        .info-grid span.lbl { color: #94a3b8; font-weight: 600; }
+        .info-grid span.val { color: #f8fafc; font-weight: 700; }
+
+        .log-table-wrap { margin-top: 1.25rem; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left; }
+        th { background: #065f46; color: #fff; padding: 9px 10px; }
+        td { padding: 8px 10px; border-bottom: 1px solid #334155; color: #cbd5e1; }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <div class="top-header">
+            <div class="brand-row">
+                <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="IQRA Logo">
+                <div>
+                    <h1>IQRA ACADEMY - Admin Attendance Scanner</h1>
+                    <p>Folder 2: QR ইন-টাইম ও ছুটির টাইম স্ক্যানার (PWA App)</p>
+                </div>
+            </div>
+            <button id="installPwaBtn" class="pwa-install-btn" onclick="installPWA()">📲 Install Admin App</button>
+        </div>
+
+        <div class="api-config">
+            <label>🔗 Google Apps Script URL:</label>
+            <input type="text" id="gasApiUrl" value="https://script.google.com/macros/s/AKfycbyIQbQyAsyvNCIX2evPgRyjhOfcxhI7u90b3Bbhsnz3mFQxWbxe9xQX3_fwighzGinr/exec" onchange="saveApiUrl()">
+            <button class="btn btn-start" style="flex:0; padding:0.45rem 0.85rem;" onclick="fetchRecentLogs()">🔄 রিফ্রেশ লগ</button>
+        </div>
+
+        <div class="main-grid">
+            <!-- বাম পাশ: ক্যামেরা QR স্ক্যানার -->
+            <div class="card">
+                <div class="card-title">
+                    <span>📷 আইডি কার্ড QR স্ক্যানার</span>
+                    <span id="scanStateBadge" style="font-size:0.75rem; color:#fde047;">প্রস্তুত</span>
+                </div>
+
+                <div class="mode-selector">
+                    <button class="mode-btn active-in" id="modeInBtn" onclick="setScanMode('IN')">🟢 প্রবেশ (IN TIME)</button>
+                    <button class="mode-btn" id="modeOutBtn" onclick="setScanMode('OUT')">🔴 ছুটি (QUIT TIME)</button>
+                    <button class="mode-btn" id="modeAutoBtn" onclick="setScanMode('AUTO')">⚡ অটো টগল</button>
+                </div>
+
+                <div id="reader"></div>
+
+                <div class="scanner-controls">
+                    <button class="btn btn-start" onclick="startCameraScanner()">▶️ ক্যামেরা চালু করুন</button>
+                    <button class="btn btn-stop" onclick="stopCameraScanner()">⏹️ ক্যামেরা বন্ধ</button>
+                </div>
+
+                <div class="manual-box">
+                    <input type="text" id="manualStudentId" placeholder="ম্যানুয়াল আইডি (যেমন: IQRA-12345)" onkeydown="if(event.key==='Enter') submitManualScan()">
+                    <button class="btn btn-start" style="flex:0; white-space:nowrap;" onclick="submitManualScan()">✅ এন্ট্রি দিন</button>
+                </div>
+            </div>
+
+            <!-- ডান পাশ: অটো-ফেচ স্টুডেন্ট প্রোফাইল ও লাইভ স্ট্যাটাস -->
+            <div class="card">
+                <div class="card-title">
+                    <span>👤 অটো-ফেচ শিক্ষার্থী ও স্ট্যাটাস</span>
+                    <span id="scanClock" style="font-size:0.75rem; color:#94a3b8;">--:--:--</span>
+                </div>
+
+                <div class="scan-result-card" id="resultCard">
+                    <div class="student-photo-ring">
+                        <img id="resPhoto" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="Student">
+                    </div>
+                    <h2 id="resName" style="font-size:1.2rem; color:#fff;">কার্ড স্ক্যান করার অপেক্ষায়...</h2>
+                    <p id="resSub" style="font-size:0.82rem; color:#94a3b8; margin-top:2px;">শিক্ষার্থীর QR কোড ক্যামেরার সামনে ধরুন</p>
+
+                    <div id="resBulbWrap" class="bulb-banner bulb-in" style="display:none;">
+                        <span id="resBulbDot" class="bulb-dot dot-green"></span>
+                        <span id="resBulbText">SAFELY IN (নিরাপদে স্কুলে প্রবেশ)</span>
+                    </div>
+
+                    <div class="info-grid" style="margin-top:0.6rem;">
+                        <div><span class="lbl">আইডি নম্বর:</span> <span class="val" id="resId">---</span></div>
+                        <div><span class="lbl">শ্রেণী ও রোল:</span> <span class="val" id="resClassRoll">---</span></div>
+                        <div><span class="lbl">ভর্তির ধরন:</span> <span class="val" id="resCategory">---</span></div>
+                        <div><span class="lbl">অভিভাবকের ফোন:</span> <span class="val" id="resPhone">---</span></div>
+                        <div><span class="lbl">প্রবেশ সময় (In Time):</span> <span class="val" id="resInTime" style="color:#4ade80;">---</span></div>
+                        <div><span class="lbl">ছুটির সময় (Quit Time):</span> <span class="val" id="resOutTime" style="color:#f87171;">---</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- নিচের অংশ: আজকের স্ক্যান লগ -->
+        <div class="card log-table-wrap">
+            <div class="card-title">
+                <span>📋 সাম্প্রতিক অ্যাটেনডেন্স লগ (Live Sheet Sync)</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>সময়</th>
+                        <th>আইডি</th>
+                        <th>শিক্ষার্থীর নাম</th>
+                        <th>ক্লাস ও রোল</th>
+                        <th>স্ট্যাটাস</th>
+                        <th>প্রবেশ (In)</th>
+                        <th>ছুটি (Out)</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceLogBody">
+                    <tr><td colspan="7" style="text-align:center; padding:16px; color:#94a3b8;">কোনো স্ক্যান লগ এখনো লোড হয়নি।</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let currentScanMode = "IN";
+        let html5QrScanner = null;
+        let isScanningLocked = false;
+        let deferredPrompt = null;
+
+        window.onload = function() {
+            try {
+                const saved = localStorage.getItem("IQRA_GAS_API_URL");
+                if (saved) document.getElementById("gasApiUrl").value = saved;
+            } catch (e) {}
+            setInterval(() => {
+                document.getElementById("scanClock").innerText = new Date().toLocaleTimeString();
+            }, 1000);
+            fetchRecentLogs();
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("sw.js").catch(() => {});
+            }
+        };
+
+        window.addEventListener("beforeinstallprompt", e => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById("installPwaBtn").style.display = "inline-block";
+        });
+
+        function installPWA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+                deferredPrompt = null;
+                document.getElementById("installPwaBtn").style.display = "none";
+            });
+        }
+
+        function saveApiUrl() {
+            try {
+                localStorage.setItem("IQRA_GAS_API_URL", document.getElementById("gasApiUrl").value.trim());
+            } catch (e) {}
+        }
+
+        function getApiUrl() {
+            return document.getElementById("gasApiUrl").value.trim();
+        }
+
+        function setScanMode(mode) {
+            currentScanMode = mode;
+            document.getElementById("modeInBtn").className = "mode-btn" + (mode === "IN" ? " active-in" : "");
+            document.getElementById("modeOutBtn").className = "mode-btn" + (mode === "OUT" ? " active-out" : "");
+            document.getElementById("modeAutoBtn").className = "mode-btn" + (mode === "AUTO" ? " active-auto" : "");
+        }
+
+        function playBeep(isSuccess) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = isSuccess ? "sine" : "sawtooth";
+                osc.frequency.setValueAtTime(isSuccess ? 880 : 240, ctx.currentTime);
+                gain.gain.setValueAtTime(0.18, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + (isSuccess ? 0.18 : 0.35));
+            } catch (e) {}
+        }
+
+        function startCameraScanner() {
+            if (html5QrScanner) return;
+            document.getElementById("scanStateBadge").innerText = "ক্যামেরা চালু হচ্ছে...";
+            html5QrScanner = new Html5Qrcode("reader");
+            html5QrScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 220, height: 220 } },
+                decodedText => {
+                    if (isScanningLocked) return;
+                    isScanningLocked = true;
+                    processScannedCode(decodedText);
+                    setTimeout(() => { isScanningLocked = false; }, 3000);
+                },
+                () => {}
+            ).then(() => {
+                document.getElementById("scanStateBadge").innerText = "🟢 স্ক্যানিং সক্রিয়";
+            }).catch(err => {
+                document.getElementById("scanStateBadge").innerText = "ক্যামেরা পারমিশন প্রয়োজন";
+                html5QrScanner = null;
+            });
+        }
+
+        function stopCameraScanner() {
+            if (!html5QrScanner) return;
+            html5QrScanner.stop().then(() => {
+                html5QrScanner.clear();
+                html5QrScanner = null;
+                document.getElementById("scanStateBadge").innerText = "⏹️ বন্ধ";
+            }).catch(() => {});
+        }
+
+        function submitManualScan() {
+            const val = document.getElementById("manualStudentId").value.trim();
+            if (!val) return;
+            processScannedCode(val);
+            document.getElementById("manualStudentId").value = "";
+        }
+
+        function processScannedCode(rawCode) {
+            document.getElementById("scanStateBadge").innerText = "⏳ সার্ভারের সাথে মিলানো হচ্ছে...";
+            const apiUrl = getApiUrl();
+
+            fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({
+                    action: "markAttendance",
+                    id: rawCode,
+                    mode: currentScanMode,
+                    scannedBy: "School Gate Admin"
+                })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res && res.success && res.student) {
+                    playBeep(true);
+                    renderScannedStudent(res.student);
+                    fetchRecentLogs();
+                    document.getElementById("scanStateBadge").innerText = "✅ স্ক্যান সফল!";
+                } else {
+                    playBeep(false);
+                    document.getElementById("scanStateBadge").innerText = "❌ " + (res ? res.error : "পাওয়া যায়নি");
+                }
+            })
+            .catch(err => {
+                playBeep(false);
+                document.getElementById("scanStateBadge").innerText = "নেটওয়ার্ক এরর";
+            });
+        }
+
+        function renderScannedStudent(st) {
+            const card = document.getElementById("resultCard");
+            const isInside = String(st.liveStatus).toUpperCase() === "IN";
+
+            card.className = "scan-result-card " + (isInside ? "state-in" : "state-out");
+            document.getElementById("resPhoto").src = st.photoUrl || "https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg";
+            document.getElementById("resName").innerText = st.name;
+            document.getElementById("resSub").innerText = `${st.category} (${st.gender})`;
+
+            const bulbWrap = document.getElementById("resBulbWrap");
+            const bulbDot = document.getElementById("resBulbDot");
+            const bulbText = document.getElementById("resBulbText");
+            bulbWrap.style.display = "inline-flex";
+
+            if (isInside) {
+                bulbWrap.className = "bulb-banner bulb-in";
+                bulbDot.className = "bulb-dot dot-green";
+                bulbText.innerText = "SAFELY IN (নিরাপদে স্কুলে প্রবেশ করেছে)";
+            } else {
+                bulbWrap.className = "bulb-banner bulb-out";
+                bulbDot.className = "bulb-dot dot-red";
+                bulbText.innerText = "SAFELY QUIT / OUT (নিরাপদে ছুটি হয়েছে)";
+            }
+
+            document.getElementById("resId").innerText = st.id;
+            document.getElementById("resClassRoll").innerText = `${st.studentClass} | Roll: ${st.roll}`;
+            document.getElementById("resCategory").innerText = st.category;
+            document.getElementById("resPhone").innerText = st.phone || "-";
+            document.getElementById("resInTime").innerText = st.lastInTime || "-";
+            document.getElementById("resOutTime").innerText = st.lastOutTime || "-";
+        }
+
+        function fetchRecentLogs() {
+            const apiUrl = getApiUrl() + "?action=getRecentAttendance";
+            fetch(apiUrl)
+                .then(r => r.json())
+                .then(res => {
+                    if (!res || !res.success || !Array.isArray(res.logs) || res.logs.length === 0) return;
+                    const tbody = document.getElementById("attendanceLogBody");
+                    tbody.innerHTML = res.logs.map(l => {
+                        const isIn = String(l.status).toUpperCase() === "IN";
+                        const pill = isIn
+                            ? `<span style="color:#4ade80; font-weight:700;">🟢 IN</span>`
+                            : `<span style="color:#f87171; font-weight:700;">🔴 OUT</span>`;
+                        return `<tr>
+                            <td>${l.fullTimestamp || l.date}</td>
+                            <td style="font-family:monospace; color:#34d399;">${l.studentId}</td>
+                            <td><strong>${l.name}</strong></td>
+                            <td>${l.studentClass} (Roll: ${l.roll})</td>
+                            <td>${pill}</td>
+                            <td>${l.inTime || "-"}</td>
+                            <td>${l.outTime || "-"}</td>
+                        </tr>`;
+                    }).join("");
+                })
+                .catch(() => {});
+        }
+    </script>
+</body>
+</html>
