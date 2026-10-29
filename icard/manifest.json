@@ -1,15 +1,38 @@
 {
-  "name": "IQRA ACADEMY - ID Card Studio",
+  "id": "./index.html",
+  "name": "IQRA ACADEMY - Smart ID Card Studio",
   "short_name": "IQRA ID Card",
+  "description": "IQRA ACADEMY - Smart ID Card Studio - IQRA ACADEMY Smart System",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#f0fdf4",
   "theme_color": "#065f46",
   "icons": [
     {
-      "src": "https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg",
+      "src": "./icon-192.png",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

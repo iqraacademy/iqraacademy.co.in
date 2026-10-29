@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IQRA ACADEMY - Smart QR ID Card Generator</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="theme-color" content="#065f46">
     <!-- Libraries: QRCode.js & html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -159,9 +161,9 @@
         <p>অনাবাসিক • ডে-বোর্ডিং • আবাসিক গার্লস মিশন | Folder 1: ID Card Creation with Auto QR Code</p>
     </div>
 
-    <div class="api-bar">
+    <div class="api-bar" style="display:none;">
         <label>🔗 Google Apps Script Web App URL:</label>
-        <input type="text" id="gasApiUrl" value="https://script.google.com/macros/s/AKfycbyIQbQyAsyvNCIX2evPgRyjhOfcxhI7u90b3Bbhsnz3mFQxWbxe9xQX3_fwighzGinr/exec" onchange="saveApiUrl()">
+        <input type="text" id="gasApiUrl" value="https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec" onchange="saveApiUrl()">
         <button class="btn btn-primary" style="flex:0; padding:0.45rem 0.9rem;" onclick="loadStudentData()">🔄 সিঙ্ক করুন</button>
     </div>
 
@@ -384,8 +386,7 @@
 
         window.onload = function() {
             try {
-                const savedUrl = localStorage.getItem("IQRA_GAS_API_URL");
-                if (savedUrl) document.getElementById("gasApiUrl").value = savedUrl;
+                document.getElementById("gasApiUrl").value = "https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec";
             } catch (e) {}
             handleCategoryChange();
             loadStudentData();
