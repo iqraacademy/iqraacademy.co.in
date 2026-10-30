@@ -29,62 +29,70 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1">পাসওয়ার্ড</label>
                     <input type="password" id="login-password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-600 outline-none" placeholder="••••••••">
                 </div>
-                <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold py-3 rounded-xl transition text-sm shadow">
+                <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold py-3 rounded-xl transition text-sm shadow cursor-pointer">
                     লগইন করুন
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Dashboard Section (Hidden by default until login) -->
+    <!-- Dashboard Section -->
     <div id="dashboard-section" class="hidden flex-1 flex flex-col">
         <header class="bg-emerald-900 text-white p-4 shadow flex justify-between items-center">
             <h1 class="text-lg font-bold">ইকরা অ্যাকাডেমি অ্যাডমিন ড্যাশবোর্ড</h1>
-            <button id="btn-logout" class="bg-red-600 hover:bg-red-700 px-4 py-1.5 rounded-lg text-xs font-bold transition">লগআউট</button>
+            <button id="btn-logout" class="bg-red-600 hover:bg-red-700 px-4 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">লগআউট</button>
         </header>
         <main class="max-w-7xl mx-auto p-4 w-full flex-1 space-y-6">
+            <!-- Notice Board Control -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-bullhorn text-emerald-700 mr-2"></i>নতুন নোটিশ যোগ করুন</h3>
                 <form id="notice-form" class="space-y-3">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input type="text" id="notice-title" placeholder="নোটিশের শিরোনাম" required class="px-3 py-2 border rounded-xl text-xs">
-                        <select id="notice-priority" class="px-3 py-2 border rounded-xl text-xs bg-white">
+                        <input type="text" id="notice-title" placeholder="নোটিশের শিরোনাম" required class="px-3 py-2 border rounded-xl text-xs outline-none">
+                        <select id="notice-priority" class="px-3 py-2 border rounded-xl text-xs bg-white outline-none">
                             <option value="সাধারণ">সাধারণ</option>
                             <option value="উচ্চ">উচ্চ</option>
                             <option value="জরুরি">জরুরি</option>
                         </select>
                     </div>
-                    <button type="submit" class="bg-emerald-800 text-white px-5 py-2 rounded-xl text-xs font-bold">নোটিশ প্রকাশ করুন</button>
+                    <button type="submit" class="bg-emerald-800 hover:bg-emerald-900 text-white px-5 py-2 rounded-xl text-xs font-bold cursor-pointer">নোটিশ প্রকাশ করুন</button>
                 </form>
+            </div>
+
+            <!-- Quick Link to Google Spreadsheet -->
+            <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h4 class="font-bold text-emerald-950 text-sm">গুগল স্প্রেডশিট ডেটাবেস</h4>
+                    <p class="text-xs text-slate-600">সকল ভর্তি আবেদন ও কন্টাক্ট মেসেজ সরাসরি আপনার গুগল স্প্রেডশিটে সংরক্ষিত হচ্ছে।</p>
+                </div>
+                <a href="https://docs.google.com/spreadsheets/d/1lsiQiYV1jE1jTWzheHBmwH6TXDyczwHh/edit" target="_blank" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow flex items-center gap-2">
+                    <i class="fa-solid fa-table"></i> স্প্রেডশিট ওপেন করুন
+                </a>
             </div>
         </main>
     </div>
 
-    <!-- Firebase SDK & Script Integration -->
+    <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-        
         const firebaseConfig = {
-  apiKey: "AIzaSyCYA3UgOGX1WQ1YwzYl5_pvDeC6fsAxU3A",
-  authDomain: "iqra-academy-210a5.firebaseapp.com",
-  projectId: "iqra-academy-210a5",
-  storageBucket: "iqra-academy-210a5.firebasestorage.app",
-  messagingSenderId: "130128878522",
-  appId: "1:130128878522:web:dd85b76426218a42479b83",
-  measurementId: "G-NGTB86KHFL"
-};
-
+            apiKey: "AIzaSyC_aNVt4kIackC9_QUnSf0dzf4PE-6PdRs",
+            authDomain: "iqra-academy-portal.firebaseapp.com",
+            projectId: "iqra-academy-portal",
+            storageBucket: "iqra-academy-portal.firebasestorage.app",
+            messagingSenderId: "141277803488",
+            appId: "1:141277803488:web:48dd362989fb8f0b6ff185"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         // Login Logic
-        const loginForm = document.getElementById('login-form');
-        loginForm.addEventListener('submit', async (e) => {
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
@@ -96,7 +104,6 @@
             }
         });
 
-        // Auth State Monitor
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('login-section').classList.add('hidden');
@@ -107,26 +114,21 @@
             }
         });
 
-        // Logout Logic
-        document.getElementById('btn-logout').addEventListener('click', () => {
-            signOut(auth);
-        });
+        document.getElementById('btn-logout').addEventListener('click', () => { signOut(auth); });
 
-        // Add Notice Logic
-        const noticeForm = document.getElementById('notice-form');
-        noticeForm.addEventListener('submit', async (e) => {
+        // Add Notice
+        document.getElementById('notice-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const title = document.getElementById('notice-title').value;
             const priority = document.getElementById('notice-priority').value;
             try {
                 await addDoc(collection(db, "notices"), {
-                    title,
-                    priority,
+                    title, priority,
                     date: new Date().toLocaleDateString('bn-BD'),
                     timestamp: Date.now()
                 });
                 alert("নোটিশ সফলভাবে যোগ করা হয়েছে!");
-                noticeForm.reset();
+                e.target.reset();
             } catch (err) {
                 alert("ত্রুটি: " + err.message);
             }
