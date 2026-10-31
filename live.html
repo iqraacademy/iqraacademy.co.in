@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQRA ACADEMY - Guardian Live Tracking Portal</title>
+    <!-- Leaflet CSS for Interactive Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f8fafc; color: #1e293b; padding: 1rem; min-height: 100vh; }
+        .container { max-width: 480px; margin: 0 auto; }
+        .card { background: #fff; padding: 1.25rem; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); margin-bottom: 1rem; border: 1px solid #e2e8f0; }
+        .title { font-size: 1.1rem; font-weight: 700; color: #065f46; margin-bottom: 0.75rem; text-align: center; }
+        .form-group { margin-bottom: 0.75rem; }
+        label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem; }
+        input { width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; }
+        .btn { width: 100%; padding: 0.75rem; background: #059669; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        #map { width: 100%; height: 320px; border-radius: 10px; margin-top: 10px; border: 2px solid #cbd5e1; }
+        .info-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 4px 0; border-bottom: 1px dotted #e2e8f0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="title">🎓 IQRA ACADEMY - Guardian Portal</div>
+        <div class="form-group">
+            <label>শিক্ষার্থীর আইডি (Student ID)</label>
+            <input type="text" id="studentIdInput" placeholder="যেমন: IQRA-29526">
+        </div>
+        <button class="btn" onclick="fetchStudentStatus()">🔍 লাইভ ট্র্যাক করুন</button>
+    </div>
+
+    <div class="card" id="resultCard" style="display:none;">
+        <div class="title" id="studentHeaderName">ছাত্রের বিবরণ</div>
+        <div class="info-row"><span>ক্লাস:</span> <strong id="resClass">-</strong></div>
+        <div class="info-row"><span>রোল:</span> <strong id="resRoll">-</strong></div>
+        <div class="info-row"><span>স্কুল স্ট্যাটাস:</span> <strong id="resStatus">-</strong></div>
+        <div class="info-row"><span>ড্রাইভার কোড:</span> <strong id="resDriver">-</strong></div>
+        
+        <div style="margin-top: 1rem;">
+            <label><strong>🚐 গাড়ির লাইভ লোকেশন ম্যাপ:</strong></label>
+            <div id="map"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyNL0w90Z5JYEr_G2Uxz2uv3h3iEdqzghX87AFo9BoDEKB63kgYp7GaIRtkV8RedIud/exec";
+    let map = null;
+    let marker = null;
+    let refreshInterval = null;
+
+    function fetchStudentStatus() {
+        const id = document.getElementById("studentIdInput").value.trim();
+        if (!id) {
+            alert("দয়া করে Student ID দিন!");
+            return;
+        }
+
+        const url = `${GAS_URL}?action=getGuardianStatus&id=${id}`;
+        fetch(url)
+            .then(r => r.json())
+            .then(res => {
+                if (res.success && res.student) {
+                    document.getElementById("resultCard").style.display = "block";
+                    document.getElementById("studentHeaderName").innerText = res.student.name + " (" + res.student.id + ")";
+                    document.getElementById("resClass").innerText = res.student.studentClass;
+                    document.getElementById("resRoll").innerText = res.student.roll;
+                    document.getElementById("resStatus").innerText = res.student.liveStatus;
+                    document.getElementById("resDriver").innerText = res.student.driverCode || "অ্যাসাইন করা হয়নি";
+
+                    if (res.driver && res.driver.lat && res.driver.lng) {
+                        updateMap(parseFloat(res.driver.lat), parseFloat(res.driver.lng), res.driver.driverName);
+                    } else {
+                        alert("ড্রাইভারের জিপিএস লোকেশন এখনও পাওয়া যায়নি!");
+                    }
+
+                    // প্রতি ১৫ সেকেন্ড পর পর অটো রিফ্রেশ হবে
+                    if (refreshInterval) clearInterval(refreshInterval);
+                    refreshInterval = setInterval(fetchStudentStatus, 15000);
+                } else {
+                    alert(res.error || "শিক্ষার্থীর তথ্য পাওয়া যায়নি!");
+                }
+            })
+            .catch(err => alert("নেটওয়ার্ক সমস্যা: " + err.message));
+    }
+
+    function updateMap(lat, lng, driverName) {
+        if (!map) {
+            map = L.map('map').setView([lat, lng], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+            marker = L.marker([lat, lng]).addTo(map).bindPopup(`<b>${driverName}</b> (Live Van)`).openPopup();
+        } else {
+            marker.setLatLng([lat, lng]);
+            map.setView([lat, lng], 15);
+        }
+    }
+</script>
+</body>
+</html>
