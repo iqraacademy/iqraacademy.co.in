@@ -1,4 +1,73 @@
-<!-- Search Section -->
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQRA ACADEMY - Admin Driver Tracker</title>
+    <meta name="theme-color" content="#0f172a">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f1f5f9; color: #1e293b; min-height: 100vh; padding: 1.5rem 1rem; }
+
+        .admin-container { max-width: 600px; margin: 0 auto; }
+
+        .header-card {
+            background: #0f172a; color: white; padding: 1.5rem; border-radius: 16px; 
+            text-align: center; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15); margin-bottom: 1.5rem;
+        }
+        .header-card h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px; color: #38bdf8; }
+        .header-card p { font-size: 0.85rem; color: #94a3b8; margin-top: 5px; }
+
+        .card {
+            background: white; padding: 1.5rem; border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 1.5rem;
+        }
+
+        .search-box { display: flex; gap: 10px; }
+        .search-box input {
+            flex: 1; padding: 0.8rem 1rem; border: 2px solid #cbd5e1; border-radius: 12px;
+            font-size: 1rem; font-weight: 600; text-transform: uppercase; outline: none; transition: 0.3s;
+        }
+        .search-box input:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
+        .btn-search {
+            background: #0284c7; color: white; border: none; padding: 0.8rem 1.2rem;
+            border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s;
+        }
+        .btn-search:hover { background: #0369a1; }
+
+        .driver-info-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem;
+            background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0;
+        }
+        .info-item { display: flex; flex-direction: column; }
+        .info-item span { font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 2px; }
+        .info-item strong { font-size: 0.95rem; color: #0f172a; }
+
+        .status-badge {
+            display: inline-block; padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700;
+        }
+        .status-online { background: #dcfce7; color: #166534; }
+        .status-offline { background: #fee2e2; color: #991b1b; }
+
+        .map-container {
+            width: 100%; height: 300px; border-radius: 12px; overflow: hidden; 
+            border: 2px solid #cbd5e1; background: #e2e8f0; display: flex; 
+            align-items: center; justify-content: center; text-align: center; padding: 1rem;
+        }
+        .map-container iframe { width: 100%; height: 100%; border: none; }
+
+        .sync-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <div class="header-card">
+        <h1>⚙️ IQRA ACADEMY ADMIN</h1>
+        <p>Driver Live GPS Tracker Portal</p>
+    </div>
+
+    <!-- Search Section -->
     <div class="card">
         <label style="display:block; font-size:0.85rem; font-weight:700; color:#334155; margin-bottom:8px;">ড্রাইভার কোড দিয়ে খুঁজুন (Search by Driver Code)</label>
         <div class="search-box">
@@ -21,3 +90,133 @@
         </div>
         <p id="errorMsg" style="color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; font-weight: 600;"></p>
     </div>
+
+    <!-- Result Section -->
+    <div class="card" id="resultCard" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:2px solid #f1f5f9; padding-bottom:10px;">
+            <h2 style="font-size:1.1rem; color:#0f172a;" id="rDriverCode">DRV-001</h2>
+            <span id="rStatus" class="status-badge status-offline">OFFLINE</span>
+        </div>
+
+        <div class="driver-info-grid">
+            <div class="info-item">
+                <span>ড্রাইভারের নাম</span>
+                <strong id="rDriverName">---</strong>
+            </div>
+            <div class="info-item">
+                <span>গাড়ির বিবরণ</span>
+                <strong id="rVehicle">---</strong>
+            </div>
+            <div class="info-item">
+                <span>মোবাইল নম্বর</span>
+                <strong id="rPhone">---</strong>
+            </div>
+            <div class="info-item">
+                <span>শেষ আপডেট</span>
+                <strong id="rLastUpdate">---</strong>
+            </div>
+        </div>
+
+        <label style="display:block; font-size:0.85rem; font-weight:700; color:#334155; margin-bottom:8px;">📍 লাইভ ম্যাপ লোকেশন</label>
+        
+        <div id="mapWrapper" class="map-container">
+            <iframe id="googleMapFrame" src="" allowfullscreen="" loading="lazy" style="display:none;"></iframe>
+            <div id="offlineMapMsg" style="color:#64748b; font-weight:600; font-size:0.9rem;">
+                🚫 ড্রাইভার বর্তমানে অফলাইনে আছেন। জিপিএস লোকেশন পাওয়া যাচ্ছে না।
+            </div>
+        </div>
+
+        <div class="sync-text" id="syncTimeMsg">অপেক্ষা করুন...</div>
+    </div>
+</div>
+
+<script>
+    // আপনার সঠিক Web App URL
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyNL0w90Z5JYEr_G2Uxz2uv3h3iEdqzghX87AFo9BoDEKB63kgYp7GaIRtkV8RedIud/exec";
+    
+    let currentTrackingCode = "";
+    let pollTimer = null;
+
+    function startTracking() {
+        const codeInput = document.getElementById("adminDriverCode").value.trim().toUpperCase();
+        if (!codeInput) {
+            showError("দয়া করে একটি ড্রাইভার কোড লিখুন বা সিলেক্ট করুন!");
+            return;
+        }
+
+        currentTrackingCode = codeInput;
+        document.getElementById("errorMsg").style.display = "none";
+        document.getElementById("resultCard").style.display = "block";
+        document.getElementById("syncTimeMsg").innerText = "ডেটা ফেচ করা হচ্ছে...";
+
+        fetchDriverData();
+
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = setInterval(fetchDriverData, 10000); // 10 seconds auto-refresh
+    }
+
+    function fetchDriverData() {
+        if (!currentTrackingCode) return;
+
+        fetch(GAS_API_URL + "?action=getAllDrivers")
+            .then(r => r.json())
+            .then(res => {
+                if (res && res.success && res.drivers) {
+                    const driver = res.drivers.find(d => d.driverCode.toUpperCase() === currentTrackingCode);
+                    
+                    if (driver) {
+                        updateUI(driver);
+                    } else {
+                        showError("এই কোডের কোনো ড্রাইভার পাওয়া যায়নি!");
+                        document.getElementById("resultCard").style.display = "none";
+                        if (pollTimer) clearInterval(pollTimer);
+                    }
+                } else {
+                    showError("সার্ভার থেকে ডেটা আনতে সমস্যা হচ্ছে।");
+                }
+            })
+            .catch(err => {
+                document.getElementById("syncTimeMsg").innerText = "ইন্টারনেট কানেকশন চেক করুন!";
+            });
+    }
+
+    function updateUI(driver) {
+        document.getElementById("rDriverCode").innerText = driver.driverCode;
+        document.getElementById("rDriverName").innerText = driver.driverName || "N/A";
+        document.getElementById("rVehicle").innerText = driver.vehicleName || "N/A";
+        document.getElementById("rPhone").innerText = driver.phone || "N/A";
+        document.getElementById("rLastUpdate").innerText = driver.lastUpdate || "N/A";
+
+        // অফলাইন চেক লজিক
+        const isOnline = driver.lat && driver.lat !== "OFFLINE" && driver.lng && driver.lng !== "OFFLINE";
+        const statusBadge = document.getElementById("rStatus");
+        const mapFrame = document.getElementById("googleMapFrame");
+        const offlineMsg = document.getElementById("offlineMapMsg");
+
+        if (isOnline) {
+            statusBadge.className = "status-badge status-online";
+            statusBadge.innerText = "🟢 ONLINE";
+            
+            mapFrame.src = `https://maps.google.com/maps?q=${driver.lat},${driver.lng}&z=16&output=embed`;
+            mapFrame.style.display = "block";
+            offlineMsg.style.display = "none";
+        } else {
+            statusBadge.className = "status-badge status-offline";
+            statusBadge.innerText = "🔴 OFFLINE";
+            
+            mapFrame.style.display = "none";
+            mapFrame.src = "";
+            offlineMsg.style.display = "block";
+        }
+
+        document.getElementById("syncTimeMsg").innerText = "শেষ সিঙ্ক: " + new Date().toLocaleTimeString();
+    }
+
+    function showError(msg) {
+        const errEl = document.getElementById("errorMsg");
+        errEl.innerText = msg;
+        errEl.style.display = "block";
+    }
+</script>
+</body>
+</html>
