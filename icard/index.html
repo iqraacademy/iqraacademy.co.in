@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IQRA ACADEMY - Smart QR ID Card Generator</title>
+    <title>IQRA ACADEMY - Smart PVC QR ID Card Studio (A4 Multi-Print)</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
@@ -29,18 +29,18 @@
 
         .layout-grid {
             display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
+            grid-template-columns: 1.12fr 0.88fr;
             gap: 1.5rem;
             max-width: 1280px;
             margin: 0 auto;
             align-items: start;
         }
-        @media (max-width: 920px) {
+        @media (max-width: 960px) {
             .layout-grid { grid-template-columns: 1fr; }
         }
 
         .box { background: #ffffff; padding: 1.4rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,95,70,0.06); border: 1px solid #d1fae5; }
-        .section-title { font-size: 1.05rem; font-weight: 700; color: #065f46; border-bottom: 2px solid #a7f3d0; padding-bottom: 0.45rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-size: 1.05rem; font-weight: 700; color: #065f46; border-bottom: 2px solid #a7f3d0; padding-bottom: 0.45rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
 
         .form-group { margin-bottom: 0.8rem; }
         label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem; color: #334155; }
@@ -50,7 +50,7 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
-        .btn { padding: 0.68rem 1rem; border: none; border-radius: 7px; font-weight: 600; cursor: pointer; font-size: 0.86rem; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: white; }
+        .btn { padding: 0.65rem 1rem; border: none; border-radius: 7px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: white; }
         .btn-primary { background: #059669; flex: 2; }
         .btn-primary:hover { background: #047857; }
         .btn-reset { background: #64748b; flex: 1; }
@@ -59,68 +59,120 @@
         .btn-print:hover { background: #0369a1; }
         .btn-png { background: #d97706; }
         .btn-png:hover { background: #b45309; }
+        .btn-purple { background: #7c3aed; }
+        .btn-purple:hover { background: #6d28d9; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        /* স্মার্ট QR আইডি কার্ড ডিজাইন */
-        .preview-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e2e8f0; padding: 1.5rem; border-radius: 10px; min-height: 560px; }
-        .id-card {
-            width: 295px; height: 485px; background: white; border: 2px solid #065f46; border-radius: 14px;
-            overflow: hidden; box-shadow: 0 12px 24px -4px rgba(6,95,70,0.25); display: flex; flex-direction: column;
-            text-align: center; position: relative;
+        /* =====================================================
+           PVC PORTRAIT ID CARD (CR80 Ratio: 54mm x 85.6mm)
+           Screen Preview: 270px x 428px (Exact 54 : 85.6 ratio)
+           Print Size: 54mm x 85.6mm
+        ===================================================== */
+        .preview-wrapper {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #e2e8f0; padding: 1.25rem; border-radius: 10px;
+        }
+        .pvc-size-tag {
+            font-size: 0.75rem; font-weight: 700; color: #065f46; background: #d1fae5;
+            padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; border: 1px solid #6ee7b7;
         }
 
-        .id-header { background: linear-gradient(135deg, #065f46 0%, #047857 100%); color: white; padding: 0.5rem 0.35rem; }
-        .id-logo-wrap { display: flex; justify-content: center; align-items: center; margin-bottom: 2px; }
-        .id-logo-wrap img { width: 42px; height: 42px; border-radius: 50%; background: white; padding: 2px; border: 2px solid #fef08a; object-fit: cover; }
-        .inst-name { font-size: 1.08rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #ffffff; }
-        .inst-sub { font-size: 0.58rem; color: #fef08a; font-weight: bold; margin-bottom: 2px; }
-        .inst-details { font-size: 0.54rem; line-height: 1.25; color: #e6fcf5; }
+        .id-card {
+            width: 270px;
+            height: 428px;
+            background: #ffffff;
+            border: 1.5px solid #065f46;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 22px -4px rgba(6,95,70,0.25);
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
 
-        .category-badge-wrap { margin-top: 5px; display: flex; justify-content: center; align-items: center; gap: 6px; }
-        .category-badge { display: inline-block; padding: 2px 10px; font-size: 0.65rem; font-weight: 700; border-radius: 12px; background: #fef08a; color: #065f46; border: 1px solid #eab308; }
-        .id-chip { display: inline-block; padding: 2px 8px; font-size: 0.63rem; font-weight: 800; border-radius: 10px; background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; font-family: monospace; }
+        .id-header {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            color: white;
+            padding: 6px 5px 5px 5px;
+        }
+        .id-logo-wrap { display: flex; justify-content: center; align-items: center; margin-bottom: 2px; }
+        .id-logo-wrap img { width: 34px; height: 34px; border-radius: 50%; background: white; padding: 1.5px; border: 1.5px solid #fef08a; object-fit: cover; }
+        .inst-name { font-size: 0.96rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; color: #ffffff; line-height: 1.1; }
+        .inst-sub { font-size: 0.53rem; color: #fef08a; font-weight: 700; margin: 1px 0; }
+        .inst-details { font-size: 0.48rem; line-height: 1.22; color: #e6fcf5; }
+
+        .category-badge-wrap { margin-top: 4px; display: flex; justify-content: center; align-items: center; gap: 5px; padding: 0 6px; }
+        .category-badge { display: inline-block; padding: 1.5px 8px; font-size: 0.58rem; font-weight: 700; border-radius: 10px; background: #fef08a; color: #065f46; border: 1px solid #eab308; }
+        .id-chip { display: inline-block; padding: 1.5px 7px; font-size: 0.58rem; font-weight: 800; border-radius: 8px; background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; font-family: monospace; }
 
         .id-photo-qr-row {
-            display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0.5rem auto 0.35rem auto; padding: 0 0.75rem;
+            display: flex; align-items: center; justify-content: center; gap: 10px; margin: 5px auto 4px auto; padding: 0 10px;
         }
         .id-photo-area {
-            width: 90px; height: 106px; border: 2px solid #059669; background: #f8fafc; border-radius: 7px;
+            width: 78px; height: 92px; border: 2px solid #059669; background: #f8fafc; border-radius: 6px;
             overflow: hidden; display: flex; justify-content: center; align-items: center; color: #94a3b8;
-            font-size: 0.75rem; box-shadow: 0 2px 5px rgba(0,0,0,0.06); flex-shrink: 0;
+            font-size: 0.68rem; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0;
         }
         .id-photo-area img { width: 100%; height: 100%; object-fit: cover; }
 
         .id-qr-box {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #ffffff; border: 1.5px dashed #059669; border-radius: 8px; padding: 5px;
-            width: 92px; height: 106px; flex-shrink: 0;
+            background: #ffffff; border: 1.5px dashed #059669; border-radius: 6px; padding: 3px;
+            width: 80px; height: 92px; flex-shrink: 0;
         }
-        #qrCodeContainer { width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; }
-        #qrCodeContainer img, #qrCodeContainer canvas { max-width: 72px !important; max-height: 72px !important; }
-        .qr-caption { font-size: 0.5rem; font-weight: 700; color: #065f46; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .qr-render-slot { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+        .qr-render-slot img, .qr-render-slot canvas { max-width: 64px !important; max-height: 64px !important; }
+        .qr-caption { font-size: 0.45rem; font-weight: 800; color: #065f46; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.2px; }
 
-        .id-details { padding: 0 1.1rem; text-align: left; font-size: 0.74rem; line-height: 1.5; color: #1e293b; }
-        .id-details p { border-bottom: 1px dotted #e2e8f0; padding: 1px 0; }
-        .id-details strong { color: #065f46; display: inline-block; width: 78px; }
+        .id-details { padding: 0 12px; text-align: left; font-size: 0.66rem; line-height: 1.42; color: #1e293b; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .id-details p { border-bottom: 1px dotted #cbd5e1; padding: 1px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .id-details strong { color: #065f46; display: inline-block; width: 68px; }
 
         .id-footer {
-            background: #f8fafc; margin-top: auto; padding: 0.3rem 0.6rem; border-top: 1px solid #d1fae5;
-            display: flex; align-items: flex-end; justify-content: space-between; min-height: 46px;
+            background: #f8fafc; margin-top: auto; padding: 3px 8px; border-top: 1px solid #d1fae5;
+            display: flex; align-items: flex-end; justify-content: space-between; min-height: 38px;
         }
-        .id-footer-left { text-align: left; font-size: 0.52rem; color: #475569; line-height: 1.25; }
-        .id-footer-right { display: flex; flex-direction: column; align-items: center; width: 120px; }
-        .sign-area { height: 24px; display: flex; justify-content: center; align-items: center; width: 100%; }
-        .sign-area img { max-height: 100%; max-width: 110px; object-fit: contain; }
-        .sign-text { font-size: 0.55rem; font-weight: bold; color: #065f46; text-transform: uppercase; margin-top: 1px; border-top: 1px dashed #94a3b8; width: 100%; padding-top: 1px; }
+        .id-footer-left { text-align: left; font-size: 0.46rem; color: #475569; line-height: 1.25; }
+        .id-footer-right { display: flex; flex-direction: column; align-items: center; width: 105px; }
+        .sign-area { height: 20px; display: flex; justify-content: center; align-items: center; width: 100%; }
+        .sign-area img { max-height: 100%; max-width: 95px; object-fit: contain; }
+        .sign-text { font-size: 0.48rem; font-weight: bold; color: #065f46; text-transform: uppercase; margin-top: 1px; border-top: 1px dashed #94a3b8; width: 100%; padding-top: 1px; }
+
+        /* A4 Multi-Card Print Control Panel */
+        .print-control-panel {
+            margin-top: 1rem; width: 100%; background: #f8fafc; border: 1.5px solid #cbd5e1;
+            border-radius: 10px; padding: 0.9rem;
+        }
+        .print-control-title {
+            font-size: 0.85rem; font-weight: 700; color: #065f46; margin-bottom: 0.6rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .range-input-row {
+            display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;
+        }
+        .range-input-row input {
+            flex: 1; min-width: 170px; padding: 0.48rem 0.65rem; font-size: 0.82rem;
+            border: 1.5px solid #0284c7; border-radius: 6px;
+        }
+        .print-hint {
+            font-size: 0.73rem; color: #475569; margin-top: 5px; line-height: 1.35;
+        }
 
         /* টেবিল */
         .table-section { max-width: 1280px; margin: 1.5rem auto 0 auto; }
         .table-responsive { overflow-x: auto; margin-top: 0.8rem; border-radius: 8px; border: 1px solid #d1fae5; }
-        table { width: 100%; border-collapse: collapse; background: white; font-size: 0.83rem; text-align: left; }
+        table { width: 100%; border-collapse: collapse; background: white; font-size: 0.82rem; text-align: left; }
         th { background: #065f46; color: white; padding: 10px; font-weight: 600; white-space: nowrap; }
         td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
         tr:hover { background-color: #f0fdf4; }
-        .table-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid #cbd5e1; display: block; }
+        .table-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid #cbd5e1; display: block; }
+        .sl-badge {
+            display: inline-block; background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7;
+            font-weight: 800; padding: 2px 7px; border-radius: 6px; font-family: monospace; font-size: 0.78rem;
+        }
 
         .action-btn { padding: 4px 8px; border-radius: 4px; border: none; font-size: 0.74rem; font-weight: 600; cursor: pointer; margin-right: 4px; color: white; }
         .btn-view { background: #059669; }
@@ -138,10 +190,83 @@
         .modal-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none; align-items: center; justify-content: center; z-index: 999; }
         .modal-card { background: #fff; padding: 1.4rem; border-radius: 12px; max-width: 380px; width: 92%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 
+        /* =====================================================
+           A4 PRINT SHEET ENGINE (PORTRAIT PVC 54mm x 85.6mm)
+           9 Cards per A4 Page (3 Columns x 3 Rows)
+        ===================================================== */
+        #a4-print-area {
+            display: none;
+        }
+
         @media print {
-            body * { visibility: hidden; }
-            #card-preview, #card-preview * { visibility: visible; }
-            #card-preview { position: absolute; left: 20px; top: 20px; box-shadow: none; border: 1px solid #065f46; }
+            @page {
+                size: A4 portrait;
+                margin: 8mm;
+            }
+            html, body {
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body > *:not(#a4-print-area) {
+                display: none !important;
+            }
+            #a4-print-area {
+                display: block !important;
+                width: 100%;
+            }
+            .a4-page-sheet {
+                width: 194mm;
+                min-height: 278mm;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: repeat(3, 54mm);
+                grid-auto-rows: 85.6mm;
+                gap: 5.5mm 6.5mm;
+                justify-content: center;
+                align-content: start;
+                page-break-after: always;
+                break-after: page;
+            }
+            .a4-page-sheet:last-child {
+                page-break-after: auto;
+                break-after: auto;
+            }
+            /* Exact PVC Portrait dimensions inside A4 print */
+            #a4-print-area .id-card {
+                width: 54mm !important;
+                height: 85.6mm !important;
+                border-radius: 2.8mm !important;
+                box-shadow: none !important;
+                border: 0.35mm solid #065f46 !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            #a4-print-area .id-header { padding: 1.2mm 1mm 1mm 1mm !important; }
+            #a4-print-area .id-logo-wrap img { width: 6.8mm !important; height: 6.8mm !important; }
+            #a4-print-area .inst-name { font-size: 7.4pt !important; }
+            #a4-print-area .inst-sub { font-size: 4.3pt !important; }
+            #a4-print-area .inst-details { font-size: 3.9pt !important; }
+            #a4-print-area .category-badge-wrap { margin-top: 0.8mm !important; gap: 1mm !important; }
+            #a4-print-area .category-badge,
+            #a4-print-area .id-chip { font-size: 4.5pt !important; padding: 0.3mm 1.6mm !important; }
+            #a4-print-area .id-photo-qr-row { gap: 2mm !important; margin: 1mm auto 0.8mm auto !important; padding: 0 2mm !important; }
+            #a4-print-area .id-photo-area { width: 15.6mm !important; height: 18.4mm !important; }
+            #a4-print-area .id-qr-box { width: 16mm !important; height: 18.4mm !important; padding: 0.6mm !important; }
+            #a4-print-area .qr-render-slot { width: 12.8mm !important; height: 12.8mm !important; }
+            #a4-print-area .qr-render-slot img,
+            #a4-print-area .qr-render-slot canvas { width: 12.8mm !important; height: 12.8mm !important; max-width: 12.8mm !important; max-height: 12.8mm !important; }
+            #a4-print-area .qr-caption { font-size: 3.5pt !important; }
+            #a4-print-area .id-details { padding: 0 2.4mm !important; font-size: 5.1pt !important; line-height: 1.38 !important; }
+            #a4-print-area .id-details strong { width: 13.5mm !important; }
+            #a4-print-area .id-footer { padding: 0.6mm 1.6mm !important; min-height: 7.5mm !important; }
+            #a4-print-area .id-footer-left { font-size: 3.6pt !important; }
+            #a4-print-area .id-footer-right { width: 21mm !important; }
+            #a4-print-area .sign-area { height: 4mm !important; }
+            #a4-print-area .sign-area img { max-width: 19mm !important; }
+            #a4-print-area .sign-text { font-size: 3.7pt !important; }
         }
     </style>
 </head>
@@ -152,10 +277,10 @@
             <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" crossorigin="anonymous" alt="Iqra Logo">
             IQRA ACADEMY - Smart QR ID Card Studio
         </h2>
-        <p>অনাবাসিক • ডে-বোর্ডিং • আবাসিক গার্লস মিশন | Student ID & Driver Live Assignment</p>
+        <p>অনাবাসিক • ডে-বোর্ডিং • আবাসিক গার্লস মিশন | PVC Portrait Size (54mm × 85.6mm) • A4 Page Print</p>
     </div>
 
-    <!-- API URL সংযোগ বার (নতুন ডিপ্লয়মেন্ট লিঙ্ক এখানে পেস্ট করা যাবে) -->
+    <!-- API URL সংযোগ বার -->
     <div class="api-bar">
         <label>🔗 Google Script Web App URL:</label>
         <input type="text" id="gasApiUrl" value="https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec" oninput="saveApiUrl()">
@@ -245,7 +370,6 @@
                 </div>
             </div>
 
-            <!-- ড্রপডাউন + ম্যানুয়ালি যেকোনো নতুন ড্রাইভার কোড (DRV-004) লেখার সুবিধা -->
             <div class="form-group">
                 <label style="color:#1e40af;">🚐 ড্রাইভার অ্যাসাইন করুন (সিলেক্ট করুন অথবা নতুন কোড যেমন DRV-004 টাইপ করুন)</label>
                 <input type="text" id="sDriverCode" list="driverOptionsList" placeholder="এখানে ক্লিক করে সিলেক্ট করুন বা টাইপ করুন (যেমন: DRV-001)" style="border-color:#3b82f6; background:#eff6ff; font-weight:700; color:#1e3a8a;">
@@ -270,10 +394,16 @@
             <div id="statusMsg" class="status-msg" style="display:none;"></div>
         </div>
 
-        <!-- প্রিভিউ সেকশন -->
+        <!-- প্রিভিউ ও A4 প্রিন্ট কন্ট্রোল সেকশন -->
         <div class="box">
-            <div class="section-title">IQRA ACADEMY স্মার্ট QR আইডি কার্ড প্রিভিউ</div>
+            <div class="section-title">
+                <span>PVC লম্বালম্বি (Portrait) আইডি কার্ড প্রিভিউ</span>
+                <span style="font-size:0.75rem; color:#047857;">CR80: 54mm × 85.6mm</span>
+            </div>
+
             <div class="preview-wrapper">
+                <div class="pvc-size-tag">📏 PVC Portrait Standard Size (54mm × 85.6mm)</div>
+
                 <div class="id-card" id="card-preview">
                     <div class="id-header">
                         <div class="id-logo-wrap">
@@ -298,7 +428,7 @@
                             <img id="cPhoto" src="" crossorigin="anonymous" alt="Student Photo" style="display:none;">
                         </div>
                         <div class="id-qr-box">
-                            <div id="qrCodeContainer"></div>
+                            <div id="qrCodeContainer" class="qr-render-slot"></div>
                             <div class="qr-caption">SCAN FOR IN/OUT</div>
                         </div>
                     </div>
@@ -309,7 +439,7 @@
                         <p><strong>Class:</strong> <span id="cClass">---------</span></p>
                         <p><strong>Roll No:</strong> <span id="cRoll">---------</span></p>
                         <p><strong>Category:</strong> <span id="cCategoryText">অনাবাসিক (ছাত্রী)</span></p>
-                        <p><strong>Blood Group:</strong> <span id="cBlood">---------</span></p>
+                        <p><strong>Blood Grp:</strong> <span id="cBlood">---------</span></p>
                         <p><strong>Contact:</strong> <span id="cPhone">---------</span></p>
                     </div>
 
@@ -320,7 +450,7 @@
                         </div>
                         <div class="id-footer-right">
                             <div class="sign-area">
-                                <span id="signPlace" style="color: #94a3b8; font-size: 0.62rem;">(Signature)</span>
+                                <span id="signPlace" style="color: #94a3b8; font-size: 0.54rem;">(Signature)</span>
                                 <img id="cSign" src="" crossorigin="anonymous" alt="Signature" style="display:none;">
                             </div>
                             <div class="sign-text">AUTHORIZED SIGNATURE</div>
@@ -328,9 +458,31 @@
                     </div>
                 </div>
 
-                <div class="btn-group" style="margin-top: 1.4rem; width: 100%; justify-content: center;">
-                    <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট কার্ড</button>
+                <!-- সিঙ্গেল কার্ড অ্যাকশন -->
+                <div class="btn-group" style="margin-top: 1rem; width: 100%; justify-content: center;">
+                    <button class="btn btn-print" onclick="printCurrentPreviewCard()">🖨️ বর্তমান প্রিভিউ কার্ড প্রিন্ট</button>
                     <button class="btn btn-png" onclick="downloadPNG()">⬇️ PNG ডাউনলোড</button>
+                </div>
+
+                <!-- A4 Multi-Card Print অপশন -->
+                <div class="print-control-panel">
+                    <div class="print-control-title">
+                        <span>📄 A4 পেজে একসাথে মাল্টিপল PVC আইডি প্রিন্ট (প্রতি পেজে ৯টি কার্ড)</span>
+                        <span id="totalLoadedCount" style="font-size:0.75rem; color:#0284c7;">মোট: 0 জন</span>
+                    </div>
+
+                    <div class="btn-group" style="margin-top: 0.4rem;">
+                        <button class="btn btn-primary" style="flex:1;" onclick="printAllCards()">🖨️ Print All ID Cards (সব কার্ড)</button>
+                        <button class="btn btn-purple" style="flex:1;" onclick="printCheckedCards()">☑️ সিলেক্টেড (টিক দেওয়া) প্রিন্ট</button>
+                    </div>
+
+                    <div class="range-input-row">
+                        <input type="text" id="printRangeInput" placeholder="ক্রমিক নম্বর দিন: যেমন 1,3,5 অথবা 1-5 বা 1-4, 8">
+                        <button class="btn btn-print" onclick="printByRangeInput()">🖨️ Print Range / Individual</button>
+                    </div>
+                    <div class="print-hint">
+                        💡 <strong>টিপস:</strong> নিচের টেবিলের <strong>ক্রমিক নং (SL)</strong> অনুযায়ী নির্দিষ্ট কার্ড প্রিন্ট করতে <code>1,3,5</code> অথবা একটানা প্রিন্ট করতে <code>1-5</code> বা <code>1-6, 9, 12</code> লিখে <strong>Print Range</strong> বাটনে ক্লিক করুন।
+                    </div>
                 </div>
             </div>
         </div>
@@ -340,13 +492,18 @@
     <div class="box table-section">
         <div class="section-title">
             <span>সংরক্ষিত ছাত্র/ছাত্রী তালিকা ও ড্রাইভার স্ট্যাটাস (Google Sheets Live View)</span>
-            <button class="btn btn-reset" style="padding: 5px 12px; font-size: 0.8rem;" onclick="loadStudentData()">🔄 রিফ্রেশ তালিকা</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-print" style="padding: 5px 12px; font-size: 0.8rem;" onclick="printAllCards()">🖨️ Print All Cards (A4)</button>
+                <button class="btn btn-reset" style="padding: 5px 12px; font-size: 0.8rem;" onclick="loadStudentData()">🔄 রিফ্রেশ তালিকা</button>
+            </div>
         </div>
 
         <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
+                        <th style="width:36px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" title="সব সিলেক্ট করুন"></th>
+                        <th>ক্রমিক (SL)</th>
                         <th>ফটো</th>
                         <th>আইডি (QR ID)</th>
                         <th>নাম</th>
@@ -360,7 +517,7 @@
                 </thead>
                 <tbody id="studentTableBody">
                     <tr>
-                        <td colspan="9" style="text-align: center; padding: 20px; color: #64748b;">লোড হচ্ছে...</td>
+                        <td colspan="11" style="text-align: center; padding: 20px; color: #64748b;">লোড হচ্ছে...</td>
                     </tr>
                 </tbody>
             </table>
@@ -379,8 +536,12 @@
         </div>
     </div>
 
+    <!-- A4 পেজ প্রিন্টের জন্য কন্টেইনার (শুধুমাত্র প্রিন্টের সময় দৃশ্যমান হবে) -->
+    <div id="a4-print-area"></div>
+
     <script>
         let currentPhotoBase64 = "";
+        let currentSignatureDataUrl = "";
         let studentRecords = [];
         let previewTempId = "IQRA-" + String(Math.floor(10000 + Math.random() * 90000));
         let pendingDeleteId = "";
@@ -390,12 +551,28 @@
             if (savedUrl) {
                 document.getElementById("gasApiUrl").value = savedUrl;
             }
-            // পুরনো Service Worker ক্যাশ ক্লিয়ার করার জন্য
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.getRegistrations().then(regs => {
-                    for (let reg of regs) reg.unregister();
-                });
+            const savedSign = localStorage.getItem("IQRA_SIGN_BASE64");
+            if (savedSign) {
+                currentSignatureDataUrl = savedSign;
+                const signImg = document.getElementById('cSign');
+                signImg.src = savedSign;
+                signImg.style.display = "block";
+                document.getElementById('signPlace').style.display = "none";
             }
+
+            // Safe service worker unregistration with document state guards
+            try {
+                if ("serviceWorker" in navigator && document.readyState === "complete") {
+                    navigator.serviceWorker.getRegistrations().then(regs => {
+                        for (let reg of regs) reg.unregister();
+                    }).catch(err => {
+                        console.warn("ServiceWorker unregister warning:", err);
+                    });
+                }
+            } catch (e) {
+                // Ignore invalid state or sandbox restriction errors
+            }
+
             handleCategoryChange();
             loadStudentData();
         };
@@ -408,18 +585,45 @@
             return document.getElementById("gasApiUrl").value.trim();
         }
 
-        function renderQRCode(qrText) {
-            const container = document.getElementById("qrCodeContainer");
+        function renderQRCodeToElement(container, qrText, sizePx = 64) {
             container.innerHTML = "";
             if (typeof QRCode !== "undefined") {
                 new QRCode(container, {
                     text: qrText || "IQRA-NEW",
-                    width: 72,
-                    height: 72,
+                    width: sizePx,
+                    height: sizePx,
                     colorDark: "#065f46",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.M
                 });
+            }
+        }
+
+        function getBadgeStyleForCategory(cat, gender) {
+            if (cat === 'আবাসিক') {
+                return {
+                    text: "আবাসিক (গার্লস মিশন)",
+                    bg: "#dcfce7",
+                    color: "#15803d",
+                    border: "#86efac",
+                    subTitle: "Residential Girls' Mission (Estd: 2015)"
+                };
+            } else if (cat === 'ডে-বোর্ডিং') {
+                return {
+                    text: `ডে-বোর্ডিং (${gender})`,
+                    bg: "#fef3c7",
+                    color: "#b45309",
+                    border: "#fde047",
+                    subTitle: "Day-Boarding Mission (Boys & Girls)"
+                };
+            } else {
+                return {
+                    text: `অনাবাসিক (${gender})`,
+                    bg: "#e0e7ff",
+                    color: "#3730a3",
+                    border: "#a5b4fc",
+                    subTitle: "Non-Residential Day School (Boys & Girls)"
+                };
             }
         }
 
@@ -455,23 +659,12 @@
             const gender = document.getElementById('sGender').value;
             const activeId = document.getElementById('editStudentId').value || previewTempId;
 
+            const badgeInfo = getBadgeStyleForCategory(cat, gender);
             const badge = document.getElementById('cBadge');
-            if (cat === 'আবাসিক') {
-                badge.innerText = "আবাসিক (গার্লস মিশন)";
-                badge.style.background = "#dcfce7";
-                badge.style.color = "#15803d";
-                badge.style.borderColor = "#86efac";
-            } else if (cat === 'ডে-বোর্ডিং') {
-                badge.innerText = `ডে-বোর্ডিং (${gender})`;
-                badge.style.background = "#fef3c7";
-                badge.style.color = "#b45309";
-                badge.style.borderColor = "#fde047";
-            } else {
-                badge.innerText = `অনাবাসিক (${gender})`;
-                badge.style.background = "#e0e7ff";
-                badge.style.color = "#3730a3";
-                badge.style.borderColor = "#a5b4fc";
-            }
+            badge.innerText = badgeInfo.text;
+            badge.style.background = badgeInfo.bg;
+            badge.style.color = badgeInfo.color;
+            badge.style.borderColor = badgeInfo.border;
 
             document.getElementById('cIdChip').innerText = activeId;
             document.getElementById('cStudentId').innerText = activeId;
@@ -482,7 +675,7 @@
             document.getElementById('cBlood').innerText = document.getElementById('sBlood').value || '---------';
             document.getElementById('cPhone').innerText = document.getElementById('sPhone').value || '---------';
 
-            renderQRCode(activeId);
+            renderQRCodeToElement(document.getElementById("qrCodeContainer"), activeId, 64);
         }
 
         function handleSignatureUpload(event) {
@@ -490,8 +683,10 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
+                currentSignatureDataUrl = e.target.result;
+                try { localStorage.setItem("IQRA_SIGN_BASE64", currentSignatureDataUrl); } catch(err) {}
                 const signImg = document.getElementById('cSign');
-                signImg.src = e.target.result;
+                signImg.src = currentSignatureDataUrl;
                 signImg.style.display = "block";
                 document.getElementById('signPlace').style.display = "none";
             };
@@ -526,27 +721,30 @@
                 .then(r => r.json())
                 .then(res => {
                     if (!res.version) {
-                        showStatus("⚠️ সতর্কবার্তা: আপনার ওয়েব অ্যাপের URL-টি পুরনো ভার্সনে চলছে! অনুগ্রহ করে Apps Script থেকে Manage Deployments -> Edit -> New Version করে ডিপ্লয় করুন।", "error");
+                        showStatus("⚠️ সতর্কবার্তা: আপনার ওয়েব অ্যাপের URL-টি পুরনো ভার্সনে চলছে! অনুগ্রহ করে Apps Script থেকে Manage Deployments -> Edit -> New Version করে ডিপ্লয় করুন।", "error");
                     }
                     if (res.success && Array.isArray(res.students)) {
                         renderTable(res.students);
                     }
                 })
                 .catch(err => {
-                    document.getElementById('studentTableBody').innerHTML = `<tr><td colspan="9" style="text-align:center; padding:18px; color:#b91c1c;">লোড করা যায়নি। উপরের বক্সে সঠিক Google Script Web App URL দেওয়া আছে কি না চেক করুন।</td></tr>`;
+                    document.getElementById('studentTableBody').innerHTML = `<tr><td colspan="11" style="text-align:center; padding:18px; color:#b91c1c;">লোড করা যায়নি। উপরের বক্সে সঠিক Google Script Web App URL দেওয়া আছে কি না চেক করুন।</td></tr>`;
                 });
         }
 
         function renderTable(students) {
             studentRecords = students || [];
+            document.getElementById('totalLoadedCount').innerText = `মোট: ${studentRecords.length} জন`;
+
             const tbody = document.getElementById('studentTableBody');
             if (studentRecords.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #64748b;">কোনো ছাত্র/ছাত্রীর তথ্য নেই। ফর্ম থেকে নতুন এন্ট্রি দিন।</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 20px; color: #64748b;">কোনো ছাত্র/ছাত্রীর তথ্য নেই। ফর্ম থেকে নতুন এন্ট্রি দিন।</td></tr>`;
                 return;
             }
 
             let html = "";
-            studentRecords.forEach(s => {
+            studentRecords.forEach((s, idx) => {
+                const serialNo = idx + 1;
                 const imgTag = s.photoUrl
                     ? `<img src="${s.photoUrl}" class="table-avatar" crossorigin="anonymous">`
                     : `<span style="font-size:0.75rem; color:#94a3b8;">নেই</span>`;
@@ -565,6 +763,8 @@
 
                 html += `
                 <tr>
+                    <td><input type="checkbox" class="row-select-cb" value="${serialNo}"></td>
+                    <td><span class="sl-badge">#${serialNo}</span></td>
                     <td>${imgTag}</td>
                     <td><strong style="font-family:monospace; color:#065f46;">${s.id}</strong></td>
                     <td>${s.name}</td>
@@ -575,6 +775,7 @@
                     <td>${driveLink}</td>
                     <td>
                         <button class="action-btn btn-view" onclick="previewCardFromTable('${s.id}')">কার্ড</button>
+                        <button class="action-btn" style="background:#0284c7;" onclick="printSingleStudentById('${s.id}')">প্রিন্ট</button>
                         <button class="action-btn btn-edit" onclick="editStudentRow('${s.id}')">এডিট</button>
                         <button class="action-btn btn-del" onclick="deleteStudentRow('${s.id}')">ডিলিট</button>
                     </td>
@@ -584,6 +785,228 @@
             tbody.innerHTML = html;
         }
 
+        function toggleSelectAll(masterCb) {
+            const checkboxes = document.querySelectorAll('.row-select-cb');
+            checkboxes.forEach(cb => cb.checked = masterCb.checked);
+        }
+
+        /* =========================================================
+           A4 MULTI-CARD GENERATOR & PRINT ENGINE
+        ========================================================= */
+        function createCardDOMForStudent(student) {
+            const logoUrl = document.getElementById('instLogoUrl').value || "https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg";
+            const instName = document.getElementById('instName').value || "IQRA ACADEMY";
+            const instAddress = document.getElementById('instAddress').value || "Dakshin Shibpur, Jadurhati, Baduria, N 24 Pgs, WB";
+            const instPhone = document.getElementById('instPhone').value || "+91 9775123096";
+
+            const cat = student.category || "অনাবাসিক";
+            const gender = student.gender || "ছাত্রী";
+            const badgeInfo = getBadgeStyleForCategory(cat, gender);
+
+            const cardEl = document.createElement("div");
+            cardEl.className = "id-card";
+
+            const photoHtml = student.photoUrl
+                ? `<img src="${student.photoUrl}" crossorigin="anonymous" alt="Photo">`
+                : `<span>PHOTO</span>`;
+
+            const signHtml = currentSignatureDataUrl
+                ? `<img src="${currentSignatureDataUrl}" crossorigin="anonymous" alt="Sign">`
+                : `<span style="color:#94a3b8; font-size:0.5rem;">(Signature)</span>`;
+
+            cardEl.innerHTML = `
+                <div class="id-header">
+                    <div class="id-logo-wrap">
+                        <img src="${logoUrl}" crossorigin="anonymous" alt="Logo">
+                    </div>
+                    <div class="inst-name">${instName}</div>
+                    <div class="inst-sub">${badgeInfo.subTitle}</div>
+                    <div class="inst-details">
+                        <span>${instAddress}</span><br>
+                        Ph: <span>${instPhone}</span> | UDISE: 19111008505
+                    </div>
+                </div>
+
+                <div class="category-badge-wrap">
+                    <span class="category-badge" style="background:${badgeInfo.bg}; color:${badgeInfo.color}; border-color:${badgeInfo.border};">${badgeInfo.text}</span>
+                    <span class="id-chip">${student.id || 'IQRA-NEW'}</span>
+                </div>
+
+                <div class="id-photo-qr-row">
+                    <div class="id-photo-area">${photoHtml}</div>
+                    <div class="id-qr-box">
+                        <div class="qr-render-slot"></div>
+                        <div class="qr-caption">SCAN FOR IN/OUT</div>
+                    </div>
+                </div>
+
+                <div class="id-details">
+                    <p><strong>ID No:</strong> <span style="font-weight:700; color:#065f46;">${student.id || '---------'}</span></p>
+                    <p><strong>Name:</strong> <span style="font-weight:700;">${student.name || '---------'}</span></p>
+                    <p><strong>Class:</strong> <span>${student.studentClass || '---------'}</span></p>
+                    <p><strong>Roll No:</strong> <span>${student.roll || '---------'}</span></p>
+                    <p><strong>Category:</strong> <span>${cat} (${gender})</span></p>
+                    <p><strong>Blood Grp:</strong> <span>${student.blood || '---------'}</span></p>
+                    <p><strong>Contact:</strong> <span>${student.phone || '---------'}</span></p>
+                </div>
+
+                <div class="id-footer">
+                    <div class="id-footer-left">
+                        <strong>Smart QR Enabled</strong><br>
+                        Admin &amp; Guardian Live Sync
+                    </div>
+                    <div class="id-footer-right">
+                        <div class="sign-area">${signHtml}</div>
+                        <div class="sign-text">AUTHORIZED SIGNATURE</div>
+                    </div>
+                </div>
+            `;
+
+            const qrSlot = cardEl.querySelector(".qr-render-slot");
+            renderQRCodeToElement(qrSlot, student.id || "IQRA-NEW", 64);
+            return cardEl;
+        }
+
+        function buildAndTriggerA4Print(studentsList) {
+            if (!studentsList || studentsList.length === 0) {
+                showStatus("প্রিন্ট করার জন্য কোনো কার্ড পাওয়া যায়নি!", "error");
+                return;
+            }
+
+            const printArea = document.getElementById("a4-print-area");
+            printArea.innerHTML = "";
+
+            const cardsPerPage = 9; // 3x3 PVC Portrait cards on 1 A4 sheet
+            for (let i = 0; i < studentsList.length; i += cardsPerPage) {
+                const pageSheet = document.createElement("div");
+                pageSheet.className = "a4-page-sheet";
+
+                const chunk = studentsList.slice(i, i + cardsPerPage);
+                chunk.forEach(st => {
+                    const cardNode = createCardDOMForStudent(st);
+                    pageSheet.appendChild(cardNode);
+                });
+
+                printArea.appendChild(pageSheet);
+            }
+
+            showStatus(`🖨️ মোট ${studentsList.length} টি PVC আইডি কার্ড A4 পেজে প্রিন্টের জন্য প্রস্তুত করা হয়েছে...`, "success");
+
+            // QR ক্যানভাস ও ছবিগুলো রেন্ডার হওয়ার জন্য সামান্য সময় দিয়ে প্রিন্ট ডায়ালগ ওপেন করা
+            setTimeout(() => {
+                window.print();
+            }, 350);
+        }
+
+        // ১. বর্তমান প্রিভিউ কার্ড প্রিন্ট
+        function printCurrentPreviewCard() {
+            const currentStudent = {
+                id: document.getElementById('editStudentId').value || previewTempId,
+                name: document.getElementById('sName').value || '---------',
+                category: document.getElementById('sCategory').value,
+                gender: document.getElementById('sGender').value,
+                studentClass: document.getElementById('sClass').value || '---------',
+                roll: document.getElementById('sRoll').value || '---------',
+                blood: document.getElementById('sBlood').value || '---------',
+                phone: document.getElementById('sPhone').value || '---------',
+                photoUrl: currentPhotoBase64 || document.getElementById('existingPhotoUrl').value || ""
+            };
+            buildAndTriggerA4Print([currentStudent]);
+        }
+
+        // ২. টেবিল থেকে একটি নির্দিষ্ট কার্ড প্রিন্ট
+        function printSingleStudentById(id) {
+            const st = studentRecords.find(s => s.id === id);
+            if (!st) return;
+            buildAndTriggerA4Print([st]);
+        }
+
+        // ৩. সব আইডি কার্ড একসাথে A4 পেজে প্রিন্ট (Print All ID Cards)
+        function printAllCards() {
+            if (studentRecords.length === 0) {
+                showStatus("তালিকায় কোনো ছাত্র/ছাত্রী নেই! আগে ডেটা লোড করুন।", "error");
+                return;
+            }
+            buildAndTriggerA4Print(studentRecords);
+        }
+
+        // ৪. কাস্টম রেঞ্জ বা ইন্ডিভিজুয়াল নম্বর প্রিন্ট (যেমন: 1,3,5 বা 1-5)
+        function parseSerialRangeString(inputStr, maxLen) {
+            const selectedIndices = [];
+            const seen = new Set();
+            // বাংলা সংখ্যা থাকলেও ইংরেজিতে রূপান্তর করে নেবে
+            const normalized = inputStr.replace(/[০-৯]/g, d => "০১২৩৪৫৬৭৮৯".indexOf(d));
+            const parts = normalized.split(',');
+
+            for (let rawPart of parts) {
+                const part = rawPart.trim();
+                if (!part) continue;
+
+                if (part.includes('-')) {
+                    const [startStr, endStr] = part.split('-').map(x => x.trim());
+                    let start = parseInt(startStr, 10);
+                    let end = parseInt(endStr, 10);
+                    if (!isNaN(start) && !isNaN(end)) {
+                        if (start > end) [start, end] = [end, start];
+                        for (let n = start; n <= end; n++) {
+                            if (n >= 1 && n <= maxLen && !seen.has(n)) {
+                                seen.add(n);
+                                selectedIndices.push(n - 1);
+                            }
+                        }
+                    }
+                } else {
+                    const num = parseInt(part, 10);
+                    if (!isNaN(num) && num >= 1 && num <= maxLen && !seen.has(num)) {
+                        seen.add(num);
+                        selectedIndices.push(num - 1);
+                    }
+                }
+            }
+            return selectedIndices;
+        }
+
+        function printByRangeInput() {
+            if (studentRecords.length === 0) {
+                showStatus("তালিকায় কোনো ছাত্র/ছাত্রী নেই!", "error");
+                return;
+            }
+            const rangeText = document.getElementById("printRangeInput").value.trim();
+            if (!rangeText) {
+                showStatus("অনুগ্রহ করে ক্রমিক নম্বর লিখুন! যেমন: 1,3,5 অথবা 1-5", "error");
+                return;
+            }
+
+            const indices = parseSerialRangeString(rangeText, studentRecords.length);
+            if (indices.length === 0) {
+                showStatus(`সঠিক ক্রমিক নম্বর দিন (1 থেকে ${studentRecords.length} এর মধ্যে)। যেমন: 1,3,5 বা 1-5`, "error");
+                return;
+            }
+
+            const selectedStudents = indices.map(i => studentRecords[i]);
+            buildAndTriggerA4Print(selectedStudents);
+        }
+
+        // ৫. টেবিল থেকে টিক (Checkbox) দেওয়া কার্ডগুলো প্রিন্ট
+        function printCheckedCards() {
+            const checkedBoxes = document.querySelectorAll('.row-select-cb:checked');
+            if (checkedBoxes.length === 0) {
+                showStatus("টেবিল থেকে অন্তত একজন শিক্ষার্থীর নামের পাশের বক্সে টিক (☑️) দিন!", "error");
+                return;
+            }
+            const selectedStudents = [];
+            checkedBoxes.forEach(cb => {
+                const sl = parseInt(cb.value, 10);
+                if (studentRecords[sl - 1]) {
+                    selectedStudents.push(studentRecords[sl - 1]);
+                }
+            });
+            buildAndTriggerA4Print(selectedStudents);
+        }
+
+        /* =========================================================
+           CRUD & GOOGLE SHEETS SYNC
+        ========================================================= */
         function submitStudentForm() {
             const name = document.getElementById('sName').value.trim();
             const sClass = document.getElementById('sClass').value.trim();
@@ -675,6 +1098,7 @@
             document.getElementById('sPhone').value = student.phone;
             document.getElementById('sDriverCode').value = student.driverCode || '';
             document.getElementById('existingPhotoUrl').value = student.photoUrl;
+            currentPhotoBase64 = "";
 
             updateCardLive();
             if (student.photoUrl) {
@@ -682,6 +1106,9 @@
                 photoImg.src = student.photoUrl;
                 photoImg.style.display = "block";
                 document.getElementById('photoText').style.display = "none";
+            } else {
+                document.getElementById('cPhoto').style.display = "none";
+                document.getElementById('photoText').style.display = "block";
             }
 
             document.getElementById('form-mode-text').innerText = "তথ্য এডিট করুন (" + student.id + ")";
@@ -761,13 +1188,13 @@
             const studentName = document.getElementById('cName').innerText.replace(/\s+/g, '-') || 'student';
 
             html2canvas(card, {
-                scale: 3,
+                scale: 4,
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: "#ffffff"
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `IQRA-ID-${studentName}.png`;
+                link.download = `IQRA-PVC-ID-${studentName}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
