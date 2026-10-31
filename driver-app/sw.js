@@ -1,5 +1,11 @@
-const CACHE_NAME = "iqra-driver-pwa-v2";
-const ASSETS = ["./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+const CACHE_NAME = "iqra-driver-v3";
+const ASSETS = [
+  "/driver-app/",
+  "/driver-app/index.html",
+  "/driver-app/manifest.json",
+  "/driver-app/icon-192.png",
+  "/driver-app/icon-512.png"
+];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE_NAME).then(c => Promise.allSettled(ASSETS.map(u => c.add(u)))));
