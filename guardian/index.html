@@ -130,6 +130,7 @@
         .map-card h3 { font-size: 0.92rem; color: #34d399; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
         .map-container-box { width: 100%; height: 260px; border-radius: 10px; overflow: hidden; border: 1.5px solid #475569; background: #1e293b; }
         .map-container-box iframe { width: 100%; height: 100%; border: none; }
+        .driver-status-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 8px; font-weight: 700; background: #22c55e; color: #022c22; }
 
         .history-list { margin-top: 0.75rem; max-height: 180px; overflow-y: auto; }
         .history-item {
@@ -154,14 +155,14 @@
         <div class="app-header">
             <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="IQRA Logo">
             <h1>IQRA ACADEMY - অভিভাবক পোর্টাল</h1>
-            <p>Guardian Live Tracking PWA • স্কুল এন্ট্রি ও গাড়ির রিয়েল-টাইম জিপিএস ম্যাপ</p>
+            <p>Guardian Live Tracking PWA • স্কুল এন্ট্রি ও গাড়ির রিয়েল-টাইম জিপিএস ম্যাপ</p>
             <button id="installGuardianBtn" class="pwa-install-btn" onclick="installGuardianPWA()">📲 অ্যাপটি ফোনে ইনস্টল করুন (Install App)</button>
         </div>
 
         <!-- ১. ওয়ান-টাইম সেটআপ সেকশন -->
         <div class="card" id="setupSection">
             <h2>🔐 এককালীন আইডি কার্ড স্ক্যান ও সেভ (One-Time Setup)</h2>
-            <p>আপনার সন্তানের আইডি কার্ডের QR কোডটি একবার স্ক্যান করুন। অ্যাপটি স্থায়ীভাবে কার্ডটি সেভ করে রাখবে এবং প্রতিদিন স্কুলের স্ট্যাটাস ও গাড়ির লাইভ ম্যাপ দেখাবে।</p>
+            <p>আপনার সন্তানের আইডি কার্ডের QR কোডটি একবার স্ক্যান করুন। অ্যাপটি স্থায়ীভাবে কার্ডটি সেভ করে রাখবে এবং প্রতিদিন স্কুলের স্ট্যাটাস ও গাড়ির লাইভ ম্যাপ দেখাবে।</p>
 
             <div id="guardianQrReader"></div>
             <button class="btn btn-emerald" onclick="startGuardianCamera()">📷 ক্যামেরা দিয়ে QR স্ক্যান করুন</button>
@@ -208,10 +209,18 @@
 
             <!-- গুগল ম্যাপস লাইভ ভেহিকেল ট্র্যাকিং -->
             <div class="map-card" id="vehicleMapCard" style="display:none;">
-                <h3><span>🚐 গাড়ির লাইভ লোকেশন (Google Maps)</span> <span id="driverInfoSub" style="font-size:0.72rem; color:#94a3b8;"></span></h3>
+                <h3>
+                    <span>🚐 গাড়ির লাইভ লোকেশন</span>
+                    <span class="driver-status-badge">🟢 ONLINE</span>
+                </h3>
+                <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:8px;" id="driverInfoSub"></div>
                 <div class="map-container-box">
                     <iframe id="googleMapFrame" src="" allowfullscreen="" loading="lazy"></iframe>
                 </div>
+            </div>
+            <!-- অফলাইন মেসেজ -->
+            <div id="driverOfflineMsg" style="display:none; text-align:center; padding:1rem; background:#334155; border-radius:12px; margin-top:1rem; font-size:0.85rem; color:#94a3b8;">
+                🚐 বর্তমানে গাড়ির জিপিএস ট্র্যাকিং বন্ধ (Offline) আছে।
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.1rem; padding-top:0.85rem; border-top:1px solid #334155;">
@@ -425,7 +434,7 @@
                     document.getElementById("gStudentId").innerText = st.id;
                     document.getElementById("gStudentClass").innerText = st.studentClass;
                     document.getElementById("gStudentRoll").innerText = st.roll;
-                    document.getElementById("gDriverBadgeVal").innerText = st.driverCode || "অ্যাসাইন করা হয়নি";
+                    document.getElementById("gDriverBadgeVal").innerText = st.driverCode || "অ্যাসাইন করা হয়নি";
 
                     // স্কুল স্ট্যাটাস বাল্ব লজিক
                     const isInside = String(st.liveStatus || "OUT").toUpperCase() === "IN";
@@ -450,20 +459,24 @@
                     document.getElementById("gLastOut").innerText = st.lastOutTime || "-";
                     document.getElementById("gLastSynced").innerText = "আপডেট: " + new Date().toLocaleTimeString();
 
-                    // গুগল ম্যাপস ভেহিকেল ট্র্যাকিং ইন্টিগ্রেশন
+                    // 🟢 গুগল ম্যাপস ভেহিকেল ট্র্যাকিং ইন্টিগ্রেশন (অফলাইন লজিক সহ)
                     const mapCard = document.getElementById("vehicleMapCard");
                     const mapFrame = document.getElementById("googleMapFrame");
                     const driverSub = document.getElementById("driverInfoSub");
+                    const offlineMsg = document.getElementById("driverOfflineMsg");
 
-                    if (res.driver && res.driver.lat && res.driver.lng) {
+                    if (res.driver && res.driver.lat && res.driver.lat !== "OFFLINE" && res.driver.lng && res.driver.lng !== "OFFLINE") {
                         const lat = res.driver.lat;
                         const lng = res.driver.lng;
-                        // ফ্রি Google Maps Embed URL (কোনো API Key ছাড়াই নিখুঁত কাজ করবে)
                         mapFrame.src = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
-                        driverSub.innerText = `(${res.driver.driverName} - ${res.driver.vehicleName})`;
+                        driverSub.innerText = `${res.driver.driverName} • ${res.driver.vehicleName}`;
+                        
                         mapCard.style.display = "block";
+                        offlineMsg.style.display = "none";
                     } else {
+                        // যদি lat/lng OFFLINE বা ফাঁকা থাকে
                         mapCard.style.display = "none";
+                        offlineMsg.style.display = "block";
                     }
 
                     // সাম্প্রতিক হিস্ট্রি রেন্ডার
