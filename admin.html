@@ -316,15 +316,41 @@
       <section id="tab-notices" class="admin-tab-section hidden space-y-6">
         <!-- Marquee Editor -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-scroll text-amber-500"></i>
-            ১. হেডার স্ক্রলিং ঘোষণা (Live Marquee Ticker) পরিবর্তন করুন
-          </h3>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-scroll text-amber-500"></i>
+              ১. হেডার স্ক্রলিং ঘোষণা (Live Marquee Ticker) পরিবর্তন করুন
+            </h3>
+            <button type="button" id="btn-insert-marquee-inline-link" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 cursor-pointer transition">
+              <i class="fa-solid fa-link"></i>
+              <span>টেক্সটের ভেতর লিংক যুক্ত করুন [Click Here](URL)</span>
+            </button>
+          </div>
+
           <div class="space-y-3">
-            <textarea id="admin-marquee-input" rows="2" class="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600" placeholder="চলমান ঘোষণা এখানে লিখুন..."></textarea>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">চলমান ঘোষণার টেক্সট *</label>
+              <textarea id="admin-marquee-input" rows="2" class="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600" placeholder="চলমান ঘোষণা এখানে লিখুন... যেকোনো শব্দে লিংক দিতে লিখুন [Click Here](https://...) অথবা নিচের বক্সে লিংক দিন"></textarea>
+            </div>
+
+            <!-- Dedicated Click Here / Action Link Fields for Marquee -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs">
+              <div class="sm:col-span-4">
+                <label class="block font-bold text-slate-700 mb-1"><i class="fa-solid fa-hand-pointer text-emerald-600 mr-1"></i>লিংক বাটনের লেখা ( ঐচ্ছিক )</label>
+                <input type="text" id="admin-marquee-link-text" placeholder="যেমন: Click Here / বিস্তারিত দেখুন" class="w-full p-2.5 rounded-lg border border-slate-300 bg-white">
+              </div>
+              <div class="sm:col-span-8">
+                <label class="block font-bold text-slate-700 mb-1"><i class="fa-solid fa-globe text-emerald-600 mr-1"></i>টার্গেট পেজ বা ওয়েবসাইট লিংক (URL - ঐচ্ছিক)</label>
+                <input type="text" id="admin-marquee-link-url" placeholder="যেমন: https://iqraacademy.co.in/#admissions অথবা যেকোনো PDF/Page লিংক" class="w-full p-2.5 rounded-lg border border-slate-300 bg-white font-mono">
+              </div>
+              <div class="sm:col-span-12 text-[11px] text-slate-500">
+                💡 <b>টিপস:</b> আপনি উপরের বক্সে আলাদাভাবে লিংক দিতে পারেন, অথবা ঘোষণার যেকোনো শব্দের ওপর লিংক দিতে <code>[Click Here](https://example.com)</code> ফরম্যাট ব্যবহার করতে পারেন।
+              </div>
+            </div>
+
             <button id="btn-save-marquee" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition flex items-center gap-2 cursor-pointer shadow">
               <i class="fa-solid fa-cloud-arrow-up text-amber-300"></i>
-              <span>স্ক্রলিং ঘোষণা আপডেট করুন</span>
+              <span>স্ক্রলিং ঘোষণা ও লিংক আপডেট করুন</span>
             </button>
           </div>
         </div>
@@ -332,15 +358,34 @@
         <!-- Add New Notice -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-plus-circle text-emerald-700"></i>
-              নতুন নোটিশ বা বিজ্ঞপ্তি প্রকাশ করুন
-            </h3>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-plus-circle text-emerald-700"></i>
+                নতুন নোটিশ বা বিজ্ঞপ্তি প্রকাশ করুন
+              </h3>
+              <button type="button" id="btn-insert-notice-inline-link" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer transition">
+                <i class="fa-solid fa-link"></i>
+                <span>শব্দে লিংক দিন</span>
+              </button>
+            </div>
             <form id="form-add-notice" class="space-y-3 text-xs">
               <div>
                 <label class="block font-bold text-slate-700 mb-1">নোটিশের শিরোনাম / বিবরণ *</label>
-                <textarea id="notice-title-input" rows="3" required placeholder="যেমন: ২০২৭ শিক্ষাবর্ষের আবাসিক ভর্তি পরীক্ষা আগামী ১৫ই নভেম্বর অনুষ্ঠিত হবে..." class="w-full p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600"></textarea>
+                <textarea id="notice-title-input" rows="3" required placeholder="যেমন: ২০২৭ শিক্ষাবর্ষের আবাসিক ভর্তি পরীক্ষা আগামী ১৫ই নভেম্বর অনুষ্ঠিত হবে। ফর্ম ডাউনলোড করতে [Click Here](https://...) ক্লিক করুন।" class="w-full p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600"></textarea>
               </div>
+
+              <!-- Optional Clickable Link for Notice -->
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2.5">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1"><i class="fa-solid fa-link text-amber-600 mr-1"></i>লিংক পেজ বা ফাইলের URL (ঐচ্ছিক)</label>
+                  <input type="text" id="notice-link-url-input" placeholder="যেমন: https://example.com/notice.pdf বা #admissions" class="w-full p-2 rounded-lg border border-slate-300 bg-white font-mono">
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1"><i class="fa-solid fa-tag text-amber-600 mr-1"></i>লিংক বাটনের লেখা (ডিফল্ট: Click Here)</label>
+                  <input type="text" id="notice-link-text-input" placeholder="Click Here / ডাউনলোড করুন / বিস্তারিত" class="w-full p-2 rounded-lg border border-slate-300 bg-white">
+                </div>
+              </div>
+
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block font-bold text-slate-700 mb-1">বিভাগ / ক্যাটাগরি</label>
@@ -591,6 +636,34 @@
     </div>
   </div>
 
+  <!-- Inline Link Insertion Helper Modal -->
+  <div id="admin-link-helper-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 class="text-base font-extrabold text-emerald-950 flex items-center gap-2">
+          <i class="fa-solid fa-link text-amber-500"></i>
+          যে শব্দের ওপর ক্লিক করলে লিংক খুলবে তা যুক্ত করুন
+        </h3>
+        <button type="button" id="btn-close-link-helper" class="text-slate-400 hover:text-slate-800 text-2xl font-bold cursor-pointer">&times;</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">শব্দ বা লেখা (যেখানে ক্লিক করবে) *</label>
+          <input type="text" id="helper-link-label" value="Click Here" placeholder="যেমন: Click Here / এখানে ক্লিক করুন" class="w-full p-2.5 rounded-xl border border-slate-300">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">কাঙ্ক্ষিত পেজ বা ওয়েবসাইটের লিংক (URL) *</label>
+          <input type="text" id="helper-link-target" placeholder="https://... অথবা #admissions" class="w-full p-2.5 rounded-xl border border-slate-300 font-mono">
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" id="btn-confirm-insert-link" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2.5 rounded-xl cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-amber-300"></i> টেক্সটে যুক্ত করুন
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="data.js"></script>
 
   <!-- ================= FIREBASE ADMIN LOGIC (iqra-academy-210a5) ================= -->
@@ -740,6 +813,12 @@
           currentMainConfig = snap.data();
           if (currentMainConfig.marquee) {
             document.getElementById('admin-marquee-input').value = currentMainConfig.marquee;
+          }
+          if (document.getElementById('admin-marquee-link-text')) {
+            document.getElementById('admin-marquee-link-text').value = currentMainConfig.marqueeLinkText || '';
+          }
+          if (document.getElementById('admin-marquee-link-url')) {
+            document.getElementById('admin-marquee-link-url').value = currentMainConfig.marqueeLinkUrl || '';
           }
           if (currentMainConfig.phone1) document.getElementById('set-phone1').value = currentMainConfig.phone1;
           if (currentMainConfig.phone2) document.getElementById('set-phone2').value = currentMainConfig.phone2;
@@ -1054,13 +1133,59 @@
       window.print();
     }
 
-    // ================= MARQUEE & NOTICES MANAGEMENT =================
+    // ================= MARQUEE & NOTICES MANAGEMENT (WITH CLICKABLE LINKS) =================
+    let activeLinkTargetTextareaId = 'admin-marquee-input';
+    const linkHelperModal = document.getElementById('admin-link-helper-modal');
+
+    document.getElementById('btn-insert-marquee-inline-link')?.addEventListener('click', () => {
+      activeLinkTargetTextareaId = 'admin-marquee-input';
+      document.getElementById('helper-link-label').value = 'Click Here';
+      document.getElementById('helper-link-target').value = '';
+      linkHelperModal.classList.remove('hidden');
+    });
+
+    document.getElementById('btn-insert-notice-inline-link')?.addEventListener('click', () => {
+      activeLinkTargetTextareaId = 'notice-title-input';
+      document.getElementById('helper-link-label').value = 'Click Here';
+      document.getElementById('helper-link-target').value = '';
+      linkHelperModal.classList.remove('hidden');
+    });
+
+    document.getElementById('btn-close-link-helper')?.addEventListener('click', () => {
+      linkHelperModal.classList.add('hidden');
+    });
+
+    document.getElementById('btn-confirm-insert-link')?.addEventListener('click', () => {
+      const label = document.getElementById('helper-link-label').value.trim() || 'Click Here';
+      const url = document.getElementById('helper-link-target').value.trim();
+      if (!url) {
+        showAdminToast("অনুগ্রহ করে লিংক (URL) দিন!", false);
+        return;
+      }
+      const targetTa = document.getElementById(activeLinkTargetTextareaId);
+      if (targetTa) {
+        const snippet = ` [${label}](${url}) `;
+        const start = targetTa.selectionStart || targetTa.value.length;
+        const end = targetTa.selectionEnd || targetTa.value.length;
+        targetTa.value = targetTa.value.substring(0, start) + snippet + targetTa.value.substring(end);
+        targetTa.focus();
+      }
+      linkHelperModal.classList.add('hidden');
+      showAdminToast("টেক্সটে ক্লিকযোগ্য লিংক যুক্ত করা হয়েছে!");
+    });
+
     document.getElementById('btn-save-marquee').addEventListener('click', async () => {
       const text = document.getElementById('admin-marquee-input').value.trim();
+      const marqueeLinkText = document.getElementById('admin-marquee-link-text')?.value.trim() || '';
+      const marqueeLinkUrl = document.getElementById('admin-marquee-link-url')?.value.trim() || '';
       if (!text) return;
       try {
-        await setDoc(doc(db, "school_data", "main_config"), { marquee: text }, { merge: true });
-        showAdminToast("হেডার স্ক্রলিং ঘোষণা লাইভ আপডেট হয়েছে!");
+        await setDoc(doc(db, "school_data", "main_config"), {
+          marquee: text,
+          marqueeLinkText: marqueeLinkText,
+          marqueeLinkUrl: marqueeLinkUrl
+        }, { merge: true });
+        showAdminToast("হেডার স্ক্রলিং ঘোষণা ও লিংক লাইভ আপডেট হয়েছে!");
       } catch (err) {
         showAdminToast("আপডেট ব্যর্থ: " + err.message, false);
       }
@@ -1069,6 +1194,8 @@
     document.getElementById('form-add-notice').addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = document.getElementById('notice-title-input').value.trim();
+      const linkUrl = document.getElementById('notice-link-url-input')?.value.trim() || '';
+      const linkText = document.getElementById('notice-link-text-input')?.value.trim() || 'Click Here';
       const category = document.getElementById('notice-cat-input').value;
       const priority = document.getElementById('notice-prio-input').value;
       if (!title) return;
@@ -1081,6 +1208,8 @@
       try {
         await addDoc(collection(db, "notices"), {
           title,
+          linkUrl,
+          linkText: linkUrl ? linkText : '',
           category,
           priority,
           date: dateStr,
@@ -1107,7 +1236,7 @@
               <span class="text-xs text-slate-500 font-mono">${n.date || ''}</span>
               <span class="text-xs font-bold text-amber-700">${n.category || ''}</span>
             </div>
-            <p class="text-xs font-bold text-slate-900">${n.title}</p>
+            <p class="text-xs font-bold text-slate-900">${window.formatIqraTextWithLinks ? window.formatIqraTextWithLinks(n.title, n.linkUrl, n.linkText, false) : n.title}</p>
           </div>
           <button data-docid="${n.docId}" class="btn-del-notice text-red-500 hover:text-red-700 p-1.5 cursor-pointer" title="ডিলিট">
             <i class="fa-solid fa-trash"></i>

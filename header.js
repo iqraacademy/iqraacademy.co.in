@@ -22,7 +22,10 @@
     connectedCallback() {
       const active = this.getAttribute('active') || 'home';
       const cached = getCachedData();
-      const announcement = cached.marquee || DEFAULT_ANNOUNCEMENT;
+      const rawAnnouncement = cached.marquee || DEFAULT_ANNOUNCEMENT;
+      const announcement = window.formatIqraTextWithLinks
+        ? window.formatIqraTextWithLinks(rawAnnouncement, cached.marqueeLinkUrl, cached.marqueeLinkText, true)
+        : rawAnnouncement;
       const phone1 = cached.phone1 || '9775123096';
       const phone2 = cached.phone2 || '9647109481';
 
