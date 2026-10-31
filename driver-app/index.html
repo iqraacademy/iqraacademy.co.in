@@ -95,6 +95,13 @@
         <p>🚐 স্কুল পুল-কার ও ভ্যান ড্রাইভার লাইভ জিপিএস পোর্টাল</p>
     </div>
 
+    <!-- PWA Install Button Container -->
+    <div id="installAppContainer" style="display: none; margin-bottom: 1rem;">
+        <button id="installAppBtn" class="btn" style="background: #7c3aed; color: white; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">
+            📲 ড্রাইভার অ্যাপটি ইনস্টল করুন (Install App)
+        </button>
+    </div>
+
     <!-- API কনফিগারেশন বক্স -->
     <div class="card" id="apiConfigBox" style="display:none;">
         <div class="card-title">🔗 Google Script URL সেটিংস</div>
@@ -192,6 +199,7 @@
     let wakeLock = null;
     let isTracking = false;
     let latestCoords = null;
+    let deferredPrompt = null;
 
     window.onload = function() {
         const savedUrl = localStorage.getItem("IQRA_GAS_API_URL");
@@ -206,6 +214,36 @@
             navigator.serviceWorker.register("sw.js").catch(() => {});
         }
     };
+
+    // PWA Install Prompt Handler
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const installContainer = document.getElementById('installAppContainer');
+        if (installContainer) {
+            installContainer.style.display = 'block';
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const installBtn = document.getElementById('installAppBtn');
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                }
+                deferredPrompt = null;
+                document.getElementById('installAppContainer').style.display = 'none';
+            });
+        }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        document.getElementById('installAppContainer').style.display = 'none';
+    });
 
     function getGasUrl() {
         return (localStorage.getItem("IQRA_GAS_API_URL") || document.getElementById("gasUrlInput").value || DEFAULT_GAS_URL).trim();
