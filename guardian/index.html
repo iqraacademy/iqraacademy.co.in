@@ -114,21 +114,27 @@
             100% { transform: scale(1.06); opacity: 1; box-shadow: 0 0 28px #f59e0b, 0 0 50px #fbbf24; }
         }
 
-        .bulb-status-title { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.4px; }
+        .bulb-status-title { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.4px; }
         .title-in { color: #4ade80; }
         .title-out { color: #f87171; }
         .title-loading { color: #fbbf24; }
-        .bulb-status-sub { font-size: 0.84rem; color: #cbd5e1; margin-top: 4px; }
+        .bulb-status-sub { font-size: 0.82rem; color: #cbd5e1; margin-top: 4px; }
 
         .time-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1rem; }
         .time-box { background: #0f172a; border: 1px solid #334155; padding: 0.75rem; border-radius: 12px; text-align: center; }
         .time-box .t-lbl { font-size: 0.74rem; color: #94a3b8; font-weight: 600; }
         .time-box .t-val { font-size: 0.92rem; font-weight: 800; margin-top: 3px; }
 
-        .history-list { margin-top: 0.75rem; max-height: 220px; overflow-y: auto; }
+        /* গুগল ম্যাপ লাইভ ভেহিকেল ট্র্যাকিং কার্ড */
+        .map-card { margin-top: 1rem; background: #0f172a; border: 1px solid #334155; border-radius: 14px; padding: 0.85rem; }
+        .map-card h3 { font-size: 0.92rem; color: #34d399; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .map-container-box { width: 100%; height: 260px; border-radius: 10px; overflow: hidden; border: 1.5px solid #475569; background: #1e293b; }
+        .map-container-box iframe { width: 100%; height: 100%; border: none; }
+
+        .history-list { margin-top: 0.75rem; max-height: 180px; overflow-y: auto; }
         .history-item {
-            display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.75rem;
-            border-bottom: 1px solid #334155; font-size: 0.8rem;
+            display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.65rem;
+            border-bottom: 1px solid #334155; font-size: 0.78rem;
         }
         .history-item:last-child { border-bottom: none; }
 
@@ -148,14 +154,14 @@
         <div class="app-header">
             <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="IQRA Logo">
             <h1>IQRA ACADEMY - অভিভাবক পোর্টাল</h1>
-            <p>Guardian Live Tracking PWA • রিয়েল-টাইম স্কুল এন্ট্রি ও ছুটি ট্র্যাকার</p>
+            <p>Guardian Live Tracking PWA • স্কুল এন্ট্রি ও গাড়ির রিয়েল-টাইম জিপিএস ম্যাপ</p>
             <button id="installGuardianBtn" class="pwa-install-btn" onclick="installGuardianPWA()">📲 অ্যাপটি ফোনে ইনস্টল করুন (Install App)</button>
         </div>
 
-        <!-- ১. ওয়ান-টাইম সেটআপ সেকশন (যদি কার্ড এখনো সেভ না থাকে) -->
+        <!-- ১. ওয়ান-টাইম সেটআপ সেকশন -->
         <div class="card" id="setupSection">
             <h2>🔐 এককালীন আইডি কার্ড স্ক্যান ও সেভ (One-Time Setup)</h2>
-            <p>আপনার সন্তানের আইডি কার্ডের QR কোডটি একবার স্ক্যান করুন। অ্যাপটি স্থায়ীভাবে কার্ডটি সেভ করে রাখবে এবং প্রতিদিন লাইভ স্ট্যাটাস দেখাবে।</p>
+            <p>আপনার সন্তানের আইডি কার্ডের QR কোডটি একবার স্ক্যান করুন। অ্যাপটি স্থায়ীভাবে কার্ডটি সেভ করে রাখবে এবং প্রতিদিন স্কুলের স্ট্যাটাস ও গাড়ির লাইভ ম্যাপ দেখাবে।</p>
 
             <div id="guardianQrReader"></div>
             <button class="btn btn-emerald" onclick="startGuardianCamera()">📷 ক্যামেরা দিয়ে QR স্ক্যান করুন</button>
@@ -167,7 +173,7 @@
             <p id="setupErrorMsg" style="color:#f87171; margin-top:0.6rem; display:none;"></p>
         </div>
 
-        <!-- ২. লাইভ ট্র্যাকিং ড্যাশবোর্ড (কার্ড সেভ থাকার পর অটোমেটিক খুলবে) -->
+        <!-- ২. লাইভ ট্র্যাকিং ড্যাশবোর্ড -->
         <div class="card" id="liveDashboardSection" style="display:none;">
             <div class="profile-top">
                 <img id="gStudentPhoto" class="student-avatar" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" alt="Student Photo">
@@ -177,12 +183,12 @@
                     <p>
                         <strong>ID:</strong> <span id="gStudentId">---</span><br>
                         <strong>শ্রেণী:</strong> <span id="gStudentClass">---</span> | <strong>রোল:</strong> <span id="gStudentRoll">---</span><br>
-                        <strong>রক্তের গ্রুপ:</strong> <span id="gStudentBlood">---</span>
+                        <strong>ড্রাইভার কোড:</strong> <span id="gDriverBadgeVal" style="color:#fef08a; font-family:monospace;">---</span>
                     </p>
                 </div>
             </div>
 
-            <!-- লাইভ বাল্ব স্টেজ (প্রথমে লোডিং দেখাবে, ফেচ শেষ হলে স্ট্যাটাস অনুযায়ী সবুজ বা লাল হবে) -->
+            <!-- রিয়েল-টাইম ব্লিঙ্কিং বাল্ব সেকশন -->
             <div class="live-bulb-stage stage-loading" id="gBulbStage">
                 <div class="giant-bulb loading-pulse" id="gBulbIcon">⏳</div>
                 <div class="bulb-status-title title-loading" id="gBulbTitle">তথ্য লোড হচ্ছে...</div>
@@ -200,6 +206,14 @@
                 </div>
             </div>
 
+            <!-- গুগল ম্যাপস লাইভ ভেহিকেল ট্র্যাকিং -->
+            <div class="map-card" id="vehicleMapCard" style="display:none;">
+                <h3><span>🚐 গাড়ির লাইভ লোকেশন (Google Maps)</span> <span id="driverInfoSub" style="font-size:0.72rem; color:#94a3b8;"></span></h3>
+                <div class="map-container-box">
+                    <iframe id="googleMapFrame" src="" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.1rem; padding-top:0.85rem; border-top:1px solid #334155;">
                 <span id="gLastSynced" style="font-size:0.74rem; color:#94a3b8;">তথ্য সংযোগ করা হচ্ছে...</span>
                 <div style="display:flex; gap:6px;">
@@ -209,7 +223,7 @@
             </div>
         </div>
 
-        <!-- ৩. প্রতিদিনের যাতায়াত হিস্ট্রি -->
+        <!-- ৩. সাম্প্রতিক হিস্ট্রি -->
         <div class="card" id="historyCard" style="display:none;">
             <h3 style="font-size:0.95rem; color:#34d399; margin-bottom:0.5rem;">📅 সাম্প্রতিক প্রবেশ ও ছুটির সময়সূচী</h3>
             <div class="history-list" id="gHistoryList">
@@ -232,7 +246,6 @@
     </div>
 
     <script>
-        // Google Apps Script URL
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec";
 
         let guardianQrScanner = null;
@@ -331,7 +344,6 @@
             showLiveDashboard(boundStudentId);
         }
 
-        // বাল্বকে লোডিং অবস্থায় রিসেট করার ফাংশন
         function setBulbLoading() {
             const stage = document.getElementById("gBulbStage");
             const bulb = document.getElementById("gBulbIcon");
@@ -357,7 +369,6 @@
             document.getElementById("liveDashboardSection").style.display = "block";
             document.getElementById("historyCard").style.display = "block";
 
-            // প্রথমে লোডিং স্টেট সক্রিয় করা
             setBulbLoading();
 
             refreshGuardianStatus();
@@ -399,7 +410,7 @@
                         if (title) {
                             title.className = "bulb-status-title";
                             title.style.color = "#f87171";
-                            title.innerText = "কোনো তথ্য পাওয়া যায়নি";
+                            title.innerText = "কোনো তথ্য পাওয়া যায়নি";
                         }
                         if (sub) {
                             sub.innerText = "শিক্ষার্থীর আইডি সঠিক আছে কিনা যাচাই করুন।";
@@ -414,8 +425,9 @@
                     document.getElementById("gStudentId").innerText = st.id;
                     document.getElementById("gStudentClass").innerText = st.studentClass;
                     document.getElementById("gStudentRoll").innerText = st.roll;
-                    document.getElementById("gStudentBlood").innerText = st.blood || "-";
+                    document.getElementById("gDriverBadgeVal").innerText = st.driverCode || "অ্যাসাইন করা হয়নি";
 
+                    // স্কুল স্ট্যাটাস বাল্ব লজিক
                     const isInside = String(st.liveStatus || "OUT").toUpperCase() === "IN";
 
                     if (isInside) {
@@ -438,6 +450,23 @@
                     document.getElementById("gLastOut").innerText = st.lastOutTime || "-";
                     document.getElementById("gLastSynced").innerText = "আপডেট: " + new Date().toLocaleTimeString();
 
+                    // গুগল ম্যাপস ভেহিকেল ট্র্যাকিং ইন্টিগ্রেশন
+                    const mapCard = document.getElementById("vehicleMapCard");
+                    const mapFrame = document.getElementById("googleMapFrame");
+                    const driverSub = document.getElementById("driverInfoSub");
+
+                    if (res.driver && res.driver.lat && res.driver.lng) {
+                        const lat = res.driver.lat;
+                        const lng = res.driver.lng;
+                        // ফ্রি Google Maps Embed URL (কোনো API Key ছাড়াই নিখুঁত কাজ করবে)
+                        mapFrame.src = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+                        driverSub.innerText = `(${res.driver.driverName} - ${res.driver.vehicleName})`;
+                        mapCard.style.display = "block";
+                    } else {
+                        mapCard.style.display = "none";
+                    }
+
+                    // সাম্প্রতিক হিস্ট্রি রেন্ডার
                     const historyEl = document.getElementById("gHistoryList");
                     if (Array.isArray(res.history) && res.history.length > 0) {
                         historyEl.innerHTML = res.history.map(h => {
