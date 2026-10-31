@@ -19,7 +19,7 @@
             color: white; padding: 1.25rem; border-radius: 16px; text-align: center;
             box-shadow: 0 8px 20px rgba(30, 58, 138, 0.25); margin-bottom: 1rem;
         }
-        .header-card img { width: 56px; height: 56px; border-radius: 50%; border: 2px solid #fef08a; background: white; padding: 2px; margin-bottom: 0.4rem; }
+        .header-card img { width: 56px; height: 56px; border-radius: 50%; border: 2px solid #fef08a; background: white; padding: 2px; margin-bottom: 0.4rem; object-fit: cover; }
         .header-card h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: 0.5px; }
         .header-card p { font-size: 0.8rem; color: #bfdbfe; margin-top: 2px; }
 
@@ -83,7 +83,6 @@
         }
         .status-ok { background: #dcfce7; color: #166534; }
         .status-err { background: #fee2e2; color: #991b1b; }
-
         .api-settings { font-size: 0.75rem; color: #64748b; text-align: center; margin-top: 0.5rem; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
@@ -91,7 +90,7 @@
 
 <div class="app-container">
     <div class="header-card">
-        <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" crossorigin="anonymous" alt="Logo">
+        <img src="icon-192.png" crossorigin="anonymous" alt="Logo">
         <h1>IQRA ACADEMY</h1>
         <p>🚐 স্কুল পুল-কার ও ভ্যান ড্রাইভার লাইভ জিপিএস পোর্টাল</p>
     </div>
@@ -106,7 +105,7 @@
         <button class="btn btn-login" onclick="saveGasUrl()">সেভ করুন</button>
     </div>
 
-    <!-- ১. ওয়ান-টাইম ড্রাইভার লগইন স্ক্রিন -->
+    <!-- ১. ড্রাইভার লগইন স্ক্রিন -->
     <div class="card" id="loginView">
         <div class="card-title">🔐 ড্রাইভার ওয়ান-টাইম লগইন</div>
         <div class="form-group">
