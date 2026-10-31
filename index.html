@@ -106,9 +106,9 @@
       <div class="flex items-center gap-2">
         <span id="live-cloud-indicator" class="hidden sm:inline-flex items-center gap-1.5 text-[11px] text-emerald-400 font-bold bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>লাইভ</span>
+          <span>লাইভ ক্লাউড সক্রিয়</span>
         </span>
-        <a href="admin.html" class="px-3 py-1 rounded font-bold text-xs transition flex items-center gap-1.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-300 border border-amber-400/30">
+        <a href="admin/index.html" class="px-3 py-1 rounded font-bold text-xs transition flex items-center gap-1.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-300 border border-amber-400/30">
           <i class="fa-solid fa-lock text-amber-400"></i>
           <span>অ্যাডমিন পোর্টাল</span>
         </a>
@@ -227,10 +227,6 @@
           <i class="fa-solid fa-bullhorn text-xs"></i>
           <span>নোটিশ বোর্ড</span>
         </a>
-        <a href="teachers.html" class="px-4 py-2.5 rounded-lg text-sm font-semibold transition hover:bg-emerald-800 text-emerald-100 hover:text-white flex items-center gap-1.5">
-          <i class="fa-solid fa-chalkboard-user text-xs"></i>
-          <span>Our Faculty</span>
-        </a>
         <a href="#gallery" class="px-4 py-2.5 rounded-lg text-sm font-semibold transition hover:bg-emerald-800 text-emerald-100 hover:text-white flex items-center gap-1.5">
           <i class="fa-solid fa-images text-xs"></i>
           <span>গ্যালারি</span>
@@ -243,7 +239,7 @@
 
       <!-- Admin Jump Link in Navigation -->
       <div class="hidden lg:flex items-center gap-2">
-        <a href="admin.html" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 hover:bg-amber-400 shadow">
+        <a href="admin/index.html" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 hover:bg-amber-400 shadow">
           <i class="fa-solid fa-lock text-xs"></i>
           <span>অ্যাডমিন পোর্টাল</span>
         </a>
@@ -265,7 +261,7 @@
         <button type="button" id="btn-mobile-apply" onclick="openAdmissionModal()" class="w-full text-center py-2.5 rounded-lg bg-emerald-600 text-white font-bold text-sm block cursor-pointer">
           <i class="fa-solid fa-file-pen mr-1 text-amber-300"></i> ভর্তি আবেদন করুন
         </button>
-        <a href="admin.html" class="w-full text-center py-2.5 rounded-lg bg-amber-500 text-slate-900 font-bold text-sm block">
+        <a href="admin/index.html" class="w-full text-center py-2.5 rounded-lg bg-amber-500 text-slate-900 font-bold text-sm block">
           <i class="fa-solid fa-lock mr-1"></i> অ্যাডমিন ডেটা এন্ট্রি
         </a>
       </div>
@@ -293,23 +289,23 @@
       <div id="hero-slider" class="relative w-full h-full">
         <!-- 5 Banner Image Slides -->
         <div class="carousel-slide absolute inset-0 opacity-100 z-10 transition-all duration-1000">
-          <img id="banner-img-0" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792326600/iqra_1.jpg" alt="Iqra Academy Slide 1" class="w-full h-full object-cover">
+          <img id="banner-img-0" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792240665/3.jpg" alt="Iqra Academy Slide 1" class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-black/30"></div>
         </div>
         <div class="carousel-slide absolute inset-0 opacity-0 z-0 transition-all duration-1000">
-          <img id="banner-img-1" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792326600/iqra_4.jpg" alt="Iqra Academy Slide 2" class="w-full h-full object-cover">
+          <img id="banner-img-1" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792240666/2.jpg" alt="Iqra Academy Slide 2" class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-black/30"></div>
         </div>
         <div class="carousel-slide absolute inset-0 opacity-0 z-0 transition-all duration-1000">
-          <img id="banner-img-2" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792326600/iqra_3.jpg" alt="Iqra Academy Slide 3" class="w-full h-full object-cover">
+          <img id="banner-img-2" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792240666/4.jpg" alt="Iqra Academy Slide 3" class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-black/30"></div>
         </div>
         <div class="carousel-slide absolute inset-0 opacity-0 z-0 transition-all duration-1000">
-          <img id="banner-img-3" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792326600/iqra_5.jpg" alt="Iqra Academy Slide 4" class="w-full h-full object-cover">
+          <img id="banner-img-3" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792240666/1.jpg" alt="Iqra Academy Slide 4" class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-black/30"></div>
         </div>
         <div class="carousel-slide absolute inset-0 opacity-0 z-0 transition-all duration-1000">
-          <img id="banner-img-4" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792326601/iqra_2.jpg" alt="Iqra Academy Slide 5" class="w-full h-full object-cover">
+          <img id="banner-img-4" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792240666/5.jpg" alt="Iqra Academy Slide 5" class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-black/30"></div>
         </div>
       </div>
@@ -332,7 +328,7 @@
             </p>
 
             <div class="flex flex-wrap items-center gap-3 pt-2">
-              <button type="button" id="btn-hero-apply" onclick="openAdmissionModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold px-6 py-3.5 rounded-xl shadow-xl transition transform hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base cursor-pointer">
+              <button type="button" id="btn-hero-apply" onclick="openAdmissionModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold px-6 py-3.5 rounded-xl shadow-xl transition transform hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base cursor-pointer cursor-pointer">
                 <i class="fa-solid fa-paper-plane text-slate-900"></i>
                 <span>ভর্তি আবেদন করুন ২০২৭</span>
               </button>
@@ -607,7 +603,7 @@
           </div>
 
           <div class="flex items-center gap-4 pt-2">
-            <button type="button" id="btn-about-apply" onclick="openAdmissionModal()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-6 py-3 rounded-xl transition shadow flex items-center gap-2 text-sm cursor-pointer">
+            <button type="button" id="btn-about-apply" onclick="openAdmissionModal()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-6 py-3 rounded-xl transition shadow flex items-center gap-2 text-sm cursor-pointer cursor-pointer">
               <i class="fa-solid fa-file-pen text-amber-300"></i>
               <span>ভর্তি ফরম পূরণ করুন</span>
             </button>
@@ -795,7 +791,7 @@
             </div>
           </div>
 
-          <button type="button" id="btn-residential-apply" onclick="openAdmissionModal('Residential Girls Mission (আবাসিক)')" class="inline-flex bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-xl transition shadow items-center gap-2 text-sm cursor-pointer">
+          <button type="button" id="btn-residential-apply" onclick="openAdmissionModal(\'Residential Girls Mission (আবাসিক)\')" class="inline-flex bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-xl transition shadow items-center gap-2 text-sm cursor-pointer cursor-pointer">
             <i class="fa-solid fa-bed text-amber-300"></i>
             <span>আবাসিক সিটের জন্য আবেদন করুন</span>
           </button>
@@ -804,7 +800,7 @@
         <div class="lg:col-span-6 bg-slate-900 text-slate-100 p-6 md:p-8 rounded-3xl shadow-xl border border-slate-800">
           <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
             <i class="fa-solid fa-calendar-day text-amber-400"></i>
-            আবাসিক ছাত্রীদের দৈনন্দিন রুটিন (Daily Routine)
+            আবাসিক ছাত্রীদের সুষম দৈনন্দিন রুটিন (Daily Routine)
           </h3>
           <p class="text-xs text-slate-400 mb-6">সময়নিষ্ঠতা ও শৃঙ্খলাই সফলতার চাবিকাঠি—</p>
 
@@ -920,7 +916,7 @@
             ঘরে বসেই অনলাইনের মাধ্যমে আপনার সন্তানের ভর্তি আবেদন পত্রটি পূরণ করে জমা দিন। আমাদের প্রতিনিধি ২৪ ঘণ্টার মধ্যে যোগাযোগ করবেন।
           </p>
           <div class="pt-2">
-            <button type="button" id="btn-open-admission-modal" onclick="openAdmissionModal()" class="w-full bg-gradient-to-r from-emerald-700 to-emerald-900 hover:from-emerald-800 hover:to-emerald-950 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-base cursor-pointer">
+            <button type="button" id="btn-open-admission-modal" onclick="openAdmissionModal()" class="w-full bg-gradient-to-r from-emerald-700 to-emerald-900 hover:from-emerald-800 hover:to-emerald-950 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-base cursor-pointer cursor-pointer">
               <i class="fa-solid fa-pen-nib text-amber-300"></i>
               <span>ভর্তি ফরম পূরণ শুরু করুন</span>
             </button>
@@ -946,7 +942,7 @@
           <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mt-1">সাম্প্রতিক নোটিশ ও পরিপত্র</h2>
           <p class="text-xs text-slate-500 mt-1">ইকরা অ্যাকাডেমির সকল নোটিশ অ্যাডমিন প্যানেল থেকে সরাসরি লাইভ আপডেট হয়।</p>
         </div>
-        <a href="admin.html" class="text-xs font-bold bg-white hover:bg-emerald-50 text-emerald-800 px-3.5 py-2 rounded-xl border border-slate-200 transition shadow-sm flex items-center gap-1.5 self-start md:self-auto">
+        <a href="admin/index.html" class="text-xs font-bold bg-white hover:bg-emerald-50 text-emerald-800 px-3.5 py-2 rounded-xl border border-slate-200 transition shadow-sm flex items-center gap-1.5 self-start md:self-auto">
           <i class="fa-solid fa-lock text-amber-600"></i>
           <span>অ্যাডমিন পোর্টাল</span>
         </a>
@@ -1172,7 +1168,7 @@
           <li><a href="#management" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> পরিচালনা (Director & Secretary)</a></li>
           <li><a href="#admissions" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> ভর্তি নির্দেশিকা ২০২৭</a></li>
           <li><a href="#notices" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> নোটিশ বোর্ড</a></li>
-          <li><a href="admin.html" class="hover:text-amber-300 transition flex items-center gap-2 text-amber-400 font-semibold"><i class="fa-solid fa-lock text-[10px]"></i> অ্যাডমিন পোর্টাল</a></li>
+          <li><a href="admin/index.html" class="hover:text-amber-300 transition flex items-center gap-2 text-amber-400 font-semibold"><i class="fa-solid fa-lock text-[10px]"></i> অ্যাডমিন পোর্টাল</a></li>
         </ul>
       </div>
 
@@ -1226,42 +1222,16 @@
       </div>
     </div>
 
-   <div class="border-t border-slate-800 pt-6 px-4">
-  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-4">
-    
-    <!-- Copyright Section -->
-    <p>© ২০২৬-২০২৭ <b>PVT. IQRA ACADEMY (ইকরা অ্যাকাডেমি)</b> | সর্বস্বত্ব সংরক্ষিত।</p>
-
-    <!-- Developer & Visitor Counter Section -->
-    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
-      <span>Developed By</span>
-      <a href="https://shmwb.in" 
-         target="_blank" 
-         rel="noopener noreferrer" 
-         style="color: #d4af37; font-weight: 700; text-decoration: none; animation: shmBlinkPulse 1.5s infinite ease-in-out;">
-         SHMspace
-      </a>
-      <img src="https://api.visitorbadge.io/api/visitors?path=iqraacademy.co.in&label=SITE%20VISITORS&labelColor=%23374151&countColor=%232563eb"
-           alt="Visitor Counter for iqraacademy.co.in"
-           style="height: 20px; vertical-align: middle;"
-           loading="lazy">
+    <div class="border-t border-slate-800 pt-6 px-4">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-2">
+        <p>© ২০২৬-২০২৭ <b>PVT. IQRA ACADEMY (ইকরা অ্যাকাডেমি)</b> | সর্বস্বত্ব সংরক্ষিত।</p>
+        <p class="flex items-center gap-1">
+          <i class="fa-solid fa-heart text-red-500"></i> শিক্ষা • শৃঙ্খলা • আত্মবিশ্বাস • উজ্জ্বল ভবিষ্যৎ
+        </p>
+      </div>
     </div>
-
-    <!-- Tagline Section -->
-    <p class="flex items-center gap-1">
-      <i class="fa-solid fa-heart text-red-500"></i> শিক্ষা • শৃঙ্খলা • আত্মবিশ্বাস • উজ্জ্বল ভবিষ্যৎ
-    </p>
-
-  </div>
-</div>
-
-<style>
-@keyframes shmBlinkPulse {
-    0%, 100% { opacity: 1; text-shadow: 0 0 5px rgba(212, 175, 55, 0.4); }
-    50% { opacity: 0.3; text-shadow: none; }
-}
-</style>
   </footer>
+
   
   <!-- In-Browser Student Admission Form Modal -->
   <div id="inbrowser-admission-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
@@ -1438,7 +1408,7 @@
         </div>
       </div>
       <p class="text-xs text-slate-500 leading-relaxed">
-        আমাদের ভর্তি সেল থেকে শীঘ্রই আপনার সাথে যোগাযোগ করা হবে। আবেদনটি অ্যাডমিন পোর্টাল এবং গুগল স্প্রেডশিটে সরাসরি পৌঁছে গেছে।
+        আমাদের ভর্তি সেল থেকে শীঘ্রই আপনার সাথে যোগাযোগ করা হবে। আবেদনটি অ্যাডমিন পোর্টালে সরাসরি পৌঁছে গেছে।
       </p>
       <div class="flex gap-2 justify-center pt-2">
         <button type="button" onclick="printPublicAdmissionReceipt()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer">
@@ -1461,7 +1431,7 @@
         <!-- Injected via JS -->
       </div>
       <div class="pt-4 border-t border-slate-100 mt-4 flex justify-end">
-        <button type="button" id="btn-stream-modal-apply" onclick="openAdmissionFromStream()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer">
+        <button type="button" id="btn-stream-modal-apply" onclick="openAdmissionFromStream()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer cursor-pointer">
           <i class="fa-solid fa-file-pen text-amber-300"></i> এই বিভাগে আবেদন করুন
         </button>
       </div>
@@ -1618,7 +1588,7 @@
     }
   
     // ================= IN-BROWSER ADMISSION MODAL SYSTEM =================
-    window.inSafPhotoBase64 = "";
+    let inSafPhotoBase64 = "";
 
     window.inSafUpdateClasses = function(category) {
       const classSelect = document.getElementById('in-saf-class');
@@ -1661,11 +1631,12 @@
         }
       }
       
+      // Determine checked category
       let chosen = "Residential Girls Mission (আবাসিক)";
       const checkedRadio = document.querySelector('input[name="in_saf_cat"]:checked');
       if (checkedRadio) chosen = checkedRadio.value;
       
-      window.inSafUpdateClasses(chosen);
+      inSafUpdateClasses(chosen);
       modal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     };
@@ -1685,9 +1656,9 @@
     };
 
     window.openAdmissionFromStream = function() {
-      const sModal = document.getElementById('stream-details-modal');
-      if (sModal) sModal.classList.add('hidden');
-      window.openAdmissionModal();
+      const streamModal = document.getElementById('stream-details-modal');
+      if (streamModal) streamModal.classList.add('hidden');
+      openAdmissionModal();
     };
 
     window.inSafPreviewPhoto = function(event) {
@@ -1700,11 +1671,11 @@
       }
       const reader = new FileReader();
       reader.onload = function(e) {
-        window.inSafPhotoBase64 = e.target.result;
+        inSafPhotoBase64 = e.target.result;
         const previewDiv = document.getElementById('in-saf-photo-preview');
         const previewImg = document.getElementById('in-saf-preview-img');
         if (previewImg && previewDiv) {
-          previewImg.src = window.inSafPhotoBase64;
+          previewImg.src = inSafPhotoBase64;
           previewDiv.classList.remove('hidden');
         }
       };
@@ -1713,24 +1684,24 @@
 
     // Close on backdrop click
     document.addEventListener('DOMContentLoaded', function() {
-      window.inSafUpdateClasses('Residential Girls Mission');
+      inSafUpdateClasses('Residential Girls Mission');
       const admModal = document.getElementById('inbrowser-admission-modal');
       if (admModal) {
         admModal.addEventListener('click', function(e) {
-          if (e.target === admModal) window.closeAdmissionModal();
+          if (e.target === admModal) closeAdmissionModal();
         });
       }
       const succModal = document.getElementById('inbrowser-success-modal');
       if (succModal) {
         succModal.addEventListener('click', function(e) {
-          if (e.target === succModal) window.closeSuccessModal();
+          if (e.target === succModal) closeSuccessModal();
         });
       }
     });
 
   </script>
 
-  <!-- ================= FIREBASE REALTIME CLOUD SYNC & GOOGLE SPREADSHEET INTEGRATION ================= -->
+  <!-- ================= FIREBASE REALTIME CLOUD SYNC ================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
     import { getFirestore, doc, onSnapshot, collection, addDoc, getDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
@@ -1747,9 +1718,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
-    // আপনার Google Apps Script Web App লিংক
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydbDDftFQhb8PUepBTcixWRDzitR6F2iyq-bzUFBO4bBVio1baAzg28Nl25X5CGRGz/exec";
 
     // Toast Notification Helper
     function showPublicToast(msg, isSuccess = true) {
@@ -1905,36 +1873,7 @@
       console.warn("Firestore public listener error:", error);
     });
 
-    // Also listen to standalone 'notices' collection if added via simple admin
-    onSnapshot(collection(db, "notices"), (snap) => {
-      if (!snap.empty) {
-        const list = [];
-        snap.forEach(d => list.push(d.data()));
-        list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-        const noticeContainer = document.getElementById('public-notice-list');
-        if (noticeContainer && list.length > 0) {
-          noticeContainer.innerHTML = list.map(n => `
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between gap-4 card-hover">
-              <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded ${
-                    n.priority === 'জরুরি' ? 'bg-red-100 text-red-700' : 
-                    n.priority === 'উচ্চ' ? 'bg-amber-100 text-amber-800' : 
-                    'bg-emerald-100 text-emerald-800'
-                  }">${n.priority || 'সাধারণ'}</span>
-                  <span class="text-xs text-slate-400 font-mono"><i class="fa-regular fa-calendar mr-1"></i>${n.date || ''}</span>
-                  <span class="text-xs font-semibold text-amber-700">| ${n.category || 'সাধারণ'}</span>
-                </div>
-                <h4 class="text-sm font-bold text-slate-900 leading-snug">${n.title}</h4>
-              </div>
-              <button class="shrink-0 text-emerald-700 hover:text-emerald-900 text-xs font-bold flex items-center gap-1 p-1.5 rounded hover:bg-emerald-50 transition cursor-pointer" onclick="window.print()" title="নোটিশ প্রিন্ট করুন">
-                <i class="fa-solid fa-print"></i>
-              </button>
-            </div>
-          `).join('');
-        }
-      }
-    });
+    
     
     // ================= SEQUENTIAL APPLICATION ID GENERATOR =================
     async function getNextSequentialFormId(academicYear) {
@@ -1953,6 +1892,7 @@
             const match = idVal.match(new RegExp(academicYear + "[-_](\\d+)"));
             if (match) {
               const num = parseInt(match[1], 10);
+              // Only consider sequential numbers (e.g. 0001, 0002, 1, 2)
               if (!isNaN(num) && (match[1].startsWith('0') || num < 1000)) {
                 if (num > maxFound) maxFound = num;
               }
@@ -2043,7 +1983,7 @@
                 <h1 style="margin: 3px 0 0 0; font-size: 21px; font-weight: 800; color: #064e3b; line-height: 1.2;">PVT. IQRA ACADEMY</h1>
                 <h2 style="margin: 2px 0 0 0; font-size: 13px; font-weight: 700; color: #1f2937;">ইকরা অ্যাকাডেমি — আবাসিক গার্লস মিশন</h2>
                 <p style="margin: 2px 0 0 0; font-size: 10px; color: #4b5563;">
-                  দক্ষিণ শিবপুর, যদুরহাটি, বাদুড়িয়া, উত্তর ২৪ পরগনা, পিন-৭৪৩২৯৩ | 📞 ৯৭৭৫১২৩০৯৬ / ৯৬৪৭১০৯৪৮১
+                  দক্ষিণ শিবপুর, যদুরহাটি, বাদুড়িয়া, উত্তর ২৪ পরগনা, পিন-৭৪৩২৯৩ | 📞 ৯৭৭৫১২৩০৯৬ / ৯৬৪৭১০৯৪৮১
                 </p>
               </td>
               <td style="width: 70px; vertical-align: middle; text-align: right;">
@@ -2151,7 +2091,7 @@
       window.print();
     }
 
-    // ================= ADMISSION FORM SUBMIT (FIREBASE + GOOGLE SHEETS & DRIVE) =================
+    // In-Browser Admission Form Submit directly to Firestore
     const inSafForm = document.getElementById('inbrowser-saf-form');
     if (inSafForm) {
       inSafForm.addEventListener('submit', async (e) => {
@@ -2195,7 +2135,6 @@
 
           const admissionData = {
             id: appId,
-            appId: appId,
             formNo: formNo,
             seqNumber: seqNumber,
             name: studentName,
@@ -2216,41 +2155,13 @@
               state: "West Bengal",
               pin: pin
             },
-            photo: window.inSafPhotoBase64 || "",
+            photo: inSafPhotoBase64 || "",
             date: dateStr,
             timestamp: Date.now()
           };
 
-          // ১. Firebase Firestore "admissions" কালেকশনে সেভ করা (অ্যাডমিন প্যানেলের জন্য)
+          // Save to Firestore "admissions" collection
           await addDoc(collection(db, "admissions"), admissionData);
-
-          // ২. Google Apps Script এর মাধ্যমে সরাসরি Google Spreadsheet ও Google Drive এ পাঠানো
-          try {
-            await fetch(APPS_SCRIPT_URL, {
-              method: "POST",
-              mode: "no-cors",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: JSON.stringify({
-                action: "admission",
-                appId: appId,
-                formNo: formNo,
-                name: studentName,
-                fatherName: fatherName,
-                guardian: guardian,
-                aadhaar: aadhaar,
-                dob: dob,
-                academicYear: academicYear,
-                stream: selectedCategory,
-                className: className,
-                phone: phone,
-                whatsapp: whatsapp,
-                address: admissionData.address,
-                photoBase64: window.inSafPhotoBase64 || ""
-              })
-            });
-          } catch (sheetErr) {
-            console.warn("Google Sheet sync note:", sheetErr);
-          }
 
           // Cache last submitted data for instant A4 printing
           lastSubmittedAdmissionData = admissionData;
@@ -2264,8 +2175,6 @@
           document.getElementById('inbrowser-success-modal').classList.remove('hidden');
 
           inSafForm.reset();
-          window.inSafPhotoBase64 = "";
-          document.getElementById('in-saf-photo-preview')?.classList.add('hidden');
         } catch (err) {
           console.error("Admission error:", err);
           alert("ভর্তি ফর্ম জমা দিতে ত্রুটি হয়েছে: " + err.message);
@@ -2276,7 +2185,7 @@
       });
     }
 
-    // ================= CONTACT FORM SUBMIT (FIREBASE + GOOGLE SHEETS) =================
+    // Public Contact Form Submission directly to Firestore
     const contactForm = document.getElementById('public-contact-form');
     if (contactForm) {
       contactForm.addEventListener('submit', async (e) => {
@@ -2301,7 +2210,6 @@
           const toBn = (n) => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
           const dateStr = `${toBn(d.getDate())} ${months[d.getMonth()]}, ${toBn(d.getFullYear())}`;
 
-          // ১. Firebase Firestore "contact_messages" কালেকশনে সেভ করা
           await addDoc(collection(db, "contact_messages"), {
             name,
             phone,
@@ -2310,24 +2218,6 @@
             date: dateStr,
             timestamp: Date.now()
           });
-
-          // ২. Google Apps Script এর মাধ্যমে সরাসরি Google Spreadsheet এ পাঠানো
-          try {
-            await fetch(APPS_SCRIPT_URL, {
-              method: "POST",
-              mode: "no-cors",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: JSON.stringify({
-                action: "contact",
-                name: name,
-                phone: phone,
-                subject: subject,
-                message: message
-              })
-            });
-          } catch (sheetErr) {
-            console.warn("Google Sheet contact sync note:", sheetErr);
-          }
 
           showPublicToast("আপনার বার্তাটি সফলভাবে প্রেরণ করা হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।");
           contactForm.reset();
