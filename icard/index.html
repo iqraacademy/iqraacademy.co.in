@@ -3,422 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IQRA ACADEMY - Smart QR ID Card Generator (PVC Portrait &amp; A4 Print)</title>
+    <title>IQRA ACADEMY - Smart QR ID Card Generator</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <meta name="theme-color" content="#065f46">
-    <!-- Libraries: QRCode.js & html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0fdf4; color: #1e293b; padding: 1.25rem; min-height: 100vh; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
+        body { background-color: #f0fdf4; color: #1e293b; padding: 1.25rem; min-height: 100vh; }
         .header-title { text-align: center; margin-bottom: 1.25rem; color: #065f46; }
         .header-title h2 { font-size: 1.75rem; margin-bottom: 0.25rem; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
         .header-title h2 img { height: 48px; width: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #059669; background: #fff; }
         .header-title p { color: #047857; font-size: 0.9rem; font-weight: 600; }
-
-        .api-bar {
-            max-width: 1280px; margin: 0 auto 1.25rem auto; background: #ecfdf5; border: 1px solid #6ee7b7;
-            padding: 0.75rem 1rem; border-radius: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-        }
-        .api-bar label { font-size: 0.8rem; font-weight: 700; color: #065f46; white-space: nowrap; margin: 0; }
-        .api-bar input { flex: 1; min-width: 240px; padding: 0.45rem 0.7rem; font-size: 0.82rem; border-radius: 6px; border: 1px solid #a7f3d0; background: #fff; }
-
-        .layout-grid {
-            display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
-            gap: 1.5rem;
-            max-width: 1280px;
-            margin: 0 auto;
-            align-items: start;
-        }
-        @media (max-width: 920px) {
-            .layout-grid { grid-template-columns: 1fr; }
-        }
-
+        .layout-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 1.5rem; max-width: 1280px; margin: 0 auto; align-items: start; }
+        @media (max-width: 920px) { .layout-grid { grid-template-columns: 1fr; } }
         .box { background: #ffffff; padding: 1.4rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,95,70,0.06); border: 1px solid #d1fae5; }
-        .section-title { font-size: 1.05rem; font-weight: 700; color: #065f46; border-bottom: 2px solid #a7f3d0; padding-bottom: 0.45rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-
+        .section-title { font-size: 1.05rem; font-weight: 700; color: #065f46; border-bottom: 2px solid #a7f3d0; padding-bottom: 0.45rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
         .form-group { margin-bottom: 0.8rem; }
         label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.25rem; color: #334155; }
         input[type="text"], input[type="file"], select { width: 100%; padding: 0.58rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem; outline: none; background: white; }
         input[type="text"]:focus, select:focus { border-color: #059669; box-shadow: 0 0 0 2px rgba(5,150,105,0.2); }
-        input[type="file"] { background: #f8fafc; border: 1px dashed #94a3b8; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
-        .btn { padding: 0.65rem 0.95rem; border: none; border-radius: 7px; font-weight: 600; cursor: pointer; font-size: 0.84rem; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: white; }
+        .btn { padding: 0.68rem 1rem; border: none; border-radius: 7px; font-weight: 600; cursor: pointer; font-size: 0.86rem; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: white; }
         .btn-primary { background: #059669; flex: 2; }
-        .btn-primary:hover { background: #047857; }
         .btn-reset { background: #64748b; flex: 1; }
-        .btn-reset:hover { background: #475569; }
-        .btn-print { background: #0284c7; }
-        .btn-print:hover { background: #0369a1; }
-        .btn-print-all { background: #0d9488; }
-        .btn-print-all:hover { background: #0f766e; }
-        .btn-print-range { background: #7c3aed; }
-        .btn-print-range:hover { background: #6d28d9; }
-        .btn-png { background: #d97706; }
-        .btn-png:hover { background: #b45309; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        /* =========================================================
-           স্মার্ট QR আইডি কার্ড ডিজাইন (Standard PVC Portrait CR80)
-           Exact physical dimensions: 54mm x 85.6mm (Lombate Portrait)
-           ========================================================= */
-        .preview-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #e2e8f0;
-            padding: 1.25rem;
-            border-radius: 10px;
-        }
-        .pvc-size-badge {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #065f46;
-            background: #d1fae5;
-            border: 1px solid #6ee7b7;
-            padding: 3px 10px;
-            border-radius: 999px;
-            margin-bottom: 0.75rem;
-        }
-
-        /* PVC Portrait Card: 54mm x 85.6mm (scaled cleanly on screen via zoom/dims, exact in print) */
-        .id-card {
-            width: 54mm;
-            height: 85.6mm;
-            background: #ffffff;
-            border: 1.5px solid #065f46;
-            border-radius: 3.2mm;
-            overflow: hidden;
-            box-shadow: 0 10px 22px -4px rgba(6,95,70,0.25);
-            display: flex;
-            flex-direction: column;
-            text-align: center;
-            position: relative;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        /* Screen preview scaling so user sees crisp details comfortably */
-        .preview-scale-box {
-            transform: scale(1.32);
-            transform-origin: top center;
-            margin-bottom: 105px;
-        }
-
-        .id-header {
-            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
-            color: white;
-            padding: 2.2mm 1.5mm 1.8mm 1.5mm;
-        }
-        .id-logo-wrap { display: flex; justify-content: center; align-items: center; margin-bottom: 0.8mm; }
-        .id-logo-wrap img {
-            width: 9.5mm;
-            height: 9.5mm;
-            border-radius: 50%;
-            background: white;
-            padding: 0.4mm;
-            border: 0.45mm solid #fef08a;
-            object-fit: cover;
-        }
-        .inst-name { font-size: 8.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: #ffffff; line-height: 1.1; }
-        .inst-sub { font-size: 4.8pt; color: #fef08a; font-weight: 700; margin: 0.4mm 0; line-height: 1.15; }
-        .inst-details { font-size: 4.3pt; line-height: 1.2; color: #e6fcf5; }
-
-        .category-badge-wrap {
-            margin-top: 1.2mm;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1.2mm;
-            padding: 0 1.5mm;
-        }
-        .category-badge {
-            display: inline-block;
-            padding: 0.4mm 2mm;
-            font-size: 5pt;
-            font-weight: 700;
-            border-radius: 2.5mm;
-            background: #fef08a;
-            color: #065f46;
-            border: 0.25mm solid #eab308;
-            white-space: nowrap;
-        }
-        .id-chip {
-            display: inline-block;
-            padding: 0.4mm 1.6mm;
-            font-size: 5pt;
-            font-weight: 800;
-            border-radius: 2mm;
-            background: #ecfdf5;
-            color: #065f46;
-            border: 0.25mm solid #6ee7b7;
-            font-family: monospace;
-            white-space: nowrap;
-        }
-
-        .id-photo-qr-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2.2mm;
-            margin: 1.4mm auto 1.1mm auto;
-            padding: 0 2mm;
-        }
-        .id-photo-area {
-            width: 20.5mm;
-            height: 24.5mm;
-            border: 0.45mm solid #059669;
-            background: #f8fafc;
-            border-radius: 1.5mm;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #94a3b8;
-            font-size: 5.5pt;
-            font-weight: 700;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-            flex-shrink: 0;
-        }
+        .preview-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e2e8f0; padding: 1.5rem; border-radius: 10px; min-height: 560px; }
+        .id-card { width: 295px; height: 485px; background: white; border: 2px solid #065f46; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 24px -4px rgba(6,95,70,0.25); display: flex; flex-direction: column; text-align: center; position: relative; }
+        .id-header { background: linear-gradient(135deg, #065f46 0%, #047857 100%); color: white; padding: 0.5rem 0.35rem; }
+        .id-logo-wrap img { width: 42px; height: 42px; border-radius: 50%; background: white; padding: 2px; border: 2px solid #fef08a; object-fit: cover; }
+        .inst-name { font-size: 1.08rem; font-weight: 800; text-transform: uppercase; color: #ffffff; }
+        .inst-sub { font-size: 0.58rem; color: #fef08a; font-weight: bold; margin-bottom: 2px; }
+        .inst-details { font-size: 0.54rem; line-height: 1.25; color: #e6fcf5; }
+        .category-badge-wrap { margin-top: 5px; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .category-badge { display: inline-block; padding: 2px 10px; font-size: 0.65rem; font-weight: 700; border-radius: 12px; background: #fef08a; color: #065f46; border: 1px solid #eab308; }
+        .id-chip { display: inline-block; padding: 2px 8px; font-size: 0.63rem; font-weight: 800; border-radius: 10px; background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; font-family: monospace; }
+        .id-photo-qr-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0.5rem auto 0.35rem auto; padding: 0 0.75rem; }
+        .id-photo-area { width: 90px; height: 106px; border: 2px solid #059669; background: #f8fafc; border-radius: 7px; overflow: hidden; display: flex; justify-content: center; align-items: center; color: #94a3b8; font-size: 0.75rem; }
         .id-photo-area img { width: 100%; height: 100%; object-fit: cover; }
-
-        .id-qr-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #ffffff;
-            border: 0.35mm dashed #059669;
-            border-radius: 1.5mm;
-            padding: 1mm;
-            width: 21mm;
-            height: 24.5mm;
-            flex-shrink: 0;
-        }
-        .qr-box-inner { width: 17.5mm; height: 17.5mm; display: flex; align-items: center; justify-content: center; }
-        .qr-box-inner img, .qr-box-inner canvas { width: 17.5mm !important; height: 17.5mm !important; max-width: 17.5mm !important; max-height: 17.5mm !important; }
-        .qr-caption { font-size: 3.9pt; font-weight: 800; color: #065f46; margin-top: 0.7mm; text-transform: uppercase; letter-spacing: 0.2px; }
-
-        .id-details {
-            padding: 0 2.8mm;
-            text-align: left;
-            font-size: 5.8pt;
-            line-height: 1.38;
-            color: #1e293b;
-        }
-        .id-details p {
-            border-bottom: 0.2mm dotted #cbd5e1;
-            padding: 0.2mm 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .id-details strong { color: #065f46; display: inline-block; width: 15.5mm; font-weight: 700; }
-
-        .id-footer {
-            background: #f8fafc;
-            margin-top: auto;
-            padding: 0.8mm 2mm;
-            border-top: 0.3mm solid #d1fae5;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            min-height: 9.5mm;
-        }
-        .id-footer-left { text-align: left; font-size: 4.2pt; color: #475569; line-height: 1.25; }
-        .id-footer-right { display: flex; flex-direction: column; align-items: center; width: 23mm; }
-        .sign-area { height: 4.8mm; display: flex; justify-content: center; align-items: center; width: 100%; }
-        .sign-area img { max-height: 100%; max-width: 21mm; object-fit: contain; }
-        .sign-text { font-size: 4.2pt; font-weight: bold; color: #065f46; text-transform: uppercase; margin-top: 0.3mm; border-top: 0.25mm dashed #94a3b8; width: 100%; padding-top: 0.3mm; }
-
-        /* =========================================================
-           A4 Print Control Panel (Option 1: All, Option 2: 1,3,5 or 1-5)
-           ========================================================= */
-        .print-studio-panel {
-            margin-top: 1.1rem;
-            width: 100%;
-            background: #f8fafc;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 0.9rem;
-        }
-        .print-studio-title {
-            font-size: 0.86rem;
-            font-weight: 700;
-            color: #065f46;
-            margin-bottom: 0.65rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .print-option-row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 0.65rem;
-        }
-        .range-input-group {
-            display: flex;
-            gap: 6px;
-            width: 100%;
-            align-items: center;
-            flex-wrap: wrap;
-            background: #ffffff;
-            padding: 0.5rem;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-        }
-        .range-input-group input {
-            flex: 1;
-            min-width: 150px;
-            padding: 0.48rem 0.65rem;
-            font-size: 0.84rem;
-            border: 1px solid #94a3b8;
-            border-radius: 6px;
-        }
-        .print-hint {
-            font-size: 0.74rem;
-            color: #475569;
-            margin-top: 0.35rem;
-            line-height: 1.35;
-        }
-
-        /* টেবিল */
+        .id-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; border: 1.5px dashed #059669; border-radius: 8px; padding: 5px; width: 92px; height: 106px; }
+        #qrCodeContainer { width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; }
+        #qrCodeContainer img, #qrCodeContainer canvas { max-width: 72px !important; max-height: 72px !important; }
+        .qr-caption { font-size: 0.5rem; font-weight: 700; color: #065f46; margin-top: 3px; text-transform: uppercase; }
+        .id-details { padding: 0 1.1rem; text-align: left; font-size: 0.74rem; line-height: 1.5; color: #1e293b; }
+        .id-details p { border-bottom: 1px dotted #e2e8f0; padding: 1px 0; }
+        .id-details strong { color: #065f46; display: inline-block; width: 78px; }
+        .id-footer { background: #f8fafc; margin-top: auto; padding: 0.3rem 0.6rem; border-top: 1px solid #d1fae5; display: flex; align-items: flex-end; justify-content: space-between; min-height: 46px; }
         .table-section { max-width: 1280px; margin: 1.5rem auto 0 auto; }
         .table-responsive { overflow-x: auto; margin-top: 0.8rem; border-radius: 8px; border: 1px solid #d1fae5; }
         table { width: 100%; border-collapse: collapse; background: white; font-size: 0.83rem; text-align: left; }
         th { background: #065f46; color: white; padding: 10px; font-weight: 600; white-space: nowrap; }
         td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-        tr:hover { background-color: #f0fdf4; }
-        .table-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid #cbd5e1; display: block; }
-        .sl-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 26px;
-            height: 26px;
-            padding: 0 6px;
-            background: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #6ee7b7;
-            border-radius: 6px;
-            font-weight: 800;
-            font-size: 0.78rem;
-        }
-
+        .table-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid #cbd5e1; }
         .action-btn { padding: 4px 8px; border-radius: 4px; border: none; font-size: 0.74rem; font-weight: 600; cursor: pointer; margin-right: 4px; color: white; }
         .btn-view { background: #059669; }
         .btn-edit { background: #f59e0b; }
         .btn-del { background: #ef4444; }
-
-        .tag-cat { padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold; }
-        .tag-residential { background: #dcfce7; color: #15803d; }
-        .tag-dayboard { background: #fef3c7; color: #b45309; }
-        .tag-dayscholar { background: #e0e7ff; color: #3730a3; }
-
-        .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
-        .status-in { background: #dcfce7; color: #15803d; }
-        .status-out { background: #fee2e2; color: #b91c1c; }
-
-        .status-msg { margin-top: 0.6rem; font-size: 0.85rem; font-weight: 600; text-align: center; padding: 6px; border-radius: 6px; }
+        .status-msg { margin-top: 0.6rem; font-size: 0.85rem; font-weight: 600; text-align: center; padding: 6px; border-radius: 6px; display: none; }
         .status-success { color: #065f46; background: #d1fae5; }
         .status-error { color: #991b1b; background: #fee2e2; }
-
-        /* ডিলিট কনফার্মেশন মডাল */
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none; align-items: center; justify-content: center; z-index: 999; }
-        .modal-card { background: #fff; padding: 1.4rem; border-radius: 12px; max-width: 380px; width: 92%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-
-        /* =========================================================
-           A4 Page Print Layout Container (3x3 = 9 PVC Cards per A4 Page)
-           ========================================================= */
-        #a4-print-root {
-            display: none;
-        }
-        .a4-sheet {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 10mm 12mm;
-            margin: 0 auto;
-            background: #ffffff;
-            display: grid;
-            grid-template-columns: repeat(3, 54mm);
-            grid-template-rows: repeat(3, 85.6mm);
-            justify-content: space-between;
-            align-content: space-between;
-            row-gap: 6mm;
-            column-gap: 8mm;
-            page-break-after: always;
-            break-after: page;
-        }
-        .a4-sheet:last-child {
-            page-break-after: auto;
-            break-after: auto;
-        }
-
-        /* On-screen A4 Print Preview Section */
-        .a4-preview-section {
-            max-width: 1280px;
-            margin: 1.5rem auto 0 auto;
-            display: none;
-        }
-        .a4-preview-scroll {
-            overflow-x: auto;
-            background: #cbd5e1;
-            padding: 1.25rem;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            align-items: center;
-        }
-        .a4-preview-scroll .a4-sheet {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.22);
-            border: 1px solid #94a3b8;
-        }
-
-        @page {
-            size: A4 portrait;
-            margin: 0mm;
-        }
-
-        @media print {
-            html, body {
-                width: 210mm;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: #ffffff !important;
-            }
-            body > *:not(#a4-print-root) {
-                display: none !important;
-            }
-            #a4-print-root {
-                display: block !important;
-                width: 210mm;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            .a4-sheet {
-                box-shadow: none !important;
-                border: none !important;
-                margin: 0 !important;
-                width: 210mm !important;
-                height: 297mm !important;
-                padding: 10mm 12mm !important;
-            }
-            .id-card {
-                box-shadow: none !important;
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
-        }
     </style>
 </head>
 <body>
@@ -428,56 +72,12 @@
             <img src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" crossorigin="anonymous" alt="Iqra Logo">
             IQRA ACADEMY - Smart QR ID Card Studio
         </h2>
-        <p>অনাবাসিক • ডে-বোর্ডিং • আবাসিক গার্লস মিশন | PVC Portrait Size (54mm × 85.6mm) &amp; A4 Sheet Print</p>
-    </div>
-
-    <div class="api-bar" style="display:none;">
-        <label>🔗 Google Apps Script Web App URL:</label>
-        <input type="text" id="gasApiUrl" value="https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec" onchange="saveApiUrl()">
-        <button class="btn btn-primary" style="flex:0; padding:0.45rem 0.9rem;" onclick="loadStudentData()">🔄 সিঙ্ক করুন</button>
+        <p>অনাবাসিক • ডে-বোর্ডিং • আবাসিক গার্লস মিশন | Student & Driver Management</p>
     </div>
 
     <div class="layout-grid">
-        <!-- ফর্ম সেকশন -->
         <div class="box">
-            <div class="section-title">প্রতিষ্ঠান বিবরণ (Header Info)</div>
-            <div class="form-group">
-                <label>লোগো URL</label>
-                <input type="text" id="instLogoUrl" value="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" oninput="updateCardLive()">
-            </div>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>প্রতিষ্ঠানের নাম</label>
-                    <input type="text" id="instName" value="IQRA ACADEMY" oninput="updateCardLive()">
-                </div>
-                <div class="form-group">
-                    <label>সাব-টাইটেল</label>
-                    <input type="text" id="instSub" value="Education • Discipline • Future" oninput="updateCardLive()">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>ঠিকানা</label>
-                <input type="text" id="instAddress" value="Dakshin Shibpur, Jadurhati, Baduria, N 24 Pgs, WB" oninput="updateCardLive()">
-            </div>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>ফোন নম্বর</label>
-                    <input type="text" id="instPhone" value="+91 9775123096" oninput="updateCardLive()">
-                </div>
-                <div class="form-group">
-                    <label>ইমেইল আইডি</label>
-                    <input type="text" id="instEmail" value="iqra.ac100@gmail.com" oninput="updateCardLive()">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>অনুমোদিত স্বাক্ষর আপলোড (স্বচ্ছ PNG)</label>
-                <input type="file" accept="image/*" onchange="handleSignatureUpload(event)">
-            </div>
-
-            <div class="section-title" style="margin-top: 1.2rem;">
-                <span id="form-mode-text">ছাত্র / ছাত্রীর তথ্য এন্ট্রি (QR Auto-Generated)</span>
-            </div>
-
+            <div class="section-title">ছাত্র / ছাত্রীর তথ্য ও ড্রাইভার অ্যাসাইনমেন্ট</div>
             <input type="hidden" id="editStudentId" value="">
             <input type="hidden" id="existingPhotoUrl" value="">
 
@@ -485,23 +85,23 @@
                 <div class="form-group">
                     <label>ভর্তির ধরন (Category) *</label>
                     <select id="sCategory" onchange="handleCategoryChange()">
-                        <option value="অনাবাসিক">অনাবাসিক (Non-Residential)</option>
-                        <option value="ডে-বোর্ডিং">ডে-বোর্ডিং (Day Boarding)</option>
-                        <option value="আবাসিক">আবাসিক (Residential Girls)</option>
+                        <option value="অনাবাসিক">অনাবাসিক</option>
+                        <option value="ডে-বোর্ডিং">ডে-বোর্ডিং</option>
+                        <option value="আবাসিক">আবাসিক</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>লিঙ্গ (Gender) *</label>
-                    <select id="sGender" onchange="updateCardLive()">
-                        <option value="ছাত্রী">ছাত্রী (Girl)</option>
-                        <option value="ছাত্র">ছাত্র (Boy)</option>
+                    <select id="sGender">
+                        <option value="ছাত্রী">ছাত্রী</option>
+                        <option value="ছাত্র">ছাত্র</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>শিক্ষার্থীর নাম *</label>
-                <input type="text" id="sName" placeholder="e.g. Fatima Khatun / Rahul Mondal" oninput="updateCardLive()">
+                <input type="text" id="sName" placeholder="e.g. Fatima Khatun" oninput="updateCardLive()">
             </div>
             <div class="grid-2">
                 <div class="form-group">
@@ -516,15 +116,27 @@
             <div class="grid-2">
                 <div class="form-group">
                     <label>রক্তের গ্রুপ</label>
-                    <input type="text" id="sBlood" placeholder="e.g. A+" oninput="updateCardLive()">
+                    <input type="text" id="sBlood" placeholder="e.g. A+">
                 </div>
                 <div class="form-group">
-                    <label>অভিভাবকের মোবাইল নম্বর *</label>
-                    <input type="text" id="sPhone" placeholder="e.g. 9876543210" oninput="updateCardLive()">
+                    <label>মোবাইল নম্বর *</label>
+                    <input type="text" id="sPhone" placeholder="e.g. 9876543210">
                 </div>
             </div>
+
+            <!-- ড্রাইভার অ্যাসাইন করার ড্রপডাউন -->
             <div class="form-group">
-                <label>শিক্ষার্থীর ফটো আপলোড (Google Drive-এ জমা হবে)</label>
+                <label>ড্রাইভার অ্যাসাইন করুন (Assigned Driver)</label>
+                <select id="sDriverCode">
+                    <option value="">-- ড্রাইভার নির্বাচন করুন --</option>
+                    <option value="DRV-001">Driver 1 (DRV-001)</option>
+                    <option value="DRV-002">Driver 2 (DRV-002)</option>
+                    <option value="DRV-003">Driver 3 (DRV-003)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>শিক্ষার্থীর ফটো আপলোড</label>
                 <input type="file" id="sPhotoInput" accept="image/*" onchange="handlePhotoUpload(event)">
             </div>
 
@@ -532,210 +144,88 @@
                 <button class="btn btn-primary" id="saveBtn" onclick="submitStudentForm()">💾 শিটে সেভ ও QR জেনারেট করুন</button>
                 <button class="btn btn-reset" onclick="resetForm()">🔄 রিসেট</button>
             </div>
-            <div id="statusMsg" class="status-msg" style="display:none;"></div>
+            <div id="statusMsg" class="status-msg"></div>
         </div>
 
-        <!-- প্রিভিউ ও A4 প্রিন্ট সেকশন -->
         <div class="box">
-            <div class="section-title">
-                <span>স্মার্ট QR আইডি কার্ড প্রিভিউ (PVC লম্বাটে পোর্ট্রেট)</span>
-            </div>
+            <div class="section-title">ID Card Preview</div>
             <div class="preview-wrapper">
-                <div class="pvc-size-badge">📐 PVC Portrait Size: 54mm × 85.6mm (A4 পেজে ৯টি কার্ড সেট)</div>
-
-                <div class="preview-scale-box">
-                    <div class="id-card" id="card-preview">
-                        <div class="id-header">
-                            <div class="id-logo-wrap">
-                                <img id="cLogo" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" crossorigin="anonymous" alt="Logo">
-                            </div>
-                            <div class="inst-name" id="cInstName">IQRA ACADEMY</div>
-                            <div class="inst-sub" id="cInstSub">Residential Girls' Mission (Estd: 2015)</div>
-                            <div class="inst-details">
-                                <span id="cInstAddress">Dakshin Shibpur, Jadurhati, Baduria, N 24 Pgs</span><br>
-                                Ph: <span id="cInstPhone">+91 9775123096</span> | UDISE: 19111008505
-                            </div>
+                <div class="id-card" id="card-preview">
+                    <div class="id-header">
+                        <div class="id-logo-wrap">
+                            <img id="cLogo" src="https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg" crossorigin="anonymous" alt="Logo">
                         </div>
-
-                        <div class="category-badge-wrap">
-                            <span class="category-badge" id="cBadge">অনাবাসিক (ছাত্রী)</span>
-                            <span class="id-chip" id="cIdChip">IQRA-NEW</span>
+                        <div class="inst-name">IQRA ACADEMY</div>
+                        <div class="inst-sub">Residential Girls' Mission</div>
+                    </div>
+                    <div class="category-badge-wrap">
+                        <span class="category-badge" id="cBadge">অনাবাসিক</span>
+                        <span class="id-chip" id="cIdChip">IQRA-NEW</span>
+                    </div>
+                    <div class="id-photo-qr-row">
+                        <div class="id-photo-area">
+                            <span id="photoText">PHOTO</span>
+                            <img id="cPhoto" src="" crossorigin="anonymous" alt="Photo" style="display:none;">
                         </div>
-
-                        <div class="id-photo-qr-row">
-                            <div class="id-photo-area">
-                                <span id="photoText">PHOTO</span>
-                                <img id="cPhoto" src="" crossorigin="anonymous" alt="Student Photo" style="display:none;">
-                            </div>
-                            <div class="id-qr-box">
-                                <div id="qrCodeContainer" class="qr-box-inner"></div>
-                                <div class="qr-caption">SCAN FOR IN/OUT</div>
-                            </div>
-                        </div>
-
-                        <div class="id-details">
-                            <p><strong>ID No:</strong> <span id="cStudentId" style="font-weight:700; color:#065f46;">IQRA-NEW</span></p>
-                            <p><strong>Name:</strong> <span id="cName" style="font-weight:700;">---------</span></p>
-                            <p><strong>Class:</strong> <span id="cClass">---------</span></p>
-                            <p><strong>Roll No:</strong> <span id="cRoll">---------</span></p>
-                            <p><strong>Category:</strong> <span id="cCategoryText">অনাবাসিক</span></p>
-                            <p><strong>Blood Grp:</strong> <span id="cBlood">---------</span></p>
-                            <p><strong>Contact:</strong> <span id="cPhone">---------</span></p>
-                        </div>
-
-                        <div class="id-footer">
-                            <div class="id-footer-left">
-                                <strong>Smart QR Enabled</strong><br>
-                                Admin &amp; Guardian Sync
-                            </div>
-                            <div class="id-footer-right">
-                                <div class="sign-area">
-                                    <span id="signPlace" style="color: #94a3b8; font-size: 4.5pt;">(Signature)</span>
-                                    <img id="cSign" src="" crossorigin="anonymous" alt="Signature" style="display:none;">
-                                </div>
-                                <div class="sign-text">Authorized Sign</div>
-                            </div>
+                        <div class="id-qr-box">
+                            <div id="qrCodeContainer"></div>
+                            <div class="qr-caption">SCAN QR</div>
                         </div>
                     </div>
-                </div>
-
-                <!-- সিঙ্গেল কার্ড অ্যাকশন -->
-                <div class="btn-group" style="margin-top: 0.4rem; width: 100%; justify-content: center;">
-                    <button class="btn btn-print" onclick="printSingleCurrentCard()">🖨️ শুধু এই কার্ডটি প্রিন্ট</button>
-                    <button class="btn btn-png" onclick="downloadPNG()">⬇️ PNG ডাউনলোড</button>
-                </div>
-
-                <!-- A4 প্রিন্ট অপশন প্যানেল (1. Print All, 2. Print Individual / Range) -->
-                <div class="print-studio-panel">
-                    <div class="print-studio-title">
-                        <span>🖨️ A4 Page PVC ID Card Print Studio</span>
-                        <span id="totalLoadedCount" style="font-size:0.75rem; color:#047857;">মোট রেকর্ড: 0</span>
+                    <div class="id-details">
+                        <p><strong>ID No:</strong> <span id="cStudentId">IQRA-NEW</span></p>
+                        <p><strong>Name:</strong> <span id="cName">---------</span></p>
+                        <p><strong>Class:</strong> <span id="cClass">---------</span></p>
+                        <p><strong>Roll No:</strong> <span id="cRoll">---------</span></p>
                     </div>
-
-                    <!-- Option 1: Print All ID Cards -->
-                    <div class="print-option-row">
-                        <button class="btn btn-print-all" style="width:100%;" onclick="printAllIdCards()">
-                            🖨️ 1. Print All ID Cards (সব আইডি কার্ড A4 পেজে প্রিন্ট করুন)
-                        </button>
-                    </div>
-
-                    <!-- Option 2: Print Individual 1,3,5 or 1-5 range -->
-                    <div class="range-input-group">
-                        <input type="text" id="printRangeInput" placeholder="ক্রমিক নং লিখুন: যেমন 1,3,5 অথবা 1-5 বা 1-4,7" />
-                        <button class="btn btn-print-range" onclick="printSelectedRangeCards()">
-                            🖨️ 2. Print Individual / Range
-                        </button>
-                        <button class="btn btn-reset" style="flex:0; padding:0.5rem 0.75rem;" onclick="previewSelectedRangeCards()">
-                            👁️ A4 প্রিভিউ
-                        </button>
-                    </div>
-                    <div class="print-hint">
-                        💡 <strong>টিপস:</strong> নিচের তালিকার <strong>ক্রমিক নং (SL)</strong> অনুযায়ী নির্দিষ্ট কার্ড প্রিন্ট করতে <code>1,3,5</code> অথবা রেঞ্জ প্রিন্ট করতে <code>1-5</code> লিখে <strong>Print Individual / Range</strong> বাটনে ক্লিক করুন। প্রতি A4 পেজে ৯টি করে PVC লম্বাটে কার্ড (54mm × 85.6mm) প্রিন্ট হবে।
-                    </div>
-                    <div id="printStatusMsg" class="status-msg" style="display:none;"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- অন-স্ক্রিন A4 প্রিন্ট প্রিভিউ প্যানেল -->
-    <div class="box a4-preview-section" id="a4PreviewSection">
-        <div class="section-title">
-            <span id="a4PreviewTitle">📄 A4 Page Print Layout Preview (PVC Portrait 54mm × 85.6mm)</span>
-            <div style="display:flex; gap:8px;">
-                <button class="btn btn-print" style="padding:5px 14px; font-size:0.8rem;" onclick="window.print()">🖨️ এখনই প্রিন্ট করুন (Print A4)</button>
-                <button class="btn btn-reset" style="padding:5px 12px; font-size:0.8rem;" onclick="closeA4Preview()">✖ বন্ধ করুন</button>
-            </div>
-        </div>
-        <div class="a4-preview-scroll" id="a4PreviewScroll"></div>
-    </div>
-
-    <!-- রেকর্ড তালিকা টেবিল -->
     <div class="box table-section">
         <div class="section-title">
-            <span>সংরক্ষিত ছাত্র/ছাত্রী তালিকা ও লাইভ স্ট্যাটাস (Google Sheets Live View)</span>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-print-all" style="padding: 5px 12px; font-size: 0.8rem;" onclick="printAllIdCards()">🖨️ Print All Icard</button>
-                <button class="btn btn-reset" style="padding: 5px 12px; font-size: 0.8rem;" onclick="loadStudentData()">🔄 রিফ্রেশ তালিকা</button>
-            </div>
+            <span>সংরক্ষিত ছাত্র/ছাত্রী তালিকা ও ড্রাইভার কোড</span>
+            <button class="btn btn-reset" style="padding: 5px 12px; font-size: 0.8rem;" onclick="loadStudentData()">🔄 রিফ্রেশ</button>
         </div>
-
         <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
-                        <th>ক্রমিক (SL)</th>
                         <th>ফটো</th>
-                        <th>আইডি (QR ID)</th>
+                        <th>আইডি</th>
                         <th>নাম</th>
-                        <th>লিঙ্গ</th>
-                        <th>ধরন</th>
                         <th>ক্লাস</th>
                         <th>রোল</th>
-                        <th>ব্লাড</th>
-                        <th>মোবাইল</th>
-                        <th>লাইভ স্ট্যাটাস</th>
-                        <th>ড্রাইভ লিঙ্ক</th>
+                        <th>ড্রাইভার কোড</th>
+                        <th>স্ট্যাটাস</th>
                         <th>অ্যাকশন</th>
                     </tr>
                 </thead>
                 <tbody id="studentTableBody">
-                    <tr>
-                        <td colspan="13" style="text-align: center; padding: 20px; color: #64748b;">লোড হচ্ছে...</td>
-                    </tr>
+                    <tr><td colspan="8" style="text-align: center; padding: 20px;">লোড হচ্ছে...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- ডিলিট মডাল -->
-    <div class="modal-backdrop" id="deleteModal">
-        <div class="modal-card">
-            <h3 style="color:#065f46; margin-bottom:0.5rem;">রেকর্ড ডিলিট নিশ্চিতকরণ</h3>
-            <p id="deleteModalText" style="font-size:0.88rem; color:#475569; margin-bottom:1.1rem;"></p>
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <button class="btn btn-reset" onclick="closeDeleteModal()">বাতিল</button>
-                <button class="btn" style="background:#ef4444;" onclick="confirmDeleteStudent()">হ্যাঁ, ডিলিট করুন</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- প্রিন্টের জন্য ডেডিকেটেড A4 কন্টেইনার -->
-    <div id="a4-print-root"></div>
-
     <script>
-        let globalSignSrc = "";
         let currentPhotoBase64 = "";
         let studentRecords = [];
         let previewTempId = "IQRA-" + String(Math.floor(10000 + Math.random() * 90000));
-        let pendingDeleteId = "";
 
         window.onload = function() {
-            try {
-                document.getElementById("gasApiUrl").value = "https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec";
-            } catch (e) {}
-            handleCategoryChange();
             loadStudentData();
         };
 
-        function saveApiUrl() {
-            try {
-                localStorage.setItem("IQRA_GAS_API_URL", document.getElementById("gasApiUrl").value.trim());
-            } catch (e) {}
-        }
-
-        function getApiUrl() {
-            return document.getElementById("gasApiUrl").value.trim();
-        }
-
-        function renderQRCodeInto(containerEl, qrText) {
-            if (!containerEl) return;
-            containerEl.innerHTML = "";
+        function renderQRCode(qrText) {
+            const container = document.getElementById("qrCodeContainer");
+            container.innerHTML = "";
             if (typeof QRCode !== "undefined") {
-                new QRCode(containerEl, {
+                new QRCode(container, {
                     text: qrText || "IQRA-NEW",
-                    width: 66,
-                    height: 66,
+                    width: 72,
+                    height: 72,
                     colorDark: "#065f46",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.M
@@ -743,84 +233,18 @@
             }
         }
 
-        function renderQRCode(qrText) {
-            const container = document.getElementById("qrCodeContainer");
-            renderQRCodeInto(container, qrText);
-        }
-
-        function getSubTitleForCategory(cat) {
-            if (cat === 'আবাসিক') return "Residential Girls' Mission (Estd: 2015)";
-            if (cat === 'ডে-বোর্ডিং') return "Day-Boarding Mission (Boys & Girls)";
-            return "Non-Residential Day School (Boys & Girls)";
-        }
-
         function handleCategoryChange() {
-            const cat = document.getElementById('sCategory').value;
-            const genderSelect = document.getElementById('sGender');
-            const subTitle = document.getElementById('cInstSub');
-
-            if (cat === 'আবাসিক') {
-                genderSelect.value = 'ছাত্রী';
-                genderSelect.disabled = true;
-            } else {
-                genderSelect.disabled = false;
-            }
-            subTitle.innerText = getSubTitleForCategory(cat);
             updateCardLive();
         }
 
-        function getBadgeStyleForCategory(cat, gender) {
-            if (cat === 'আবাসিক') {
-                return { text: "আবাসিক (গার্লস মিশন)", bg: "#dcfce7", color: "#15803d", border: "#86efac" };
-            } else if (cat === 'ডে-বোর্ডিং') {
-                return { text: `ডে-বোর্ডিং (${gender})`, bg: "#fef3c7", color: "#b45309", border: "#fde047" };
-            }
-            return { text: `অনাবাসিক (${gender})`, bg: "#e0e7ff", color: "#3730a3", border: "#a5b4fc" };
-        }
-
         function updateCardLive() {
-            const logoUrl = document.getElementById('instLogoUrl').value;
-            if (logoUrl) document.getElementById('cLogo').src = logoUrl;
-
-            document.getElementById('cInstName').innerText = document.getElementById('instName').value || 'IQRA ACADEMY';
-            document.getElementById('cInstAddress').innerText = document.getElementById('instAddress').value || '';
-            document.getElementById('cInstPhone').innerText = document.getElementById('instPhone').value || '';
-
-            const cat = document.getElementById('sCategory').value;
-            const gender = document.getElementById('sGender').value;
             const activeId = document.getElementById('editStudentId').value || previewTempId;
-
-            const badge = document.getElementById('cBadge');
-            const bStyle = getBadgeStyleForCategory(cat, gender);
-            badge.innerText = bStyle.text;
-            badge.style.background = bStyle.bg;
-            badge.style.color = bStyle.color;
-            badge.style.borderColor = bStyle.border;
-
             document.getElementById('cIdChip').innerText = activeId;
             document.getElementById('cStudentId').innerText = activeId;
-            document.getElementById('cCategoryText').innerText = cat + " (" + gender + ")";
             document.getElementById('cName').innerText = document.getElementById('sName').value || '---------';
             document.getElementById('cClass').innerText = document.getElementById('sClass').value || '---------';
             document.getElementById('cRoll').innerText = document.getElementById('sRoll').value || '---------';
-            document.getElementById('cBlood').innerText = document.getElementById('sBlood').value || '---------';
-            document.getElementById('cPhone').innerText = document.getElementById('sPhone').value || '---------';
-
             renderQRCode(activeId);
-        }
-
-        function handleSignatureUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                globalSignSrc = e.target.result;
-                const signImg = document.getElementById('cSign');
-                signImg.src = globalSignSrc;
-                signImg.style.display = "block";
-                document.getElementById('signPlace').style.display = "none";
-            };
-            reader.readAsDataURL(file);
         }
 
         function handlePhotoUpload(event) {
@@ -839,337 +263,46 @@
 
         function loadStudentData() {
             if (typeof google !== "undefined" && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(renderTable)
-                    .withFailureHandler(err => showStatus("লোড করতে সমস্যা: " + err.message, "error"))
-                    .getAllStudents();
+                google.script.run.withSuccessHandler(renderTable).getAllStudents();
                 return;
             }
-
-            const apiUrl = getApiUrl() + "?action=getAllStudents";
-            fetch(apiUrl)
-                .then(r => r.json())
-                .then(res => {
-                    if (res.success && Array.isArray(res.students)) {
-                        renderTable(res.students);
-                    } else if (Array.isArray(res)) {
-                        renderTable(res);
-                    }
-                })
-                .catch(() => {
-                    document.getElementById('studentTableBody').innerHTML = `<tr><td colspan="13" style="text-align:center; padding:18px; color:#b45309;">Google Apps Script-এ নতুন Code.gs ডিপ্লয় করার পর এখানে লাইভ তালিকা দেখা যাবে।</td></tr>`;
-                });
         }
 
         function renderTable(students) {
             studentRecords = students || [];
-            document.getElementById('totalLoadedCount').innerText = `মোট রেকর্ড: ${studentRecords.length}`;
             const tbody = document.getElementById('studentTableBody');
             if (studentRecords.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; padding: 20px; color: #64748b;">কোনো ছাত্র/ছাত্রীর তথ্য নেই। ফর্ম থেকে নতুন এন্ট্রি দিন।</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 20px;">কোনো ডেটা নেই।</td></tr>`;
                 return;
             }
 
             let html = "";
-            studentRecords.forEach((s, idx) => {
-                const slNo = idx + 1;
-                const imgTag = s.photoUrl
-                    ? `<img src="${s.photoUrl}" class="table-avatar" crossorigin="anonymous">`
-                    : `<span style="font-size:0.75rem; color:#94a3b8;">নেই</span>`;
-                const driveLink = s.photoUrl
-                    ? `<a href="${s.photoUrl}" target="_blank" style="color:#059669; text-decoration:none; font-weight:bold;">ভিউ ফটো</a>`
-                    : `-`;
-
-                let tagClass = "tag-dayscholar";
-                if (s.category === 'আবাসিক') tagClass = "tag-residential";
-                else if (s.category === 'ডে-বোর্ডিং') tagClass = "tag-dayboard";
-
-                const isInside = String(s.liveStatus || "OUT").toUpperCase() === "IN";
-                const statusBadge = isInside
-                    ? `<span class="status-pill status-in">🟢 Safely In</span>`
-                    : `<span class="status-pill status-out">🔴 Safely Out</span>`;
-
+            studentRecords.forEach(s => {
+                const imgTag = s.photoUrl ? `<img src="${s.photoUrl}" class="table-avatar" crossorigin="anonymous">` : `নেই`;
                 html += `
                 <tr>
-                    <td><span class="sl-badge">${slNo}</span></td>
                     <td>${imgTag}</td>
-                    <td><strong style="font-family:monospace; color:#065f46;">${s.id}</strong></td>
+                    <td><strong>${s.id}</strong></td>
                     <td>${s.name}</td>
-                    <td><span style="font-weight:600; color:${s.gender === 'ছাত্র' ? '#2563eb':'#db2777'}">${s.gender}</span></td>
-                    <td><span class="tag-cat ${tagClass}">${s.category}</span></td>
                     <td>${s.studentClass}</td>
                     <td>${s.roll}</td>
-                    <td>${s.blood}</td>
-                    <td>${s.phone}</td>
-                    <td>${statusBadge}</td>
-                    <td>${driveLink}</td>
+                    <td><span style="color:#1e40af; font-weight:bold;">${s.driverCode || 'অ্যাসাইন করা হয়নি'}</span></td>
+                    <td>${s.liveStatus}</td>
                     <td>
-                        <button class="action-btn btn-view" onclick="previewCardFromTable('${s.id}')">কার্ড ও QR</button>
                         <button class="action-btn btn-edit" onclick="editStudentRow('${s.id}')">এডিট</button>
-                        <button class="action-btn btn-del" onclick="deleteStudentRow('${s.id}')">ডিলিট</button>
                     </td>
-                </tr>
-                `;
+                </tr>`;
             });
             tbody.innerHTML = html;
-        }
-
-        /* =========================================================
-           A4 PVC Portrait Card Builder & Range Parser
-           ========================================================= */
-        function escapeHtml(str) {
-            return String(str || "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
-        }
-
-        function createCardElementForStudent(s) {
-            const logoUrl = document.getElementById('instLogoUrl').value || "https://res.cloudinary.com/u0z4riei/image/upload/v1792241337/WhatsApp_Image_2026-10-17_at_6.14.01_PM.jpg";
-            const instName = document.getElementById('instName').value || "IQRA ACADEMY";
-            const instAddress = document.getElementById('instAddress').value || "Dakshin Shibpur, Jadurhati, Baduria, N 24 Pgs";
-            const instPhone = document.getElementById('instPhone').value || "+91 9775123096";
-
-            const cat = s.category || "অনাবাসিক";
-            const gender = s.gender || (cat === 'আবাসিক' ? 'ছাত্রী' : 'ছাত্রী');
-            const subTitle = getSubTitleForCategory(cat);
-            const bStyle = getBadgeStyleForCategory(cat, gender);
-            const cardId = s.id || "IQRA-NEW";
-
-            const cardDiv = document.createElement("div");
-            cardDiv.className = "id-card";
-
-            const hasPhoto = Boolean(s.photoUrl);
-            const hasSign = Boolean(globalSignSrc);
-
-            cardDiv.innerHTML = `
-                <div class="id-header">
-                    <div class="id-logo-wrap">
-                        <img src="${escapeHtml(logoUrl)}" crossorigin="anonymous" alt="Logo">
-                    </div>
-                    <div class="inst-name">${escapeHtml(instName)}</div>
-                    <div class="inst-sub">${escapeHtml(subTitle)}</div>
-                    <div class="inst-details">
-                        <span>${escapeHtml(instAddress)}</span><br>
-                        Ph: <span>${escapeHtml(instPhone)}</span> | UDISE: 19111008505
-                    </div>
-                </div>
-
-                <div class="category-badge-wrap">
-                    <span class="category-badge" style="background:${bStyle.bg}; color:${bStyle.color}; border-color:${bStyle.border};">${escapeHtml(bStyle.text)}</span>
-                    <span class="id-chip">${escapeHtml(cardId)}</span>
-                </div>
-
-                <div class="id-photo-qr-row">
-                    <div class="id-photo-area">
-                        ${hasPhoto
-                            ? `<img src="${escapeHtml(s.photoUrl)}" crossorigin="anonymous" alt="Student Photo">`
-                            : `<span>PHOTO</span>`}
-                    </div>
-                    <div class="id-qr-box">
-                        <div class="qr-box-inner"></div>
-                        <div class="qr-caption">SCAN FOR IN/OUT</div>
-                    </div>
-                </div>
-
-                <div class="id-details">
-                    <p><strong>ID No:</strong> <span style="font-weight:700; color:#065f46;">${escapeHtml(cardId)}</span></p>
-                    <p><strong>Name:</strong> <span style="font-weight:700;">${escapeHtml(s.name || '---------')}</span></p>
-                    <p><strong>Class:</strong> <span>${escapeHtml(s.studentClass || '---------')}</span></p>
-                    <p><strong>Roll No:</strong> <span>${escapeHtml(s.roll || '---------')}</span></p>
-                    <p><strong>Category:</strong> <span>${escapeHtml(cat + " (" + gender + ")")}</span></p>
-                    <p><strong>Blood Grp:</strong> <span>${escapeHtml(s.blood || '---------')}</span></p>
-                    <p><strong>Contact:</strong> <span>${escapeHtml(s.phone || '---------')}</span></p>
-                </div>
-
-                <div class="id-footer">
-                    <div class="id-footer-left">
-                        <strong>Smart QR Enabled</strong><br>
-                        Admin &amp; Guardian Sync
-                    </div>
-                    <div class="id-footer-right">
-                        <div class="sign-area">
-                            ${hasSign
-                                ? `<img src="${escapeHtml(globalSignSrc)}" crossorigin="anonymous" alt="Signature">`
-                                : `<span style="color: #94a3b8; font-size: 4.5pt;">(Signature)</span>`}
-                        </div>
-                        <div class="sign-text">Authorized Sign</div>
-                    </div>
-                </div>
-            `;
-
-            const qrTarget = cardDiv.querySelector(".qr-box-inner");
-            renderQRCodeInto(qrTarget, cardId);
-            return cardDiv;
-        }
-
-        function parseSerialSelection(inputStr, maxLen) {
-            const cleaned = String(inputStr || "").trim();
-            if (!cleaned) return [];
-            const parts = cleaned.split(",");
-            const selectedIndices = [];
-            const seen = new Set();
-
-            for (let part of parts) {
-                part = part.trim();
-                if (!part) continue;
-                if (part.includes("-")) {
-                    const rangeParts = part.split("-").map(x => parseInt(x.trim(), 10));
-                    if (rangeParts.length === 2 && !isNaN(rangeParts[0]) && !isNaN(rangeParts[1])) {
-                        const start = Math.min(rangeParts[0], rangeParts[1]);
-                        const end = Math.max(rangeParts[0], rangeParts[1]);
-                        for (let n = start; n <= end; n++) {
-                            if (n >= 1 && n <= maxLen && !seen.has(n)) {
-                                seen.add(n);
-                                selectedIndices.push(n - 1);
-                            }
-                        }
-                    }
-                } else {
-                    const num = parseInt(part, 10);
-                    if (!isNaN(num) && num >= 1 && num <= maxLen && !seen.has(num)) {
-                        seen.add(num);
-                        selectedIndices.push(num - 1);
-                    }
-                }
-            }
-            return selectedIndices;
-        }
-
-        function buildA4SheetsInto(targetContainer, studentsList) {
-            targetContainer.innerHTML = "";
-            const cardsPerPage = 9; // 3 columns x 3 rows on A4 Portrait
-            for (let i = 0; i < studentsList.length; i += cardsPerPage) {
-                const pageSlice = studentsList.slice(i, i + cardsPerPage);
-                const sheetDiv = document.createElement("div");
-                sheetDiv.className = "a4-sheet";
-                pageSlice.forEach(student => {
-                    sheetDiv.appendChild(createCardElementForStudent(student));
-                });
-                targetContainer.appendChild(sheetDiv);
-            }
-        }
-
-        function showPrintStatus(msg, type) {
-            const el = document.getElementById("printStatusMsg");
-            el.style.display = "block";
-            el.innerText = msg;
-            el.className = "status-msg " + (type === "error" ? "status-error" : "status-success");
-            setTimeout(() => { el.style.display = "none"; }, 5000);
-        }
-
-        function getCurrentFormAsStudentObject() {
-            const activeId = document.getElementById('editStudentId').value || previewTempId;
-            return {
-                id: activeId,
-                name: document.getElementById('sName').value || "---------",
-                category: document.getElementById('sCategory').value || "অনাবাসিক",
-                gender: document.getElementById('sGender').value || "ছাত্রী",
-                studentClass: document.getElementById('sClass').value || "---------",
-                roll: document.getElementById('sRoll').value || "---------",
-                blood: document.getElementById('sBlood').value || "---------",
-                phone: document.getElementById('sPhone').value || "---------",
-                photoUrl: currentPhotoBase64 || document.getElementById('existingPhotoUrl').value || ""
-            };
-        }
-
-        function triggerPrintWithStudents(studentsToPrint, labelText, showPreviewOnly) {
-            const printRoot = document.getElementById("a4-print-root");
-            const previewScroll = document.getElementById("a4PreviewScroll");
-            const previewSection = document.getElementById("a4PreviewSection");
-            const previewTitle = document.getElementById("a4PreviewTitle");
-
-            buildA4SheetsInto(printRoot, studentsToPrint);
-            buildA4SheetsInto(previewScroll, studentsToPrint);
-
-            const totalPages = Math.ceil(studentsToPrint.length / 9);
-            previewTitle.innerText = `📄 A4 Print Preview: ${labelText} — মোট ${studentsToPrint.length}টি কার্ড (${totalPages}টি A4 পেজ)`;
-            previewSection.style.display = "block";
-
-            if (showPreviewOnly) {
-                previewSection.scrollIntoView({ behavior: "smooth" });
-            } else {
-                setTimeout(() => {
-                    window.print();
-                }, 250);
-            }
-        }
-
-        // শুধু বর্তমান প্রিভিউ কার্ড প্রিন্ট
-        function printSingleCurrentCard() {
-            const currentStudent = getCurrentFormAsStudentObject();
-            triggerPrintWithStudents([currentStudent], "সিঙ্গেল কার্ড (" + currentStudent.id + ")", false);
-        }
-
-        // Option 1: Print All ID Cards
-        function printAllIdCards() {
-            if (!studentRecords || studentRecords.length === 0) {
-                const fallbackStudent = getCurrentFormAsStudentObject();
-                showPrintStatus("তালিকায় কোনো সংরক্ষিত রেকর্ড নেই; বর্তমান প্রিভিউ কার্ডটি A4 পেজে প্রিন্ট হচ্ছে।", "success");
-                triggerPrintWithStudents([fallbackStudent], "বর্তমান প্রিভিউ কার্ড", false);
-                return;
-            }
-            showPrintStatus(`মোট ${studentRecords.length}টি আইডি কার্ড A4 পেজে প্রিন্টের জন্য প্রস্তুত করা হয়েছে!`, "success");
-            triggerPrintWithStudents(studentRecords, "সব আইডি কার্ড (All Cards)", false);
-        }
-
-        // Option 2: Print Individual 1,3,5 or 1-5 range
-        function getSelectedRangeStudents() {
-            const rangeVal = document.getElementById("printRangeInput").value.trim();
-            if (!rangeVal) {
-                showPrintStatus("অনুগ্রহ করে ক্রমিক নম্বর বা রেঞ্জ লিখুন (যেমন: 1,3,5 অথবা 1-5)!", "error");
-                return null;
-            }
-            if (!studentRecords || studentRecords.length === 0) {
-                showPrintStatus("তালিকায় কোনো সংরক্ষিত ছাত্র/ছাত্রী নেই! আগে ডেটা লোড বা সেভ করুন।", "error");
-                return null;
-            }
-            const indices = parseSerialSelection(rangeVal, studentRecords.length);
-            if (indices.length === 0) {
-                showPrintStatus(`প্রদত্ত রেঞ্জ (${rangeVal})-এর সাথে ১ থেকে ${studentRecords.length}-এর কোনো ক্রমিক নম্বর মেলেনি!`, "error");
-                return null;
-            }
-            return {
-                rangeVal,
-                list: indices.map(i => studentRecords[i])
-            };
-        }
-
-        function printSelectedRangeCards() {
-            const res = getSelectedRangeStudents();
-            if (!res) return;
-            showPrintStatus(`নির্বাচিত ${res.list.length}টি কার্ড (ক্রমিক: ${res.rangeVal}) A4 পেজে প্রিন্ট হচ্ছে...`, "success");
-            triggerPrintWithStudents(res.list, `নির্বাচিত ক্রমিক (${res.rangeVal})`, false);
-        }
-
-        function previewSelectedRangeCards() {
-            const rangeVal = document.getElementById("printRangeInput").value.trim();
-            if (!rangeVal) {
-                if (studentRecords && studentRecords.length > 0) {
-                    triggerPrintWithStudents(studentRecords, "সব আইডি কার্ড (All Cards)", true);
-                } else {
-                    triggerPrintWithStudents([getCurrentFormAsStudentObject()], "বর্তমান প্রিভিউ কার্ড", true);
-                }
-                return;
-            }
-            const res = getSelectedRangeStudents();
-            if (!res) return;
-            triggerPrintWithStudents(res.list, `নির্বাচিত ক্রমিক (${res.rangeVal})`, true);
-        }
-
-        function closeA4Preview() {
-            document.getElementById("a4PreviewSection").style.display = "none";
         }
 
         function submitStudentForm() {
             const name = document.getElementById('sName').value.trim();
             const sClass = document.getElementById('sClass').value.trim();
             const roll = document.getElementById('sRoll').value.trim();
-            const phone = document.getElementById('sPhone').value.trim();
 
             if (!name || !sClass || !roll) {
-                showStatus("অনুগ্রহ করে শিক্ষার্থীর নাম, ক্লাস এবং রোল নম্বর দিন!", "error");
+                showStatus("নাম, ক্লাস ও রোল দিন!", "error");
                 return;
             }
 
@@ -1181,54 +314,22 @@
                 studentClass: sClass,
                 roll: roll,
                 blood: document.getElementById('sBlood').value.trim(),
-                phone: phone,
+                phone: document.getElementById('sPhone').value.trim(),
+                driverCode: document.getElementById('sDriverCode').value.trim(),
                 photoBase64: currentPhotoBase64,
                 existingPhotoUrl: document.getElementById('existingPhotoUrl').value
             };
 
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true;
-            saveBtn.innerText = "⏳ শিটে সেভ হচ্ছে...";
-            showStatus("ডেটা প্রসেস হচ্ছে, অপেক্ষা করুন...", "success");
-
             if (typeof google !== "undefined" && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(res => handleSaveResponse(res, payload))
-                    .withFailureHandler(err => {
-                        saveBtn.disabled = false;
-                        saveBtn.innerText = "💾 শিটে সেভ ও QR জেনারেট করুন";
-                        showStatus("ব্যর্থ হয়েছে: " + err.message, "error");
-                    })
-                    .saveOrUpdateStudent(payload);
-                return;
-            }
-
-            const apiUrl = getApiUrl();
-            fetch(apiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "saveStudent", data: payload })
-            })
-            .then(r => r.json())
-            .then(res => handleSaveResponse(res, payload))
-            .catch(err => {
-                saveBtn.disabled = false;
-                saveBtn.innerText = "💾 শিটে সেভ ও QR জেনারেট করুন";
-                showStatus("নেটওয়ার্ক বা ডিপ্লয়মেন্ট এরর: " + err.message, "error");
-            });
-        }
-
-        function handleSaveResponse(res, payload) {
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = false;
-            saveBtn.innerText = "💾 শিটে সেভ ও QR জেনারেট করুন";
-            if (res && res.success) {
-                showStatus(res.message + " (ID: " + res.id + ")", "success");
-                document.getElementById('editStudentId').value = res.id;
-                updateCardLive();
-                loadStudentData();
-            } else {
-                showStatus("এরর: " + (res ? res.error : "Unknown error"), "error");
+                google.script.run.withSuccessHandler(res => {
+                    if (res.success) {
+                        showStatus(res.message, "success");
+                        loadStudentData();
+                        resetForm();
+                    } else {
+                        showStatus(res.error, "error");
+                    }
+                }).saveOrUpdateStudent(payload);
             }
         }
 
@@ -1239,107 +340,19 @@
             document.getElementById('editStudentId').value = student.id;
             document.getElementById('sName').value = student.name;
             document.getElementById('sCategory').value = student.category || 'অনাবাসিক';
-            handleCategoryChange();
-
             document.getElementById('sGender').value = student.gender || 'ছাত্রী';
             document.getElementById('sClass').value = student.studentClass;
             document.getElementById('sRoll').value = student.roll;
             document.getElementById('sBlood').value = student.blood;
             document.getElementById('sPhone').value = student.phone;
+            document.getElementById('sDriverCode').value = student.driverCode || '';
             document.getElementById('existingPhotoUrl').value = student.photoUrl;
 
             updateCardLive();
-            if (student.photoUrl) {
-                const photoImg = document.getElementById('cPhoto');
-                photoImg.src = student.photoUrl;
-                photoImg.style.display = "block";
-                document.getElementById('photoText').style.display = "none";
-            }
-
-            document.getElementById('form-mode-text').innerText = "তথ্য এডিট করুন (" + student.id + ")";
-            document.getElementById('saveBtn').innerText = "🔄 আপডেট করুন";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function deleteStudentRow(id) {
-            pendingDeleteId = id;
-            document.getElementById('deleteModalText').innerText = `আপনি কি নিশ্চিত যে আইডি ${id} টি স্প্রেডশিট থেকে ডিলিট করতে চান?`;
-            document.getElementById('deleteModal').style.display = 'flex';
-        }
-
-        function closeDeleteModal() {
-            pendingDeleteId = "";
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-
-        function confirmDeleteStudent() {
-            const id = pendingDeleteId;
-            closeDeleteModal();
-            if (!id) return;
-
-            showStatus("ডিলিট করা হচ্ছে...", "success");
-            if (typeof google !== "undefined" && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(res => {
-                        if (res.success) {
-                            showStatus(res.message, "success");
-                            loadStudentData();
-                            resetForm();
-                        } else {
-                            showStatus("ডিলিট ব্যর্থ: " + res.error, "error");
-                        }
-                    })
-                    .deleteStudent(id);
-                return;
-            }
-
-            const apiUrl = getApiUrl();
-            fetch(apiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "deleteStudent", id: id })
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.success) {
-                    showStatus(res.message, "success");
-                    loadStudentData();
-                    resetForm();
-                } else {
-                    showStatus("ডিলিট ব্যর্থ: " + res.error, "error");
-                }
-            });
-        }
-
-        function previewCardFromTable(id) {
-            const student = studentRecords.find(s => s.id === id);
-            if (!student) return;
-
-            document.getElementById('editStudentId').value = student.id;
-            document.getElementById('sCategory').value = student.category || 'অনাবাসিক';
-            document.getElementById('sGender').value = student.gender || 'ছাত্রী';
-            document.getElementById('sName').value = student.name;
-            document.getElementById('sClass').value = student.studentClass;
-            document.getElementById('sRoll').value = student.roll;
-            document.getElementById('sBlood').value = student.blood;
-            document.getElementById('sPhone').value = student.phone;
-            document.getElementById('existingPhotoUrl').value = student.photoUrl || "";
-            handleCategoryChange();
-
-            const photoImg = document.getElementById('cPhoto');
-            if (student.photoUrl) {
-                photoImg.src = student.photoUrl;
-                photoImg.style.display = "block";
-                document.getElementById('photoText').style.display = "none";
-            } else {
-                photoImg.style.display = "none";
-                document.getElementById('photoText').style.display = "block";
-            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function resetForm() {
-            previewTempId = "IQRA-" + String(Math.floor(10000 + Math.random() * 90000));
             document.getElementById('editStudentId').value = "";
             document.getElementById('existingPhotoUrl').value = "";
             document.getElementById('sName').value = "";
@@ -1347,16 +360,8 @@
             document.getElementById('sRoll').value = "";
             document.getElementById('sBlood').value = "";
             document.getElementById('sPhone').value = "";
-            document.getElementById('sPhotoInput').value = "";
+            document.getElementById('sDriverCode').value = "";
             currentPhotoBase64 = "";
-
-            document.getElementById('sCategory').value = "অনাবাসিক";
-            handleCategoryChange();
-
-            document.getElementById('form-mode-text').innerText = "ছাত্র / ছাত্রীর তথ্য এন্ট্রি (QR Auto-Generated)";
-            document.getElementById('saveBtn').innerText = "💾 শিটে সেভ ও QR জেনারেট করুন";
-            document.getElementById('cPhoto').style.display = "none";
-            document.getElementById('photoText').style.display = "block";
             updateCardLive();
         }
 
@@ -1365,24 +370,7 @@
             el.style.display = "block";
             el.innerText = text;
             el.className = "status-msg " + (type === 'error' ? "status-error" : "status-success");
-            setTimeout(() => { el.style.display = "none"; }, 5000);
-        }
-
-        function downloadPNG() {
-            const card = document.getElementById('card-preview');
-            const studentName = document.getElementById('cName').innerText.replace(/\s+/g, '-') || 'student';
-
-            html2canvas(card, {
-                scale: 4,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: "#ffffff"
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `IQRA-ID-${studentName}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
+            setTimeout(() => { el.style.display = "none"; }, 4000);
         }
     </script>
 </body>
