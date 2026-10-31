@@ -452,7 +452,7 @@
             tbody.innerHTML = html;
         }
 
-        function submitStudentForm() {
+       function submitStudentForm() {
             const name = document.getElementById('sName').value.trim();
             const sClass = document.getElementById('sClass').value.trim();
             const roll = document.getElementById('sRoll').value.trim();
@@ -464,6 +464,7 @@
             }
 
             const payload = {
+                action: "saveStudent", // এটি অত্যন্ত জরুরি
                 id: document.getElementById('editStudentId').value,
                 name: name,
                 category: document.getElementById('sCategory').value,
@@ -480,22 +481,33 @@
             const saveBtn = document.getElementById('saveBtn');
             saveBtn.disabled = true;
             saveBtn.innerText = "সেভ হচ্ছে...";
+            showStatus("ডেটা সেভ হচ্ছে, অপেক্ষা করুন...", "success");
 
-            if (typeof google !== "undefined" && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(res => {
-                        saveBtn.disabled = false;
-                        saveBtn.innerText = "💾 শিটে সেভ ও QR জেনারেট করুন";
-                        if (res.success) {
-                            showStatus(res.message, "success");
-                            document.getElementById('editStudentId').value = res.id;
-                            loadStudentData();
-                        } else {
-                            showStatus(res.error, "error");
-                        }
-                    })
-                    .saveOrUpdateStudent(payload);
-            }
+            // সরাসরি আপনার ডিপ্লয় করা সঠিক GAS Web App URL এখানে বসিয়ে দিন
+            const GAS_URL = "https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec";
+
+            fetch(GAS_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(res => {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "💾 শিটে সেভ ও QR জেনারেট করুন";
+                if (res && res.success) {
+                    showStatus(res.message, "success");
+                    document.getElementById('editStudentId').value = res.id;
+                    loadStudentData();
+                } else {
+                    showStatus("এরর: " + (res ? res.error : "অজানা সমস্যা"), "error");
+                }
+            })
+            .catch(err => {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "💾 শিটে সেভ ও QR জেনারেট করুন";
+                showStatus("নেটওয়ার্ক এরর: " + err.message, "error");
+            });
         }
 
         function editStudentRow(id) {
