@@ -1,6 +1,6 @@
 /**
  * PVT. IQRA ACADEMY (ইকরা অ্যাকাডেমি) - Reusable Footer Component
- * Can be used in any page by adding:
+ * Usage:
  * <script src="footer.js"></script>
  * <iqra-footer></iqra-footer>
  */
@@ -47,11 +47,12 @@
               <ul class="space-y-2 text-xs">
                 <li><a href="index.html#home" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> হোম পেজ</a></li>
                 <li><a href="index.html#about" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> আমাদের পরিচিতি ও আদর্শ</a></li>
-                <li><a href="index.html#academics" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> শিক্ষাব্যবস্থা ও পাঠক্রম</a></li>
-                <li><a href="index.html#day-boarding" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> ডে-বোর্ডিং সুবিধা (সকাল ৮টা - সন্ধ্যা ৬টা)</a></li>
-                <li><a href="index.html#residential" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> আবাসিক বালিকা মিশন</a></li>
-                <li><a href="index.html#management" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> পরিচালনা ও বার্তা</a></li>
-                <li><a href="#" class="hover:text-amber-300 transition flex items-center gap-2 text-amber-400 font-semibold"><i class="fa-solid fa-lock text-[10px]"></i> demo</a></li>
+                <li><a href="index.html#streams" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> ৪টি শিক্ষাধারা</a></li>
+                <li><a href="index.html#residential" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> আবাসিক গার্লস মিশন</a></li>
+                <li><a href="index.html#management" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> পরিচালনা (Director & Secretary)</a></li>
+                <li><a href="index.html#admissions" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> ভর্তি নির্দেশিকা ২০২৭</a></li>
+                <li><a href="index.html#notices" class="hover:text-amber-300 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-emerald-500"></i> নোটিশ বোর্ড</a></li>
+                <li><a href="admin.html" class="hover:text-amber-300 transition flex items-center gap-2 text-amber-400 font-semibold"><i class="fa-solid fa-lock text-[10px]"></i> অ্যাডমিন পোর্টাল</a></li>
               </ul>
             </div>
 
@@ -87,24 +88,20 @@
                 </li>
                 <li class="flex items-center gap-2.5">
                   <i class="fa-solid fa-phone text-amber-400"></i>
-                  <a href="tel:9775123096" class="hover:text-white font-semibold">9775123096</a>
+                  <a href="tel:9775123096" class="hover:text-white font-semibold font-mono">9775123096</a>
                   <span>/</span>
-                  <a href="tel:9647109481" class="hover:text-white font-semibold">9647109481</a>
+                  <a href="tel:9647109481" class="hover:text-white font-semibold font-mono">9647109481</a>
                 </li>
                 <li class="flex items-center gap-2.5">
                   <i class="fa-solid fa-envelope text-amber-400"></i>
                   <a href="mailto:iqra.ac100@gmail.com" class="hover:text-white">iqra.ac100@gmail.com</a>
-                </li>
-                <li class="flex items-center gap-2.5">
-                  <i class="fa-solid fa-globe text-amber-400"></i>
-                  <a href="https://iqramission.com" target="_blank" rel="noopener" class="hover:text-white">iqramission.com</a>
                 </li>
               </ul>
               <div class="pt-2 flex items-center gap-2">
                 <a href="https://wa.me/919775123096" target="_blank" rel="noopener" class="bg-green-700 hover:bg-green-600 text-white px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition">
                   <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp চ্যাট
                 </a>
-                <button id="btn-scroll-top" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1.5 rounded text-xs transition ml-auto" title="উপরে যান">
+                <button id="comp-btn-scroll-top" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1.5 rounded text-xs transition ml-auto cursor-pointer" title="উপরে যান">
                   <i class="fa-solid fa-arrow-up"></i>
                 </button>
               </div>
@@ -113,8 +110,14 @@
 
           <!-- Bottom Copyright Bar -->
           <div class="border-t border-slate-800 pt-6 px-4">
-            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-2">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-4">
               <p>© ২০২৬-২০২৭ <b>PVT. IQRA ACADEMY (ইকরা অ্যাকাডেমি)</b> | সর্বস্বত্ব সংরক্ষিত।</p>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                <span>Developed By</span>
+                <a href="https://shmwb.in" target="_blank" rel="noopener noreferrer" style="color: #d4af37; font-weight: 700; text-decoration: none; animation: shmBlinkPulse 1.5s infinite ease-in-out;">
+                  SHMspace
+                </a>
+              </div>
               <p class="flex items-center gap-1">
                 <i class="fa-solid fa-heart text-red-500"></i> শিক্ষা • শৃঙ্খলা • আত্মবিশ্বাস • উজ্জ্বল ভবিষ্যৎ
               </p>
@@ -123,7 +126,7 @@
         </footer>
       `;
 
-      const btnTop = this.querySelector('#btn-scroll-top');
+      const btnTop = this.querySelector('#comp-btn-scroll-top');
       if (btnTop) {
         btnTop.addEventListener('click', () => {
           window.scrollTo({ top: 0, behavior: 'smooth' });

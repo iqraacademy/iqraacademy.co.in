@@ -1,4 +1,4 @@
-/* PVT. IQRA ACADEMY - Custom Stylesheet */
+/* PVT. IQRA ACADEMY (ইকরা অ্যাকাডেমি) - Official Stylesheet */
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 body {
@@ -16,7 +16,7 @@ body {
 .animate-marquee {
   display: inline-block;
   white-space: nowrap;
-  animation: marquee 25s linear infinite;
+  animation: marquee 28s linear infinite;
 }
 
 .animate-marquee:hover, .pause:hover {
@@ -41,7 +41,7 @@ body {
 
 /* Hero Carousel */
 .carousel-slide {
-  transition: opacity 0.8s ease-in-out, transform 1.2s ease-out;
+  transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
 }
 
 .card-hover {
@@ -49,5 +49,43 @@ body {
 }
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes shmBlinkPulse {
+  0%, 100% { opacity: 1; text-shadow: 0 0 5px rgba(212, 175, 55, 0.4); }
+  50% { opacity: 0.3; text-shadow: none; }
+}
+
+/* Dedicated A4 Print Styling */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  body > *:not(#print-container) {
+    display: none !important;
+  }
+  #print-container {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  #print-container * {
+    visibility: visible !important;
+  }
 }
