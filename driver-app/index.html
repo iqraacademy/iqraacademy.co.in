@@ -96,12 +96,12 @@
         <p>🚐 স্কুল পুল-কার ও ভ্যান ড্রাইভার লাইভ জিপিএস পোর্টাল</p>
     </div>
 
-    <!-- API কনফিগারেশন বক্স (ডিফল্টভাবে লুকানো, প্রয়োজনে খোলা যাবে) -->
+    <!-- API কনফিগারেশন বক্স -->
     <div class="card" id="apiConfigBox" style="display:none;">
         <div class="card-title">🔗 Google Script URL সেটিংস</div>
         <div class="form-group">
             <label>Web App URL</label>
-            <input type="text" id="gasUrlInput" value="https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec">
+            <input type="text" id="gasUrlInput" value="https://script.google.com/macros/s/AKfycbyNL0w90Z5JYEr_G2Uxz2uv3h3iEdqzghX87AFo9BoDEKB63kgYp7GaIRtkV8RedIud/exec">
         </div>
         <button class="btn btn-login" onclick="saveGasUrl()">সেভ করুন</button>
     </div>
@@ -187,7 +187,7 @@
 </div>
 
 <script>
-    const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbzisbikmQJSP6RHGh3lj2lWhZwFtS9nMm3BMf3_Nqo8gI1Ep3G_ljSNYWsZfN-6EWdb/exec";
+    const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbyNL0w90Z5JYEr_G2Uxz2uv3h3iEdqzghX87AFo9BoDEKB63kgYp7GaIRtkV8RedIud/exec";
     let watchId = null;
     let syncTimer = null;
     let wakeLock = null;
@@ -198,6 +198,9 @@
         const savedUrl = localStorage.getItem("IQRA_GAS_API_URL");
         if (savedUrl) {
             document.getElementById("gasUrlInput").value = savedUrl;
+        } else {
+            document.getElementById("gasUrlInput").value = DEFAULT_GAS_URL;
+            localStorage.setItem("IQRA_GAS_API_URL", DEFAULT_GAS_URL);
         }
         checkSavedLogin();
         if ("serviceWorker" in navigator) {
@@ -298,7 +301,7 @@
         document.getElementById("toggleGpsBtn").innerText = "🔴 ডিউটি শেষ করুন (Stop GPS)";
         document.getElementById("pulseIndicator").classList.add("pulse-active");
         document.getElementById("gpsStateTitle").innerText = "হাই-অ্যাকুরেসি GPS চালু আছে (Live)";
-        document.getElementById("gpsSubText").innerText = "প্রতি ১৫ সেকেন্ডে আপনার লোকেশন অভিভাবক পোর্টালে আপডেট হচ্ছে।";
+        document.getElementById("gpsSubText").innerText = "প্রতি ১৫ সেকেন্ডে আপনার লোকেশন আপডেট হচ্ছে।";
 
         watchId = navigator.geolocation.watchPosition(
             pos => {
@@ -311,14 +314,13 @@
                 document.getElementById("lngVal").innerText = latestCoords.lng;
                 document.getElementById("accVal").innerText = latestCoords.acc + " m";
 
-                // প্রথমবার সাথে সাথে সার্ভারে পাঠাবে
                 if (!syncTimer) {
                     pushLocationToSheet();
                     syncTimer = setInterval(pushLocationToSheet, 15000);
                 }
             },
             err => {
-                showBanner("GPS পারমিশন অন করুন (High Accuracy): " + err.message, false);
+                showBanner("GPS পারমিশন অন করুন: " + err.message, false);
             },
             {
                 enableHighAccuracy: true,
